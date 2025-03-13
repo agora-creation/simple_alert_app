@@ -2,8 +2,12 @@ import 'package:floating_navigation_bar/floating_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
-import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/screens/company_notice.dart';
+import 'package:simple_alert_app/screens/reminder.dart';
 import 'package:simple_alert_app/screens/setting.dart';
+import 'package:simple_alert_app/screens/user.dart';
+import 'package:simple_alert_app/screens/user_notice.dart';
+import 'package:simple_alert_app/widgets/custom_navigation_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,27 +18,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
-
-  List<Widget> screens = [
-    Center(
-      child: Text('受信履歴'),
-    ),
-    Center(
-      child: Text('送信履歴'),
-    ),
-    Center(
-      child: Text('リマインダー'),
-    ),
-    Center(
-      child: Text('名無し'),
-    ),
+  List<Widget> screenWidgets = [
+    UserNoticeScreen(),
+    CompanyNoticeScreen(),
+    ReminderScreen(),
+    UserScreen(),
   ];
+  List<String> screenNames = ['受信履歴', '送信状況', 'リマインダー', '名無し'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('受信履歴'),
+        title: Text(screenNames[currentIndex]),
         actions: [
           IconButton(
             icon: const FaIcon(FontAwesomeIcons.ellipsisVertical),
@@ -45,46 +41,31 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: screens[currentIndex],
+      body: screenWidgets[currentIndex],
       extendBody: true,
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 16),
-        child: FloatingNavigationBar(
-          backgroundColor: kWhiteColor,
-          barHeight: 80,
-          barWidth: MediaQuery.of(context).size.width - 40,
-          iconColor: kBlackColor,
-          textStyle: TextStyle(
-            color: kBlackColor,
-            fontSize: 14,
+      bottomNavigationBar: CustomNavigationBar(
+        items: [
+          NavBarItems(
+            icon: FontAwesomeIcons.rectangleList,
+            title: '受信履歴',
           ),
-          iconSize: 18,
-          indicatorColor: kRedColor,
-          indicatorHeight: 4,
-          indicatorWidth: 20,
-          items: [
-            NavBarItems(
-              icon: FontAwesomeIcons.rectangleList,
-              title: '受信履歴',
-            ),
-            NavBarItems(
-              icon: FontAwesomeIcons.squareCaretDown,
-              title: '送信状況',
-            ),
-            NavBarItems(
-              icon: FontAwesomeIcons.paperPlane,
-              title: 'リマインダー',
-            ),
-            NavBarItems(
-              icon: FontAwesomeIcons.user,
-              title: '名無し',
-            ),
-          ],
-          onChanged: (value) {
-            currentIndex = value;
-            setState(() {});
-          },
-        ),
+          NavBarItems(
+            icon: FontAwesomeIcons.squareCaretDown,
+            title: '送信状況',
+          ),
+          NavBarItems(
+            icon: FontAwesomeIcons.paperPlane,
+            title: 'リマインダー',
+          ),
+          NavBarItems(
+            icon: FontAwesomeIcons.user,
+            title: '名無し',
+          ),
+        ],
+        onChanged: (value) {
+          currentIndex = value;
+          setState(() {});
+        },
       ),
     );
   }

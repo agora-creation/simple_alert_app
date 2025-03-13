@@ -23,6 +23,9 @@ class SettingScreen extends StatelessWidget {
           ),
         ],
       ),
+      body: SafeArea(
+        child: Container(),
+      ),
     );
   }
 }
