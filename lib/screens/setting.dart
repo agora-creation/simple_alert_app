@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/widgets/custom_list.dart';
+import 'package:simple_alert_app/widgets/custom_switch_list.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -26,86 +28,34 @@ class SettingScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: kBlackColor.withOpacity(0.5),
-                  ),
-                ),
-              ),
-              child: SwitchListTile(
-                title: Text('PUSH通知のON/OFF'),
-                value: false,
-                onChanged: (value) {},
-              ),
+            CustomSwitchList(
+              titleLabel: 'PUSH通知のON/OFF',
+              value: false,
+              onChanged: (value) {},
             ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: kBlackColor.withOpacity(0.5),
-                  ),
-                ),
+            CustomList(
+              titleLabel: '利用規約',
+              trailing: const FaIcon(
+                FontAwesomeIcons.chevronRight,
+                size: 16,
               ),
-              child: ListTile(
-                title: Text('お問い合わせ'),
-                trailing: const FaIcon(
-                  FontAwesomeIcons.chevronRight,
-                  size: 16,
-                ),
-                onTap: () {},
-              ),
+              onTap: () {},
             ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: kBlackColor.withOpacity(0.5),
-                  ),
-                ),
+            CustomList(
+              titleLabel: 'プライバシーポリシー',
+              trailing: const FaIcon(
+                FontAwesomeIcons.chevronRight,
+                size: 16,
               ),
-              child: ListTile(
-                title: Text('利用規約'),
-                trailing: const FaIcon(
-                  FontAwesomeIcons.chevronRight,
-                  size: 16,
-                ),
-                onTap: () {},
-              ),
+              onTap: () {},
             ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: kBlackColor.withOpacity(0.5),
-                  ),
-                ),
+            CustomList(
+              titleLabel: 'アプリのバージョン',
+              trailing: Text(
+                '1.0.0',
+                style: TextStyle(fontSize: 14),
               ),
-              child: ListTile(
-                title: Text('プライバシーポリシー'),
-                trailing: const FaIcon(
-                  FontAwesomeIcons.chevronRight,
-                  size: 16,
-                ),
-                onTap: () {},
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: kBlackColor.withOpacity(0.5),
-                  ),
-                ),
-              ),
-              child: ListTile(
-                title: Text('アプリのバージョン'),
-                trailing: Text(
-                  '1.0.0',
-                  style: TextStyle(fontSize: 14),
-                ),
-              ),
+              onTap: () {},
             ),
           ],
         ),

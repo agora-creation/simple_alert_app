@@ -35,14 +35,14 @@ class UserNoticeDetailScreen extends StatelessWidget {
                       Text(
                         '受信日時: 2025/03/25 12:59',
                         style: TextStyle(
-                          color: kBlackColor.withOpacity(0.5),
+                          color: kBlackColor.withOpacity(0.8),
                           fontSize: 14,
                         ),
                       ),
                       Text(
                         '送信者名: 山田太郎',
                         style: TextStyle(
-                          color: kBlackColor.withOpacity(0.5),
+                          color: kBlackColor.withOpacity(0.8),
                           fontSize: 14,
                         ),
                       ),
