@@ -1,11 +1,27 @@
+import 'dart:io';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Platform.isAndroid
+      ? await Firebase.initializeApp(
+          options: const FirebaseOptions(
+            apiKey: 'AIzaSyAxTKeHtsyHLYidtdrY27byAxqQckpTzOU',
+            appId: '1:44926072077:android:36f188621c8ec660d62c44',
+            messagingSenderId: '44926072077',
+            projectId: 'simple-alert-project',
+            storageBucket: 'simple-alert-project.firebasestorage.app',
+          ),
+        )
+      : await Firebase.initializeApp();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
@@ -17,23 +33,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: (context, child) {
-        return MediaQuery.withNoTextScaling(
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: UserProvider.initialize()),
       ],
-      supportedLocales: const [Locale('ja')],
-      locale: const Locale('ja'),
-      title: 'B-Alert',
-      theme: customTheme(),
-      home: const HomeScreen(),
+      child: MaterialApp(
+        builder: (context, child) {
+          return MediaQuery.withNoTextScaling(
+            child: child!,
+          );
+        },
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('ja')],
+        locale: const Locale('ja'),
+        title: 'B-Alert',
+        theme: customTheme(),
+        home: const HomeScreen(),
+      ),
     );
   }
 }

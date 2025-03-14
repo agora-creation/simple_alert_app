@@ -1,127 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/sign_panel.dart';
+import 'package:simple_alert_app/widgets/user_list.dart';
 
-class UserScreen extends StatelessWidget {
+class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    bool isLogin = false;
+  State<UserScreen> createState() => _UserScreenState();
+}
 
+class _UserScreenState extends State<UserScreen> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Card(
           color: kWhiteColor,
           elevation: 0,
-          child: isLogin
+          child: userProvider.loginCheck()
               ? Column(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: kBlackColor.withOpacity(0.5),
-                          ),
-                        ),
+                    UserList(
+                      label: '名前',
+                      trailing: Text(
+                        '山田太郎',
+                        style: TextStyle(fontSize: 14),
                       ),
-                      child: ListTile(
-                        title: Text('名前'),
-                        trailing: Text(
-                          '山田太郎',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        onTap: () {},
-                      ),
+                      onTap: () {},
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: kBlackColor.withOpacity(0.5),
-                          ),
-                        ),
+                    UserList(
+                      label: 'メールアドレス',
+                      trailing: Text(
+                        'yamada@agora-c.com',
+                        style: TextStyle(fontSize: 14),
                       ),
-                      child: ListTile(
-                        title: Text('メールアドレス'),
-                        trailing: Text(
-                          'yamada@agora-c.com',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        onTap: () {},
-                      ),
+                      onTap: () {},
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: kBlackColor.withOpacity(0.5),
-                          ),
-                        ),
+                    UserList(
+                      label: 'パスワード',
+                      trailing: Text(
+                        '********',
+                        style: TextStyle(fontSize: 14),
                       ),
-                      child: ListTile(
-                        title: Text('パスワード'),
-                        trailing: Text(
-                          '********',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        onTap: () {},
-                      ),
+                      onTap: () {},
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: kBlackColor.withOpacity(0.5),
-                          ),
-                        ),
+                    UserList(
+                      label: '送信者登録',
+                      trailing: Text(
+                        'サブスク課金',
+                        style: TextStyle(fontSize: 14),
                       ),
-                      child: ListTile(
-                        title: Text('送信者登録'),
-                        trailing: Text(
-                          'サブスク課金',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        onTap: () {},
-                      ),
+                      onTap: () {},
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: kBlackColor.withOpacity(0.5),
-                          ),
-                        ),
+                    UserList(
+                      label: '送信先一覧',
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.chevronRight,
+                        size: 16,
                       ),
-                      child: ListTile(
-                        title: Text('送信先一覧'),
-                        trailing: const FaIcon(
-                          FontAwesomeIcons.chevronRight,
-                          size: 16,
-                        ),
-                        onTap: () {},
-                      ),
+                      onTap: () {},
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: kBlackColor.withOpacity(0.5),
-                          ),
-                        ),
+                    UserList(
+                      label: '受信先一覧',
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.chevronRight,
+                        size: 16,
                       ),
-                      child: ListTile(
-                        title: Text('受信先一覧'),
-                        trailing: const FaIcon(
-                          FontAwesomeIcons.chevronRight,
-                          size: 16,
-                        ),
-                        onTap: () {},
-                      ),
+                      onTap: () {},
                     ),
                   ],
                 )
@@ -137,7 +96,7 @@ class UserScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         CustomTextFormField(
-                          controller: TextEditingController(),
+                          controller: nameController,
                           textInputType: TextInputType.name,
                           maxLines: 1,
                           label: '名前',
@@ -146,7 +105,7 @@ class UserScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         CustomTextFormField(
-                          controller: TextEditingController(),
+                          controller: emailController,
                           textInputType: TextInputType.emailAddress,
                           maxLines: 1,
                           label: 'メールアドレス',
@@ -155,7 +114,7 @@ class UserScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         CustomTextFormField(
-                          controller: TextEditingController(),
+                          controller: passwordController,
                           obscureText: true,
                           textInputType: TextInputType.visiblePassword,
                           maxLines: 1,
@@ -169,7 +128,24 @@ class UserScreen extends StatelessWidget {
                           label: '登録して始める',
                           labelColor: kBlackColor,
                           backgroundColor: kBackgroundColor,
-                          onPressed: () async {},
+                          onPressed: () async {
+                            String? error = await userProvider.registration(
+                              name: nameController.text,
+                              email: emailController.text,
+                              password: passwordController.text,
+                            );
+                            if (error != null) {
+                              return;
+                            }
+                            if (!mounted) return;
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.bottomToTop,
+                                child: const HomeScreen(),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -181,7 +157,7 @@ class UserScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         CustomTextFormField(
-                          controller: TextEditingController(),
+                          controller: emailController,
                           textInputType: TextInputType.emailAddress,
                           maxLines: 1,
                           label: 'メールアドレス',
@@ -190,7 +166,7 @@ class UserScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         CustomTextFormField(
-                          controller: TextEditingController(),
+                          controller: passwordController,
                           obscureText: true,
                           textInputType: TextInputType.visiblePassword,
                           maxLines: 1,
@@ -204,7 +180,23 @@ class UserScreen extends StatelessWidget {
                           label: 'ログイン',
                           labelColor: kBlackColor,
                           backgroundColor: kBackgroundColor,
-                          onPressed: () async {},
+                          onPressed: () async {
+                            String? error = await userProvider.login(
+                              email: emailController.text,
+                              password: passwordController.text,
+                            );
+                            if (error != null) {
+                              return;
+                            }
+                            if (!mounted) return;
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.bottomToTop,
+                                child: const HomeScreen(),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),

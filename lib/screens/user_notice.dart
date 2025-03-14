@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/user_notice_detail.dart';
 import 'package:simple_alert_app/widgets/notice_list.dart';
 
@@ -9,6 +11,7 @@ class UserNoticeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -19,7 +22,7 @@ class UserNoticeScreen extends StatelessWidget {
             itemCount: 100,
             itemBuilder: (context, index) {
               return NoticeList(
-                titleLabel: '休業のお知らせ',
+                label: '休業のお知らせ',
                 onTap: () {
                   Navigator.push(
                     context,

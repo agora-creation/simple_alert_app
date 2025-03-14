@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/style.dart';
 
-class CustomSwitchList extends StatelessWidget {
+class UserList extends StatelessWidget {
   final String label;
-  final bool value;
-  final Function(bool)? onChanged;
+  final Widget? trailing;
+  final Function()? onTap;
 
-  const CustomSwitchList({
+  const UserList({
     required this.label,
-    required this.value,
-    required this.onChanged,
+    this.trailing,
+    this.onTap,
     super.key,
   });
 
@@ -23,10 +23,10 @@ class CustomSwitchList extends StatelessWidget {
           ),
         ),
       ),
-      child: SwitchListTile(
+      child: ListTile(
         title: Text(label),
-        value: value,
-        onChanged: onChanged,
+        trailing: trailing,
+        onTap: onTap,
       ),
     );
   }

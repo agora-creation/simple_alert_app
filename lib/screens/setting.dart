@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/widgets/custom_list.dart';
+import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_switch_list.dart';
+import 'package:simple_alert_app/widgets/setting_list.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -29,28 +32,28 @@ class SettingScreen extends StatelessWidget {
         child: Column(
           children: [
             CustomSwitchList(
-              titleLabel: 'PUSH通知のON/OFF',
+              label: 'PUSH通知のON/OFF',
               value: false,
               onChanged: (value) {},
             ),
-            CustomList(
-              titleLabel: '利用規約',
+            SettingList(
+              label: '利用規約',
               trailing: const FaIcon(
                 FontAwesomeIcons.chevronRight,
                 size: 16,
               ),
               onTap: () {},
             ),
-            CustomList(
-              titleLabel: 'プライバシーポリシー',
+            SettingList(
+              label: 'プライバシーポリシー',
               trailing: const FaIcon(
                 FontAwesomeIcons.chevronRight,
                 size: 16,
               ),
               onTap: () {},
             ),
-            CustomList(
-              titleLabel: 'アプリのバージョン',
+            SettingList(
+              label: 'アプリのバージョン',
               trailing: Text(
                 '1.0.0',
                 style: TextStyle(fontSize: 14),

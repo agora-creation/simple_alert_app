@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/style.dart';
 
-class CustomList extends StatelessWidget {
-  final String titleLabel;
+class SettingList extends StatelessWidget {
+  final String label;
   final Widget? trailing;
   final Function()? onTap;
 
-  const CustomList({
-    required this.titleLabel,
+  const SettingList({
+    required this.label,
     this.trailing,
     this.onTap,
     super.key,
@@ -24,7 +24,7 @@ class CustomList extends StatelessWidget {
         ),
       ),
       child: ListTile(
-        title: Text(titleLabel),
+        title: Text(label),
         trailing: trailing,
         onTap: onTap,
       ),

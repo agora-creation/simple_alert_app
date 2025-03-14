@@ -1,7 +1,9 @@
 import 'package:floating_navigation_bar/floating_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
+import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/setting.dart';
 import 'package:simple_alert_app/screens/user.dart';
 import 'package:simple_alert_app/screens/user_notice.dart';
@@ -24,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(screenNames[currentIndex]),

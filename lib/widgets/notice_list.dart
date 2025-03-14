@@ -3,11 +3,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/style.dart';
 
 class NoticeList extends StatelessWidget {
-  final String titleLabel;
+  final String label;
   final Function()? onTap;
 
   const NoticeList({
-    required this.titleLabel,
+    required this.label,
     this.onTap,
     super.key,
   });
@@ -24,7 +24,7 @@ class NoticeList extends StatelessWidget {
       ),
       child: ListTile(
         title: Text(
-          titleLabel,
+          label,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,

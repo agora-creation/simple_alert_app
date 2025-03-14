@@ -26,6 +26,18 @@ class UserProvider with ChangeNotifier {
     _auth?.authStateChanges().listen(_onStateChanged);
   }
 
+  bool loginCheck() {
+    switch (_status) {
+      case AuthStatus.uninitialized:
+        return false;
+      case AuthStatus.unauthenticated:
+      case AuthStatus.authenticating:
+        return false;
+      case AuthStatus.authenticated:
+        return true;
+    }
+  }
+
   Future<String?> login({
     required String email,
     required String password,
