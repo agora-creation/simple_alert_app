@@ -12,11 +12,7 @@ class UserNoticeDetailScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: kWhiteColor,
         leading: IconButton(
-          icon: const FaIcon(
-            FontAwesomeIcons.chevronLeft,
-            color: kBlackColor,
-            size: 18,
-          ),
+          icon: const FaIcon(FontAwesomeIcons.chevronLeft),
           onPressed: () => Navigator.pop(context),
         ),
       ),

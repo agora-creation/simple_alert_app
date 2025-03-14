@@ -3,8 +3,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
+import 'package:simple_alert_app/screens/user_email.dart';
+import 'package:simple_alert_app/screens/user_name.dart';
+import 'package:simple_alert_app/screens/user_password.dart';
+import 'package:simple_alert_app/screens/user_recipient.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/sign_panel.dart';
@@ -25,6 +30,7 @@ class _UserScreenState extends State<UserScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    UserModel? user = userProvider.user;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -37,18 +43,34 @@ class _UserScreenState extends State<UserScreen> {
                     UserList(
                       label: '名前',
                       trailing: Text(
-                        '山田太郎',
+                        user?.name ?? '',
                         style: TextStyle(fontSize: 14),
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserNameScreen(),
+                          ),
+                        );
+                      },
                     ),
                     UserList(
                       label: 'メールアドレス',
                       trailing: Text(
-                        'yamada@agora-c.com',
+                        user?.email ?? '',
                         style: TextStyle(fontSize: 14),
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserEmailScreen(),
+                          ),
+                        );
+                      },
                     ),
                     UserList(
                       label: 'パスワード',
@@ -56,18 +78,35 @@ class _UserScreenState extends State<UserScreen> {
                         '********',
                         style: TextStyle(fontSize: 14),
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserPasswordScreen(),
+                          ),
+                        );
+                      },
                     ),
                     UserList(
-                      label: '送信者登録',
-                      trailing: Text(
-                        'サブスク課金',
-                        style: TextStyle(fontSize: 14),
+                      label: '受信先一覧',
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.chevronRight,
+                        size: 16,
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserRecipientScreen(),
+                          ),
+                        );
+                      },
                     ),
                     UserList(
-                      label: '送信先一覧',
+                      label: '送信者として登録',
+                      annotation: '※サブスク契約が必要です',
                       trailing: const FaIcon(
                         FontAwesomeIcons.chevronRight,
                         size: 16,
@@ -75,7 +114,15 @@ class _UserScreenState extends State<UserScreen> {
                       onTap: () {},
                     ),
                     UserList(
-                      label: '受信先一覧',
+                      label: '送信者情報',
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.chevronRight,
+                        size: 16,
+                      ),
+                      onTap: () {},
+                    ),
+                    UserList(
+                      label: '送信先一覧',
                       trailing: const FaIcon(
                         FontAwesomeIcons.chevronRight,
                         size: 16,

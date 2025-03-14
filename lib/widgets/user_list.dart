@@ -3,11 +3,13 @@ import 'package:simple_alert_app/common/style.dart';
 
 class UserList extends StatelessWidget {
   final String label;
+  final String? annotation;
   final Widget? trailing;
   final Function()? onTap;
 
   const UserList({
     required this.label,
+    this.annotation,
     this.trailing,
     this.onTap,
     super.key,
@@ -25,6 +27,15 @@ class UserList extends StatelessWidget {
       ),
       child: ListTile(
         title: Text(label),
+        subtitle: annotation != null
+            ? Text(
+                annotation!,
+                style: TextStyle(
+                  color: kRedColor,
+                  fontSize: 14,
+                ),
+              )
+            : null,
         trailing: trailing,
         onTap: onTap,
       ),
