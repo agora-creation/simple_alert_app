@@ -2,8 +2,6 @@ import 'package:floating_navigation_bar/floating_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
-import 'package:simple_alert_app/screens/company_notice.dart';
-import 'package:simple_alert_app/screens/reminder.dart';
 import 'package:simple_alert_app/screens/setting.dart';
 import 'package:simple_alert_app/screens/user.dart';
 import 'package:simple_alert_app/screens/user_notice.dart';
@@ -20,11 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
   List<Widget> screenWidgets = [
     UserNoticeScreen(),
-    CompanyNoticeScreen(),
-    ReminderScreen(),
     UserScreen(),
   ];
-  List<String> screenNames = ['受信履歴', '送信状況', 'リマインダー', '名無し'];
+  List<String> screenNames = ['受信履歴', 'マイページ'];
 
   @override
   Widget build(BuildContext context) {
@@ -50,16 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
             title: '受信履歴',
           ),
           NavBarItems(
-            icon: FontAwesomeIcons.squareCaretDown,
-            title: '送信状況',
-          ),
-          NavBarItems(
-            icon: FontAwesomeIcons.paperPlane,
-            title: 'リマインダー',
-          ),
-          NavBarItems(
             icon: FontAwesomeIcons.user,
-            title: '名無し',
+            title: 'マイページ',
           ),
         ],
         onChanged: (value) {

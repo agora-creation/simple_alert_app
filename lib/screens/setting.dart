@@ -24,7 +24,91 @@ class SettingScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Container(),
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: kBlackColor.withOpacity(0.5),
+                  ),
+                ),
+              ),
+              child: SwitchListTile(
+                title: Text('PUSH通知のON/OFF'),
+                value: false,
+                onChanged: (value) {},
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: kBlackColor.withOpacity(0.5),
+                  ),
+                ),
+              ),
+              child: ListTile(
+                title: Text('お問い合わせ'),
+                trailing: const FaIcon(
+                  FontAwesomeIcons.chevronRight,
+                  size: 16,
+                ),
+                onTap: () {},
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: kBlackColor.withOpacity(0.5),
+                  ),
+                ),
+              ),
+              child: ListTile(
+                title: Text('利用規約'),
+                trailing: const FaIcon(
+                  FontAwesomeIcons.chevronRight,
+                  size: 16,
+                ),
+                onTap: () {},
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: kBlackColor.withOpacity(0.5),
+                  ),
+                ),
+              ),
+              child: ListTile(
+                title: Text('プライバシーポリシー'),
+                trailing: const FaIcon(
+                  FontAwesomeIcons.chevronRight,
+                  size: 16,
+                ),
+                onTap: () {},
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: kBlackColor.withOpacity(0.5),
+                  ),
+                ),
+              ),
+              child: ListTile(
+                title: Text('アプリのバージョン'),
+                trailing: Text(
+                  '1.0.0',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

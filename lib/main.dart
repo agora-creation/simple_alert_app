@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: const [Locale('ja')],
       locale: const Locale('ja'),
-      title: 'シンプルアラート',
+      title: 'B-Alert',
       theme: customTheme(),
       home: const HomeScreen(),
     );
