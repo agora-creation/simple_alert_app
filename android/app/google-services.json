@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "44926072077",
+    "project_id": "simple-alert-project",
+    "storage_bucket": "simple-alert-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44926072077:android:36f188621c8ec660d62c44",
+        "android_client_info": {
+          "package_name": "com.agoracreation.simple_alert_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxTKeHtsyHLYidtdrY27byAxqQckpTzOU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
