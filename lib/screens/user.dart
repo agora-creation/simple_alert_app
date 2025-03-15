@@ -6,6 +6,7 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
+import 'package:simple_alert_app/screens/sender.dart';
 import 'package:simple_alert_app/screens/user_email.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/screens/user_password.dart';
@@ -38,100 +39,128 @@ class _UserScreenState extends State<UserScreen> {
           color: kWhiteColor,
           elevation: 0,
           child: userProvider.loginCheck()
-              ? SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      UserList(
-                        label: '名前',
-                        trailing: Text(
-                          user?.name ?? '',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: UserNameScreen(),
-                            ),
-                          );
-                        },
+              ? ListView(
+                  children: [
+                    UserList(
+                      label: '名前',
+                      subtitle: Text(
+                        user?.name ?? '',
+                        style: TextStyle(fontSize: 14),
                       ),
-                      UserList(
-                        label: 'メールアドレス',
-                        trailing: Text(
-                          user?.email ?? '',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: UserEmailScreen(),
-                            ),
-                          );
-                        },
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.pen,
+                        size: 16,
                       ),
-                      UserList(
-                        label: 'パスワード',
-                        trailing: Text(
-                          '********',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: UserPasswordScreen(),
-                            ),
-                          );
-                        },
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserNameScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    UserList(
+                      label: 'メールアドレス',
+                      subtitle: Text(
+                        user?.email ?? '',
+                        style: TextStyle(fontSize: 14),
                       ),
-                      UserList(
-                        label: '受信先一覧',
-                        trailing: const FaIcon(
-                          FontAwesomeIcons.chevronRight,
-                          size: 16,
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: UserRecipientScreen(),
-                            ),
-                          );
-                        },
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.pen,
+                        size: 16,
                       ),
-                      UserList(
-                        label: '送信者として登録',
-                        annotation: '※サブスク契約が必要です',
-                        trailing: const FaIcon(
-                          FontAwesomeIcons.chevronRight,
-                          size: 16,
-                        ),
-                        onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserEmailScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    UserList(
+                      label: 'パスワード',
+                      subtitle: Text(
+                        '********',
+                        style: TextStyle(fontSize: 14),
                       ),
-                      UserList(
-                        label: '送信者情報',
-                        trailing: const FaIcon(
-                          FontAwesomeIcons.chevronRight,
-                          size: 16,
-                        ),
-                        onTap: () {},
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.pen,
+                        size: 16,
                       ),
-                      UserList(
-                        label: '送信先一覧',
-                        trailing: const FaIcon(
-                          FontAwesomeIcons.chevronRight,
-                          size: 16,
-                        ),
-                        onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserPasswordScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    UserList(
+                      label: '受信先一覧',
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.chevronRight,
+                        size: 16,
                       ),
-                    ],
-                  ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserRecipientScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    UserList(
+                      label: '送信者として登録',
+                      subtitle: Text(
+                        'サブスク課金が必要になります',
+                        style: TextStyle(
+                          color: kRedColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.chevronRight,
+                        size: 16,
+                      ),
+                      onTap: () {},
+                    ),
+                    UserList(
+                      label: '送信者情報',
+                      subtitle: Text(
+                        'アゴラクリエーション',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.pen,
+                        size: 16,
+                      ),
+                      onTap: () {},
+                    ),
+                    UserList(
+                      label: '送信先一覧',
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.chevronRight,
+                        size: 16,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: SenderScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 )
               : GestureDetector(
                   onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -139,8 +168,8 @@ class _UserScreenState extends State<UserScreen> {
                   child: SignPanel(
                     signUpChild: SingleChildScrollView(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          const SizedBox(height: 16),
                           Text(
                             '本アプリをご利用いただくには、以下の情報のご登録が必要です。あらかじめご了承ください。',
                           ),
@@ -193,7 +222,7 @@ class _UserScreenState extends State<UserScreen> {
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.bottomToTop,
-                                  child: const HomeScreen(),
+                                  child: HomeScreen(),
                                 ),
                               );
                             },
@@ -203,8 +232,8 @@ class _UserScreenState extends State<UserScreen> {
                     ),
                     signInChild: SingleChildScrollView(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          const SizedBox(height: 16),
                           Text(
                             '本アプリを既にご利用いただいたことがある方は、登録時のメールアドレスやパスワードでログインすることで、情報を引き継いで利用することが可能です。',
                           ),
@@ -247,7 +276,7 @@ class _UserScreenState extends State<UserScreen> {
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.bottomToTop,
-                                  child: const HomeScreen(),
+                                  child: HomeScreen(),
                                 ),
                               );
                             },

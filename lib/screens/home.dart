@@ -31,8 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    _init();
     super.initState();
+    _init();
   }
 
   @override
