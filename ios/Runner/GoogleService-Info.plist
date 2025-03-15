@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDfLXN40SKQmYfsGV38BJ3uapRHvCY2tCw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>44926072077</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.agoracreation.simpleAlertApp</string>
+	<key>PROJECT_ID</key>
+	<string>simple-alert-project</string>
+	<key>STORAGE_BUCKET</key>
+	<string>simple-alert-project.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:44926072077:ios:192240a267051377d62c44</string>
+</dict>
+</plist>

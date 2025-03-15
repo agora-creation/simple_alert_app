@@ -57,6 +57,7 @@ class UserProvider with ChangeNotifier {
         id: result.user!.uid,
       );
       if (tmpUser == null) return 'ログインに失敗しました';
+      _authUser = result.user;
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
@@ -82,6 +83,14 @@ class UserProvider with ChangeNotifier {
         password: password,
       );
       if (result == null) return '登録に失敗しました';
+      _userService.create({
+        'id': result.user!.uid,
+        'name': name,
+        'email': email,
+        'password': password,
+        'tokens': [],
+      });
+      _authUser = result.user;
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
@@ -139,9 +148,9 @@ class UserProvider with ChangeNotifier {
   }
 
   Future reload() async {
-    if (_user == null) return;
+    if (_authUser == null) return;
     UserModel? tmpUser = await _userService.selectData(
-      id: _user!.id,
+      id: _authUser!.uid,
     );
     if (tmpUser == null) return;
     _user = tmpUser;

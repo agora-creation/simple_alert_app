@@ -38,214 +38,222 @@ class _UserScreenState extends State<UserScreen> {
           color: kWhiteColor,
           elevation: 0,
           child: userProvider.loginCheck()
-              ? Column(
-                  children: [
-                    UserList(
-                      label: '名前',
-                      trailing: Text(
-                        user?.name ?? '',
-                        style: TextStyle(fontSize: 14),
+              ? SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      UserList(
+                        label: '名前',
+                        trailing: Text(
+                          user?.name ?? '',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              child: UserNameScreen(),
+                            ),
+                          );
+                        },
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: UserNameScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    UserList(
-                      label: 'メールアドレス',
-                      trailing: Text(
-                        user?.email ?? '',
-                        style: TextStyle(fontSize: 14),
+                      UserList(
+                        label: 'メールアドレス',
+                        trailing: Text(
+                          user?.email ?? '',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              child: UserEmailScreen(),
+                            ),
+                          );
+                        },
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: UserEmailScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    UserList(
-                      label: 'パスワード',
-                      trailing: Text(
-                        '********',
-                        style: TextStyle(fontSize: 14),
+                      UserList(
+                        label: 'パスワード',
+                        trailing: Text(
+                          '********',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              child: UserPasswordScreen(),
+                            ),
+                          );
+                        },
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: UserPasswordScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    UserList(
-                      label: '受信先一覧',
-                      trailing: const FaIcon(
-                        FontAwesomeIcons.chevronRight,
-                        size: 16,
+                      UserList(
+                        label: '受信先一覧',
+                        trailing: const FaIcon(
+                          FontAwesomeIcons.chevronRight,
+                          size: 16,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              child: UserRecipientScreen(),
+                            ),
+                          );
+                        },
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: UserRecipientScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    UserList(
-                      label: '送信者として登録',
-                      annotation: '※サブスク契約が必要です',
-                      trailing: const FaIcon(
-                        FontAwesomeIcons.chevronRight,
-                        size: 16,
+                      UserList(
+                        label: '送信者として登録',
+                        annotation: '※サブスク契約が必要です',
+                        trailing: const FaIcon(
+                          FontAwesomeIcons.chevronRight,
+                          size: 16,
+                        ),
+                        onTap: () {},
                       ),
-                      onTap: () {},
-                    ),
-                    UserList(
-                      label: '送信者情報',
-                      trailing: const FaIcon(
-                        FontAwesomeIcons.chevronRight,
-                        size: 16,
+                      UserList(
+                        label: '送信者情報',
+                        trailing: const FaIcon(
+                          FontAwesomeIcons.chevronRight,
+                          size: 16,
+                        ),
+                        onTap: () {},
                       ),
-                      onTap: () {},
-                    ),
-                    UserList(
-                      label: '送信先一覧',
-                      trailing: const FaIcon(
-                        FontAwesomeIcons.chevronRight,
-                        size: 16,
+                      UserList(
+                        label: '送信先一覧',
+                        trailing: const FaIcon(
+                          FontAwesomeIcons.chevronRight,
+                          size: 16,
+                        ),
+                        onTap: () {},
                       ),
-                      onTap: () {},
-                    ),
-                  ],
+                    ],
+                  ),
                 )
               : GestureDetector(
                   onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
                   behavior: HitTestBehavior.opaque,
                   child: SignPanel(
-                    signUpChild: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '本アプリをご利用いただくには、以下の情報のご登録が必要です。あらかじめご了承ください。',
-                        ),
-                        const SizedBox(height: 16),
-                        CustomTextFormField(
-                          controller: nameController,
-                          textInputType: TextInputType.name,
-                          maxLines: 1,
-                          label: '名前',
-                          color: kBlackColor,
-                          prefix: Icons.account_box,
-                        ),
-                        const SizedBox(height: 8),
-                        CustomTextFormField(
-                          controller: emailController,
-                          textInputType: TextInputType.emailAddress,
-                          maxLines: 1,
-                          label: 'メールアドレス',
-                          color: kBlackColor,
-                          prefix: Icons.email,
-                        ),
-                        const SizedBox(height: 8),
-                        CustomTextFormField(
-                          controller: passwordController,
-                          obscureText: true,
-                          textInputType: TextInputType.visiblePassword,
-                          maxLines: 1,
-                          label: 'パスワード',
-                          color: kBlackColor,
-                          prefix: Icons.password,
-                        ),
-                        const SizedBox(height: 16),
-                        CustomButton(
-                          type: ButtonSizeType.lg,
-                          label: '登録して始める',
-                          labelColor: kBlackColor,
-                          backgroundColor: kBackgroundColor,
-                          onPressed: () async {
-                            String? error = await userProvider.registration(
-                              name: nameController.text,
-                              email: emailController.text,
-                              password: passwordController.text,
-                            );
-                            if (error != null) {
-                              return;
-                            }
-                            if (!mounted) return;
-                            Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                type: PageTransitionType.bottomToTop,
-                                child: const HomeScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                    signUpChild: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '本アプリをご利用いただくには、以下の情報のご登録が必要です。あらかじめご了承ください。',
+                          ),
+                          const SizedBox(height: 16),
+                          CustomTextFormField(
+                            controller: nameController,
+                            textInputType: TextInputType.name,
+                            maxLines: 1,
+                            label: '名前',
+                            color: kBlackColor,
+                            prefix: Icons.account_box,
+                          ),
+                          const SizedBox(height: 8),
+                          CustomTextFormField(
+                            controller: emailController,
+                            textInputType: TextInputType.emailAddress,
+                            maxLines: 1,
+                            label: 'メールアドレス',
+                            color: kBlackColor,
+                            prefix: Icons.email,
+                          ),
+                          const SizedBox(height: 8),
+                          CustomTextFormField(
+                            controller: passwordController,
+                            obscureText: true,
+                            textInputType: TextInputType.visiblePassword,
+                            maxLines: 1,
+                            label: 'パスワード',
+                            color: kBlackColor,
+                            prefix: Icons.password,
+                          ),
+                          const SizedBox(height: 16),
+                          CustomButton(
+                            type: ButtonSizeType.lg,
+                            label: '登録して始める',
+                            labelColor: kBlackColor,
+                            backgroundColor: kBackgroundColor,
+                            onPressed: () async {
+                              String? error = await userProvider.registration(
+                                name: nameController.text,
+                                email: emailController.text,
+                                password: passwordController.text,
+                              );
+                              if (error != null) {
+                                return;
+                              }
+                              await userProvider.reload();
+                              if (!mounted) return;
+                              Navigator.pushReplacement(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.bottomToTop,
+                                  child: const HomeScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                    signInChild: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '本アプリを既にご利用いただいたことがある方は、登録時のメールアドレスやパスワードでログインすることで、情報を引き継いで利用することが可能です。',
-                        ),
-                        const SizedBox(height: 16),
-                        CustomTextFormField(
-                          controller: emailController,
-                          textInputType: TextInputType.emailAddress,
-                          maxLines: 1,
-                          label: 'メールアドレス',
-                          color: kBlackColor,
-                          prefix: Icons.email,
-                        ),
-                        const SizedBox(height: 8),
-                        CustomTextFormField(
-                          controller: passwordController,
-                          obscureText: true,
-                          textInputType: TextInputType.visiblePassword,
-                          maxLines: 1,
-                          label: 'パスワード',
-                          color: kBlackColor,
-                          prefix: Icons.password,
-                        ),
-                        const SizedBox(height: 16),
-                        CustomButton(
-                          type: ButtonSizeType.lg,
-                          label: 'ログイン',
-                          labelColor: kBlackColor,
-                          backgroundColor: kBackgroundColor,
-                          onPressed: () async {
-                            String? error = await userProvider.login(
-                              email: emailController.text,
-                              password: passwordController.text,
-                            );
-                            if (error != null) {
-                              return;
-                            }
-                            if (!mounted) return;
-                            Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                type: PageTransitionType.bottomToTop,
-                                child: const HomeScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                    signInChild: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '本アプリを既にご利用いただいたことがある方は、登録時のメールアドレスやパスワードでログインすることで、情報を引き継いで利用することが可能です。',
+                          ),
+                          const SizedBox(height: 16),
+                          CustomTextFormField(
+                            controller: emailController,
+                            textInputType: TextInputType.emailAddress,
+                            maxLines: 1,
+                            label: 'メールアドレス',
+                            color: kBlackColor,
+                            prefix: Icons.email,
+                          ),
+                          const SizedBox(height: 8),
+                          CustomTextFormField(
+                            controller: passwordController,
+                            obscureText: true,
+                            textInputType: TextInputType.visiblePassword,
+                            maxLines: 1,
+                            label: 'パスワード',
+                            color: kBlackColor,
+                            prefix: Icons.password,
+                          ),
+                          const SizedBox(height: 16),
+                          CustomButton(
+                            type: ButtonSizeType.lg,
+                            label: 'ログイン',
+                            labelColor: kBlackColor,
+                            backgroundColor: kBackgroundColor,
+                            onPressed: () async {
+                              String? error = await userProvider.login(
+                                email: emailController.text,
+                                password: passwordController.text,
+                              );
+                              if (error != null) {
+                                return;
+                              }
+                              await userProvider.reload();
+                              if (!mounted) return;
+                              Navigator.pushReplacement(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.bottomToTop,
+                                  child: const HomeScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

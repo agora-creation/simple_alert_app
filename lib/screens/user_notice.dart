@@ -18,23 +18,30 @@ class UserNoticeScreen extends StatelessWidget {
         child: Card(
           color: kWhiteColor,
           elevation: 0,
-          child: ListView.builder(
-            itemCount: 100,
-            itemBuilder: (context, index) {
-              return NoticeList(
-                label: '休業のお知らせ',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      type: PageTransitionType.rightToLeft,
-                      child: UserNoticeDetailScreen(),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+          child: userProvider.loginCheck()
+              ? ListView.builder(
+                  itemCount: 100,
+                  itemBuilder: (context, index) {
+                    return NoticeList(
+                      label: '休業のお知らせ',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserNoticeDetailScreen(),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                )
+              : Center(
+                  child: Text(
+                    'マイページから登録・ログインしてください',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
         ),
       ),
     );

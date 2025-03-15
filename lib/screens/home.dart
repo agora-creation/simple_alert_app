@@ -24,9 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   List<String> screenNames = ['受信履歴', 'マイページ'];
 
+  void _init() {
+    currentIndex = 0;
+    setState(() {});
+  }
+
   @override
   void initState() {
-    currentIndex = 0;
+    _init();
     super.initState();
   }
 
