@@ -17,26 +17,19 @@ ThemeData customTheme() {
       systemOverlayStyle: SystemUiOverlayStyle.dark,
       titleTextStyle: TextStyle(
         color: kBlackColor,
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: FontWeight.bold,
         fontFamily: 'SourceHanSansJP-Bold',
       ),
-      iconTheme: IconThemeData(color: kBlackColor),
+      iconTheme: IconThemeData(
+        color: kBlackColor,
+        size: 18,
+      ),
     ),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: kBlackColor, fontSize: 16),
       bodyMedium: TextStyle(color: kBlackColor, fontSize: 16),
       bodySmall: TextStyle(color: kBlackColor, fontSize: 16),
-    ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: kWhiteColor,
-      elevation: 5,
-      extendedTextStyle: TextStyle(
-        color: kBlackColor,
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        fontFamily: 'SourceHanSansJP-Bold',
-      ),
     ),
     visualDensity: VisualDensity.adaptivePlatformDensity,
     unselectedWidgetColor: kWhiteColor,

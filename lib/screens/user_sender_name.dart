@@ -1,23 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
-class UserPasswordScreen extends StatefulWidget {
-  const UserPasswordScreen({super.key});
-
-  @override
-  State<UserPasswordScreen> createState() => _UserPasswordScreenState();
-}
-
-class _UserPasswordScreenState extends State<UserPasswordScreen> {
-  TextEditingController passwordController = TextEditingController();
+class UserSenderNameScreen extends StatelessWidget {
+  const UserSenderNameScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -27,20 +17,12 @@ class _UserPasswordScreenState extends State<UserPasswordScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'パスワードの変更',
+          '送信者名の変更',
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
           TextButton(
-            onPressed: () async {
-              String? error = await userProvider.updatePassword(
-                password: passwordController.text,
-              );
-              if (error != null) {
-                return;
-              }
-              await userProvider.reload();
-              if (!mounted) return;
+            onPressed: () {
               Navigator.pop(context);
             },
             child: Text('保存'),
@@ -57,13 +39,12 @@ class _UserPasswordScreenState extends State<UserPasswordScreen> {
               children: [
                 const SizedBox(height: 16),
                 CustomTextFormField(
-                  controller: passwordController,
-                  obscureText: true,
-                  textInputType: TextInputType.visiblePassword,
+                  controller: TextEditingController(),
+                  textInputType: TextInputType.name,
                   maxLines: 1,
-                  label: 'パスワード',
+                  label: '送信者名',
                   color: kBlackColor,
-                  prefix: Icons.password,
+                  prefix: Icons.account_box,
                 ),
               ],
             ),

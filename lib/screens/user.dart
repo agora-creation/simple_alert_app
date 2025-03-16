@@ -6,13 +6,15 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
-import 'package:simple_alert_app/screens/sender.dart';
 import 'package:simple_alert_app/screens/user_email.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/screens/user_password.dart';
-import 'package:simple_alert_app/screens/user_recipient.dart';
+import 'package:simple_alert_app/screens/user_sender.dart';
+import 'package:simple_alert_app/screens/user_sender_name.dart';
+import 'package:simple_alert_app/screens/user_senders.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
+import 'package:simple_alert_app/widgets/link_text.dart';
 import 'package:simple_alert_app/widgets/sign_panel.dart';
 import 'package:simple_alert_app/widgets/user_list.dart';
 
@@ -112,7 +114,7 @@ class _UserScreenState extends State<UserScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: UserRecipientScreen(),
+                            child: UserSendersScreen(),
                           ),
                         );
                       },
@@ -130,10 +132,19 @@ class _UserScreenState extends State<UserScreen> {
                         FontAwesomeIcons.chevronRight,
                         size: 16,
                       ),
-                      onTap: () {},
+                      tileColor: kRedColor.withOpacity(0.3),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserSenderScreen(),
+                          ),
+                        );
+                      },
                     ),
                     UserList(
-                      label: '送信者情報',
+                      label: '送信者名',
                       subtitle: Text(
                         'アゴラクリエーション',
                         style: TextStyle(fontSize: 14),
@@ -142,24 +153,34 @@ class _UserScreenState extends State<UserScreen> {
                         FontAwesomeIcons.pen,
                         size: 16,
                       ),
-                      onTap: () {},
-                    ),
-                    UserList(
-                      label: '送信先一覧',
-                      trailing: const FaIcon(
-                        FontAwesomeIcons.chevronRight,
-                        size: 16,
-                      ),
                       onTap: () {
                         Navigator.push(
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: SenderScreen(),
+                            child: UserSenderNameScreen(),
                           ),
                         );
                       },
                     ),
+                    SizedBox(height: 24),
+                    Center(
+                      child: LinkText(
+                        label: 'ログアウト',
+                        onTap: () async {
+                          await userProvider.logout();
+                          if (!mounted) return;
+                          Navigator.pushReplacement(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.topToBottom,
+                              child: const HomeScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 40),
                   ],
                 )
               : GestureDetector(

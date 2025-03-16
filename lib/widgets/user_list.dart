@@ -5,12 +5,14 @@ class UserList extends StatelessWidget {
   final String label;
   final Widget? subtitle;
   final Widget? trailing;
+  final Color? tileColor;
   final Function()? onTap;
 
   const UserList({
     required this.label,
     this.subtitle,
     this.trailing,
+    this.tileColor,
     this.onTap,
     super.key,
   });
@@ -29,6 +31,7 @@ class UserList extends StatelessWidget {
         title: Text(label),
         subtitle: subtitle,
         trailing: trailing,
+        tileColor: tileColor,
         onTap: onTap,
       ),
     );

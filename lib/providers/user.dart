@@ -121,6 +121,8 @@ class UserProvider with ChangeNotifier {
     String? error;
     if (email == '') return 'メールアドレスは必須入力です';
     try {
+      if (_authUser == null) return 'メールアドレスの変更に失敗しました';
+      await _authUser!.updateEmail(email);
       _userService.update({
         'id': _user?.id,
         'email': email,
@@ -137,6 +139,8 @@ class UserProvider with ChangeNotifier {
     String? error;
     if (password == '') return 'パスワードは必須入力です';
     try {
+      if (_authUser == null) return 'パスワードの変更に失敗しました';
+      await _authUser!.updatePassword(password);
       _userService.update({
         'id': _user?.id,
         'password': password,
@@ -145,6 +149,14 @@ class UserProvider with ChangeNotifier {
       error = e.toString();
     }
     return error;
+  }
+
+  Future logout() async {
+    await _auth?.signOut();
+    _status = AuthStatus.unauthenticated;
+    _user = null;
+    notifyListeners();
+    return Future.delayed(Duration.zero);
   }
 
   Future reload() async {
