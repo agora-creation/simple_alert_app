@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simple_alert_app/models/sender_user.dart';
+import 'package:simple_alert_app/models/receive_user.dart';
+import 'package:simple_alert_app/models/send_user.dart';
 
 class UserModel {
   String _id = '';
@@ -7,13 +8,12 @@ class UserModel {
   String _email = '';
   String _password = '';
   List<String> tokens = [];
-  List<SenderUserModel> senderUsers = [];
-  List<String> receiveDestinationUsers = [];
+  List<ReceiveUserModel> receiveUsers = [];
   bool _isSender = false;
   String _senderNumber = '';
   String _senderName = '';
   int _sendUserLimit = 0;
-  List<String> sendDestinationUsers = [];
+  List<SendUserModel> sendUsers = [];
 
   String get id => _id;
   String get name => _name;
@@ -32,11 +32,12 @@ class UserModel {
     _email = data['email'] ?? '';
     _password = data['password'] ?? '';
     tokens = _convertTokens(data['tokens'] ?? []);
-    senderUsers = _convertSenderUsers(data['senderUsers'] ?? []);
+    receiveUsers = _convertReceiveUsers(data['receiveUsers'] ?? []);
     _isSender = data['isSender'] ?? false;
     _senderNumber = data['senderNumber'] ?? '';
     _senderName = data['senderName'] ?? '';
     _sendUserLimit = data['sendUserLimit'] ?? 0;
+    sendUsers = _convertSendUsers(data['sendUsers'] ?? []);
   }
 
   List<String> _convertTokens(List list) {
@@ -47,10 +48,18 @@ class UserModel {
     return ret;
   }
 
-  List<SenderUserModel> _convertSenderUsers(List list) {
-    List<SenderUserModel> ret = [];
+  List<ReceiveUserModel> _convertReceiveUsers(List list) {
+    List<ReceiveUserModel> ret = [];
     for (Map data in list) {
-      ret.add(SenderUserModel.fromMap(data));
+      ret.add(ReceiveUserModel.fromMap(data));
+    }
+    return ret;
+  }
+
+  List<SendUserModel> _convertSendUsers(List list) {
+    List<SendUserModel> ret = [];
+    for (Map data in list) {
+      ret.add(SendUserModel.fromMap(data));
     }
     return ret;
   }

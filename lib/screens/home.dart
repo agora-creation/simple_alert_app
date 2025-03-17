@@ -20,9 +20,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
   List<Widget> screenWidgets = [
     UserNoticeScreen(),
+    Container(),
     UserScreen(),
   ];
-  List<String> screenNames = ['受信履歴', 'マイページ'];
+  List<String> screenNames = ['受信履歴', '送信機能', 'マイページ'];
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
           NavBarItems(
             icon: FontAwesomeIcons.rectangleList,
             title: '受信履歴',
+          ),
+          NavBarItems(
+            icon: FontAwesomeIcons.paperPlane,
+            title: '送信機能',
           ),
           NavBarItems(
             icon: FontAwesomeIcons.user,

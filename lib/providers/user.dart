@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/functions.dart';
-import 'package:simple_alert_app/models/sender_user.dart';
+import 'package:simple_alert_app/models/receive_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/services/user.dart';
 
@@ -91,11 +91,12 @@ class UserProvider with ChangeNotifier {
         'email': email,
         'password': password,
         'tokens': [],
-        'senderUsers': [],
+        'receiveUsers': [],
         'isSender': false,
         'senderNumber': '',
         'senderName': '',
         'sendUserLimit': 0,
+        'sendUsers': [],
       });
       _authUser = result.user;
     } catch (e) {
@@ -158,7 +159,7 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
-  Future<String?> addSenderUsers({
+  Future<String?> addReceiveUsers({
     required String senderNumber,
   }) async {
     String? error;
@@ -168,20 +169,20 @@ class UserProvider with ChangeNotifier {
         senderNumber: senderNumber,
       );
       if (tmpUser == null) return '受信先の追加に失敗しました';
-      List<Map> senderUsers = [];
-      if (_user!.senderUsers.isNotEmpty) {
-        for (SenderUserModel senderUser in _user!.senderUsers) {
-          senderUsers.add(senderUser.toMap());
+      List<Map> receiveUsers = [];
+      if (_user!.receiveUsers.isNotEmpty) {
+        for (ReceiveUserModel receiveUser in _user!.receiveUsers) {
+          receiveUsers.add(receiveUser.toMap());
         }
       }
-      senderUsers.add({
+      receiveUsers.add({
         'id': tmpUser.id,
-        'number': tmpUser.senderNumber,
-        'name': tmpUser.senderName,
+        'senderNumber': tmpUser.senderNumber,
+        'senderName': tmpUser.senderName,
       });
       _userService.update({
         'id': _user?.id,
-        'senderUsers': senderUsers,
+        'receiveUsers': receiveUsers,
       });
     } catch (e) {
       error = e.toString();
@@ -189,23 +190,23 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
-  Future<String?> removeSenderUsers({
-    required List<SenderUserModel> deleteSenderUsers,
+  Future<String?> removeReceiveUsers({
+    required List<ReceiveUserModel> deleteReceiveUsers,
   }) async {
     String? error;
-    if (deleteSenderUsers.isEmpty) return '受信先の削除に失敗しました';
+    if (deleteReceiveUsers.isEmpty) return '受信先の削除に失敗しました';
     try {
-      List<Map> senderUsers = [];
-      if (_user!.senderUsers.isNotEmpty) {
-        for (SenderUserModel senderUser in _user!.senderUsers) {
-          if (!deleteSenderUsers.contains(senderUser)) {
-            senderUsers.add(senderUser.toMap());
+      List<Map> receiveUsers = [];
+      if (_user!.receiveUsers.isNotEmpty) {
+        for (ReceiveUserModel receiveUser in _user!.receiveUsers) {
+          if (!deleteReceiveUsers.contains(receiveUser)) {
+            receiveUsers.add(receiveUser.toMap());
           }
         }
       }
       _userService.update({
         'id': _user?.id,
-        'senderUsers': senderUsers,
+        'receiveUsers': receiveUsers,
       });
     } catch (e) {
       error = e.toString();

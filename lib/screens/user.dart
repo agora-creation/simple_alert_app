@@ -9,8 +9,9 @@ import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/user_email.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/screens/user_password.dart';
+import 'package:simple_alert_app/screens/user_receive_user.dart';
+import 'package:simple_alert_app/screens/user_send_user.dart';
 import 'package:simple_alert_app/screens/user_sender.dart';
-import 'package:simple_alert_app/screens/user_sender_user.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
@@ -109,7 +110,7 @@ class _UserScreenState extends State<UserScreen> {
                       },
                     ),
                     UserList(
-                      label: '受信先一覧 (${user!.senderUsers.length})',
+                      label: '受信先一覧 (${user!.receiveUsers.length})',
                       trailing: const FaIcon(
                         FontAwesomeIcons.chevronRight,
                         size: 16,
@@ -119,7 +120,7 @@ class _UserScreenState extends State<UserScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: UserSenderUserScreen(
+                            child: UserReceiveUserScreen(
                               user: userProvider.user!,
                             ),
                           ),
@@ -187,7 +188,7 @@ class _UserScreenState extends State<UserScreen> {
                           ),
                     user.isSender
                         ? UserList(
-                            label: '送信先一覧 (0)',
+                            label: '送信先一覧 (${user.sendUsers.length})',
                             leading: const FaIcon(
                               FontAwesomeIcons.userTag,
                               size: 16,
@@ -196,7 +197,17 @@ class _UserScreenState extends State<UserScreen> {
                               FontAwesomeIcons.chevronRight,
                               size: 16,
                             ),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: UserSendUserScreen(
+                                    user: userProvider.user!,
+                                  ),
+                                ),
+                              );
+                            },
                           )
                         : Container(),
                     SizedBox(height: 24),
