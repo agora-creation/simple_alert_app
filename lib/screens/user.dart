@@ -109,7 +109,7 @@ class _UserScreenState extends State<UserScreen> {
                       },
                     ),
                     UserList(
-                      label: '受信先一覧',
+                      label: '受信先一覧 (${user!.senderUsers.length})',
                       trailing: const FaIcon(
                         FontAwesomeIcons.chevronRight,
                         size: 16,

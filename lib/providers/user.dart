@@ -176,8 +176,8 @@ class UserProvider with ChangeNotifier {
       }
       senderUsers.add({
         'id': tmpUser.id,
-        'name': tmpUser.name,
-        'email': tmpUser.email,
+        'number': tmpUser.senderNumber,
+        'name': tmpUser.senderName,
       });
       _userService.update({
         'id': _user?.id,

@@ -1,21 +1,21 @@
 class SenderUserModel {
   String _id = '';
+  String _number = '';
   String _name = '';
-  String _email = '';
 
   String get id => _id;
+  String get number => _number;
   String get name => _name;
-  String get email => _email;
 
   SenderUserModel.fromMap(Map data) {
     _id = data['id'] ?? '';
+    _number = data['number'] ?? '';
     _name = data['name'] ?? '';
-    _email = data['email'] ?? '';
   }
 
   Map toMap() => {
         'id': _id,
+        'number': _number,
         'name': _name,
-        'email': _email,
       };
 }

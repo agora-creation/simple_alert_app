@@ -39,7 +39,6 @@ class _UserSenderUserScreenState extends State<UserSenderUserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -79,6 +78,10 @@ class _UserSenderUserScreenState extends State<UserSenderUserScreen> {
                   bool value = deleteSenderUsers.contains(senderUser);
                   return CustomCheckList(
                     label: senderUser.name,
+                    subtitle: Text(
+                      '送信者番号: ${senderUser.id}',
+                      style: TextStyle(fontSize: 14),
+                    ),
                     value: value,
                     onChanged: (value) {
                       if (!deleteSenderUsers.contains(senderUser)) {
@@ -142,7 +145,7 @@ class _AddDialogState extends State<AddDialog> {
             controller: senderNumberController,
             textInputType: TextInputType.number,
             maxLines: 1,
-            label: '発信者番号',
+            label: '送信者番号',
             color: kBlackColor,
             prefix: Icons.numbers,
           ),
