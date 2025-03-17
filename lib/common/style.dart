@@ -5,6 +5,7 @@ const kBackgroundColor = Color(0xFFFFF176);
 const kWhiteColor = Color(0xFFFFFFFF);
 const kBlackColor = Color(0xFF333333);
 const kRedColor = Color(0xFFF44336);
+const kBlueColor = Color(0xFF2196F3);
 
 ThemeData customTheme() {
   return ThemeData(
@@ -30,6 +31,16 @@ ThemeData customTheme() {
       bodyLarge: TextStyle(color: kBlackColor, fontSize: 16),
       bodyMedium: TextStyle(color: kBlackColor, fontSize: 16),
       bodySmall: TextStyle(color: kBlackColor, fontSize: 16),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: kBlueColor,
+      elevation: 0,
+      extendedTextStyle: TextStyle(
+        color: kWhiteColor,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        fontFamily: 'SourceHanSansJP-Bold',
+      ),
     ),
     visualDensity: VisualDensity.adaptivePlatformDensity,
     unselectedWidgetColor: kWhiteColor,

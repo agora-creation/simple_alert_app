@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class UserEmailScreen extends StatefulWidget {
-  const UserEmailScreen({super.key});
+  final UserModel user;
+
+  const UserEmailScreen({
+    required this.user,
+    super.key,
+  });
 
   @override
   State<UserEmailScreen> createState() => _UserEmailScreenState();
@@ -14,6 +20,12 @@ class UserEmailScreen extends StatefulWidget {
 
 class _UserEmailScreenState extends State<UserEmailScreen> {
   TextEditingController emailController = TextEditingController();
+
+  @override
+  void initState() {
+    emailController.text = widget.user.email;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

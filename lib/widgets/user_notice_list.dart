@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user_notice.dart';
 
-class NoticeList extends StatelessWidget {
-  final String label;
+class UserNoticeList extends StatelessWidget {
+  final UserNoticeModel userNotice;
   final Function()? onTap;
 
-  const NoticeList({
-    required this.label,
+  const UserNoticeList({
+    required this.userNotice,
     this.onTap,
     super.key,
   });
@@ -21,10 +23,11 @@ class NoticeList extends StatelessWidget {
             color: kBlackColor.withOpacity(0.5),
           ),
         ),
+        color: userNotice.read ? kWhiteColor : kRedColor.withOpacity(0.3),
       ),
       child: ListTile(
         title: Text(
-          label,
+          userNotice.title,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -32,7 +35,7 @@ class NoticeList extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          '2025/03/25 12:59',
+          dateText('yyyy/MM/dd HH:mm', userNotice.createdAt),
           style: TextStyle(
             color: kBlackColor.withOpacity(0.8),
             fontSize: 14,

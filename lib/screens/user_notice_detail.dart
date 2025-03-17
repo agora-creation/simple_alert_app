@@ -1,9 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user_notice.dart';
+import 'package:simple_alert_app/services/user_notice.dart';
 
-class UserNoticeDetailScreen extends StatelessWidget {
-  const UserNoticeDetailScreen({super.key});
+class UserNoticeDetailScreen extends StatefulWidget {
+  final UserNoticeModel userNotice;
+
+  const UserNoticeDetailScreen({
+    required this.userNotice,
+    super.key,
+  });
+
+  @override
+  State<UserNoticeDetailScreen> createState() => _UserNoticeDetailScreenState();
+}
+
+class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
+  void _init() {
+    if (!widget.userNotice.read) {
+      UserNoticeService().update({
+        'id': widget.userNotice.id,
+        'userId': widget.userNotice.userId,
+        'read': true,
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +58,14 @@ class UserNoticeDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '受信日時: 2025/03/25 12:59',
+                        '受信日時: ${dateText('yyyy/MM/dd HH:mm', widget.userNotice.createdAt)}',
                         style: TextStyle(
                           color: kBlackColor.withOpacity(0.8),
                           fontSize: 14,
                         ),
                       ),
                       Text(
-                        '送信者名: 山田太郎',
+                        '送信者名: ${widget.userNotice.createdUserName}',
                         style: TextStyle(
                           color: kBlackColor.withOpacity(0.8),
                           fontSize: 14,
@@ -49,7 +78,7 @@ class UserNoticeDetailScreen extends StatelessWidget {
                 Divider(height: 0, color: kBlackColor.withOpacity(0.5)),
                 const SizedBox(height: 8),
                 Text(
-                  '休業のお知らせ',
+                  widget.userNotice.title,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -57,41 +86,7 @@ class UserNoticeDetailScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text('''
-平素よりご愛顧いただき、誠にありがとうございます。
-このたび、以下の通り休業（または営業時間変更）させていただくこととなりましたので、ご案内申し上げます。
-
-【休業期間（または営業時間変更）】
-●○年○月○日（○）〜○月○日（○）
-
-休業期間中、皆様にはご不便をおかけしますが、何卒ご理解賜りますようお願い申し上げます。
-今後とも変わらぬご愛顧をよろしくお願い申し上げます。
-
-――――――――――――――――
-会社名：〇〇株式会社
-担当部署：〇〇課
-電話番号：〇〇-〇〇〇〇-〇〇〇〇
-メール：〇〇〇@〇〇〇.com
-――――――――――――――――
-
-
-
-平素よりご愛顧いただき、誠にありがとうございます。
-このたび、以下の通り休業（または営業時間変更）させていただくこととなりましたので、ご案内申し上げます。
-
-【休業期間（または営業時間変更）】
-●○年○月○日（○）〜○月○日（○）
-
-休業期間中、皆様にはご不便をおかけしますが、何卒ご理解賜りますようお願い申し上げます。
-今後とも変わらぬご愛顧をよろしくお願い申し上げます。
-
-――――――――――――――――
-会社名：〇〇株式会社
-担当部署：〇〇課
-電話番号：〇〇-〇〇〇〇-〇〇〇〇
-メール：〇〇〇@〇〇〇.com
-――――――――――――――――
-              '''),
+                Text(widget.userNotice.content),
               ],
             ),
           ),

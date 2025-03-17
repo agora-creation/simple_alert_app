@@ -24,17 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   List<String> screenNames = ['受信履歴', 'マイページ'];
 
-  void _init() {
-    currentIndex = 0;
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
-
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);

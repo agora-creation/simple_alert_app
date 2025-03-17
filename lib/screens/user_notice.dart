@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user_notice.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/user_notice_detail.dart';
-import 'package:simple_alert_app/widgets/notice_list.dart';
+import 'package:simple_alert_app/services/user_notice.dart';
+import 'package:simple_alert_app/widgets/user_notice_list.dart';
 
 class UserNoticeScreen extends StatelessWidget {
   const UserNoticeScreen({super.key});
@@ -18,19 +21,44 @@ class UserNoticeScreen extends StatelessWidget {
         child: Card(
           color: kWhiteColor,
           elevation: 0,
+          shape: RoundedRectangleBorder(),
           child: userProvider.loginCheck()
-              ? ListView.builder(
-                  itemCount: 100,
-                  itemBuilder: (context, index) {
-                    return NoticeList(
-                      label: '休業のお知らせ',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: UserNoticeDetailScreen(),
-                          ),
+              ? StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: UserNoticeService().streamList(
+                    userId: userProvider.user?.id ?? 'error',
+                  ),
+                  builder: (context, snapshot) {
+                    List<UserNoticeModel> userNotices = [];
+                    if (snapshot.hasData) {
+                      userNotices = UserNoticeService().generateList(
+                        data: snapshot.data,
+                      );
+                    }
+                    if (userNotices.isEmpty) {
+                      return Center(
+                        child: Text(
+                          '通知はありません',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: userNotices.length,
+                      itemBuilder: (context, index) {
+                        UserNoticeModel userNotice = userNotices[index];
+                        return UserNoticeList(
+                          userNotice: userNotice,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: UserNoticeDetailScreen(
+                                  userNotice: userNotice,
+                                ),
+                              ),
+                            );
+                          },
                         );
                       },
                     );

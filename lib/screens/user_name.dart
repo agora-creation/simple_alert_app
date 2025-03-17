@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class UserNameScreen extends StatefulWidget {
-  const UserNameScreen({super.key});
+  final UserModel user;
+
+  const UserNameScreen({
+    required this.user,
+    super.key,
+  });
 
   @override
   State<UserNameScreen> createState() => _UserNameScreenState();
@@ -14,6 +20,12 @@ class UserNameScreen extends StatefulWidget {
 
 class _UserNameScreenState extends State<UserNameScreen> {
   TextEditingController nameController = TextEditingController();
+
+  @override
+  void initState() {
+    nameController.text = widget.user.name;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

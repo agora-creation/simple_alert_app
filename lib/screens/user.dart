@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/screens/user_email.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/screens/user_password.dart';
 import 'package:simple_alert_app/screens/user_sender.dart';
 import 'package:simple_alert_app/screens/user_sender_name.dart';
-import 'package:simple_alert_app/screens/user_senders.dart';
+import 'package:simple_alert_app/screens/user_sender_user.dart';
+import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/link_text.dart';
@@ -40,6 +41,7 @@ class _UserScreenState extends State<UserScreen> {
         child: Card(
           color: kWhiteColor,
           elevation: 0,
+          shape: RoundedRectangleBorder(),
           child: userProvider.loginCheck()
               ? ListView(
                   children: [
@@ -58,7 +60,9 @@ class _UserScreenState extends State<UserScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: UserNameScreen(),
+                            child: UserNameScreen(
+                              user: userProvider.user!,
+                            ),
                           ),
                         );
                       },
@@ -78,7 +82,9 @@ class _UserScreenState extends State<UserScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: UserEmailScreen(),
+                            child: UserEmailScreen(
+                              user: userProvider.user!,
+                            ),
                           ),
                         );
                       },
@@ -114,7 +120,9 @@ class _UserScreenState extends State<UserScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: UserSendersScreen(),
+                            child: UserSenderUserScreen(
+                              user: userProvider.user!,
+                            ),
                           ),
                         );
                       },
@@ -122,7 +130,7 @@ class _UserScreenState extends State<UserScreen> {
                     UserList(
                       label: '送信者として登録',
                       subtitle: Text(
-                        'サブスク課金が必要になります',
+                        user!.isSender ? '登録済' : 'サブスク課金が必要になります',
                         style: TextStyle(
                           color: kRedColor,
                           fontSize: 14,
@@ -138,46 +146,43 @@ class _UserScreenState extends State<UserScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: UserSenderScreen(),
+                            child: UserSenderScreen(
+                              user: userProvider.user!,
+                            ),
                           ),
                         );
                       },
                     ),
-                    UserList(
-                      label: '送信者名',
-                      subtitle: Text(
-                        'アゴラクリエーション',
-                        style: TextStyle(fontSize: 14),
-                      ),
-                      trailing: const FaIcon(
-                        FontAwesomeIcons.pen,
-                        size: 16,
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: UserSenderNameScreen(),
-                          ),
-                        );
-                      },
-                    ),
+                    user.isSender
+                        ? UserList(
+                            label: '送信者名',
+                            subtitle: Text(
+                              'アゴラクリエーション',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            trailing: const FaIcon(
+                              FontAwesomeIcons.pen,
+                              size: 16,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: UserSenderNameScreen(),
+                                ),
+                              );
+                            },
+                          )
+                        : Container(),
                     SizedBox(height: 24),
                     Center(
                       child: LinkText(
                         label: 'ログアウト',
-                        onTap: () async {
-                          await userProvider.logout();
-                          if (!mounted) return;
-                          Navigator.pushReplacement(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.topToBottom,
-                              child: const HomeScreen(),
-                            ),
-                          );
-                        },
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => LogoutDialog(),
+                        ),
                       ),
                     ),
                     SizedBox(height: 40),
@@ -238,13 +243,10 @@ class _UserScreenState extends State<UserScreen> {
                                 return;
                               }
                               await userProvider.reload();
-                              if (!mounted) return;
-                              Navigator.pushReplacement(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.bottomToTop,
-                                  child: HomeScreen(),
-                                ),
+                              Restart.restartApp(
+                                notificationTitle: 'アプリの再起動',
+                                notificationBody:
+                                    'ログイン情報を再読み込みするため、アプリを再起動します。',
                               );
                             },
                           ),
@@ -292,13 +294,10 @@ class _UserScreenState extends State<UserScreen> {
                                 return;
                               }
                               await userProvider.reload();
-                              if (!mounted) return;
-                              Navigator.pushReplacement(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.bottomToTop,
-                                  child: HomeScreen(),
-                                ),
+                              Restart.restartApp(
+                                notificationTitle: 'アプリの再起動',
+                                notificationBody:
+                                    'ログイン情報を再読み込みするため、アプリを再起動します。',
                               );
                             },
                           ),
@@ -309,6 +308,50 @@ class _UserScreenState extends State<UserScreen> {
                 ),
         ),
       ),
+    );
+  }
+}
+
+class LogoutDialog extends StatelessWidget {
+  const LogoutDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    return CustomAlertDialog(
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8),
+          Text(
+            '本当にログアウトしますか？',
+            style: TextStyle(color: kRedColor),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'ログアウト',
+          labelColor: kWhiteColor,
+          backgroundColor: kRedColor,
+          onPressed: () async {
+            await userProvider.logout();
+            Restart.restartApp(
+              notificationTitle: 'アプリの再起動',
+              notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
+            );
+          },
+        ),
+      ],
     );
   }
 }

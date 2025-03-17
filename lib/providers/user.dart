@@ -89,6 +89,10 @@ class UserProvider with ChangeNotifier {
         'email': email,
         'password': password,
         'tokens': [],
+        'senderUsers': [],
+        'isSender': false,
+        'senderName': '',
+        'sendUserLimit': 0,
       });
       _authUser = result.user;
     } catch (e) {
