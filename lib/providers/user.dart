@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/functions.dart';
+import 'package:simple_alert_app/models/sender_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/services/user.dart';
 
@@ -150,6 +151,37 @@ class UserProvider with ChangeNotifier {
       _userService.update({
         'id': _user?.id,
         'password': password,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> addSenderUsers({
+    required String senderNumber,
+  }) async {
+    String? error;
+    if (senderNumber == '') return '発信者番号は必須入力です';
+    try {
+      UserModel? tmpUser = await _userService.selectData(
+        senderNumber: senderNumber,
+      );
+      if (tmpUser == null) return '受信先の追加に失敗しました';
+      List<Map> senderUsers = [];
+      if (_user!.senderUsers.isNotEmpty) {
+        for (SenderUserModel senderUser in _user!.senderUsers) {
+          senderUsers.add(senderUser.toMap());
+        }
+      }
+      senderUsers.add({
+        'id': tmpUser.id,
+        'name': tmpUser.name,
+        'email': tmpUser.email,
+      });
+      _userService.update({
+        'id': _user?.id,
+        'senderUsers': senderUsers,
       });
     } catch (e) {
       error = e.toString();
