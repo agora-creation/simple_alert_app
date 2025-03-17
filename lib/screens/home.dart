@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/send.dart';
 import 'package:simple_alert_app/screens/setting.dart';
 import 'package:simple_alert_app/screens/user.dart';
 import 'package:simple_alert_app/screens/user_notice.dart';
@@ -20,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
   List<Widget> screenWidgets = [
     UserNoticeScreen(),
-    Container(),
+    SendScreen(),
     UserScreen(),
   ];
   List<String> screenNames = ['受信履歴', '送信機能', 'マイページ'];
