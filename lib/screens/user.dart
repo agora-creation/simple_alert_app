@@ -130,14 +130,15 @@ class _UserScreenState extends State<UserScreen> {
                         ? UserList(
                             label: '送信者情報',
                             subtitle: Text(
-                              'アゴラクリエーション',
-                              style: TextStyle(
-                                color: kRedColor,
-                                fontSize: 14,
-                              ),
+                              userProvider.user!.senderName,
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            leading: const FaIcon(
+                              FontAwesomeIcons.userTag,
+                              size: 16,
                             ),
                             trailing: const FaIcon(
-                              FontAwesomeIcons.pen,
+                              FontAwesomeIcons.chevronRight,
                               size: 16,
                             ),
                             onTap: () {
@@ -162,6 +163,10 @@ class _UserScreenState extends State<UserScreen> {
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'SourceHanSansJP-Bold',
                               ),
+                            ),
+                            leading: const FaIcon(
+                              FontAwesomeIcons.userTag,
+                              size: 16,
                             ),
                             trailing: const FaIcon(
                               FontAwesomeIcons.chevronRight,

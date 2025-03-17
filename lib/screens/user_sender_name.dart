@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
-class UserSenderNameScreen extends StatelessWidget {
-  const UserSenderNameScreen({super.key});
+class UserSenderNameScreen extends StatefulWidget {
+  final UserModel user;
+
+  const UserSenderNameScreen({
+    required this.user,
+    super.key,
+  });
+
+  @override
+  State<UserSenderNameScreen> createState() => _UserSenderNameScreenState();
+}
+
+class _UserSenderNameScreenState extends State<UserSenderNameScreen> {
+  TextEditingController senderNameController = TextEditingController();
+
+  @override
+  void initState() {
+    senderNameController.text = widget.user.senderName;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +58,7 @@ class UserSenderNameScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 16),
                 CustomTextFormField(
-                  controller: TextEditingController(),
+                  controller: senderNameController,
                   textInputType: TextInputType.name,
                   maxLines: 1,
                   label: '送信者名',

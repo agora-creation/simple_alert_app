@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_switch_list.dart';
@@ -54,9 +55,14 @@ class SettingScreen extends StatelessWidget {
             ),
             SettingList(
               label: 'アプリのバージョン',
-              trailing: Text(
-                '1.0.0',
-                style: TextStyle(fontSize: 14),
+              trailing: FutureBuilder<String>(
+                future: getVersionInfo(),
+                builder: (context, snapshot) {
+                  return Text(
+                    snapshot.data ?? '',
+                    style: TextStyle(fontSize: 14),
+                  );
+                },
               ),
               onTap: () {},
             ),

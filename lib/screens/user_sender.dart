@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/user_sender_name.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/link_text.dart';
+import 'package:simple_alert_app/widgets/user_list.dart';
 
 class UserSenderScreen extends StatefulWidget {
   final UserModel user;
@@ -65,60 +68,44 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
           child: widget.user.isSender
               ? Column(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: kBlackColor.withOpacity(0.5),
-                          ),
-                        ),
+                    UserList(
+                      label: '送信者番号',
+                      subtitle: Text(
+                        widget.user.senderNumber,
+                        style: TextStyle(fontSize: 14),
                       ),
-                      child: ListTile(
-                        title: Text('送信者番号'),
-                        subtitle: Text(
-                          widget.user.senderNumber,
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        trailing: LinkText(
-                          label: '共有',
-                          onTap: () {},
-                        ),
+                      trailing: LinkText(
+                        label: '共有',
+                        onTap: () {},
                       ),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: kBlackColor.withOpacity(0.5),
+                    UserList(
+                      label: '送信者名',
+                      subtitle: Text(
+                        widget.user.senderName,
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.pen,
+                        size: 16,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserSenderNameScreen(
+                              user: userProvider.user!,
+                            ),
                           ),
-                        ),
-                      ),
-                      child: ListTile(
-                        title: Text('送信者名'),
-                        subtitle: Text(
-                          widget.user.senderName,
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        trailing: const FaIcon(
-                          FontAwesomeIcons.pen,
-                          size: 16,
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: kBlackColor.withOpacity(0.5),
-                          ),
-                        ),
-                      ),
-                      child: ListTile(
-                        title: Text('登録プラン'),
-                        subtitle: Text(
-                          'Aプラン(300名まで)',
-                          style: TextStyle(fontSize: 14),
-                        ),
+                    UserList(
+                      label: '登録プラン',
+                      subtitle: Text(
+                        'Aプラン(300名まで)',
+                        style: TextStyle(fontSize: 14),
                       ),
                     ),
                   ],

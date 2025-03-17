@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/services/user.dart';
 
@@ -162,10 +163,11 @@ class UserProvider with ChangeNotifier {
     String? error;
     if (senderName == '') return '送信者名は必須入力です';
     try {
+      String senderNumber = randomNumber(8);
       _userService.update({
         'id': _user?.id,
         'isSender': true,
-        'senderNumber': '10000001',
+        'senderNumber': senderNumber,
         'senderName': senderName,
         'sendUserLimit': 10,
       });

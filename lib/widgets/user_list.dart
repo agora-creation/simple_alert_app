@@ -4,6 +4,7 @@ import 'package:simple_alert_app/common/style.dart';
 class UserList extends StatelessWidget {
   final String label;
   final Widget? subtitle;
+  final Widget? leading;
   final Widget? trailing;
   final Color? tileColor;
   final Function()? onTap;
@@ -11,6 +12,7 @@ class UserList extends StatelessWidget {
   const UserList({
     required this.label,
     this.subtitle,
+    this.leading,
     this.trailing,
     this.tileColor,
     this.onTap,
@@ -28,6 +30,7 @@ class UserList extends StatelessWidget {
         ),
       ),
       child: ListTile(
+        leading: leading,
         title: Text(label),
         subtitle: subtitle,
         trailing: trailing,
