@@ -126,7 +126,7 @@ class _UserScreenState extends State<UserScreen> {
                         );
                       },
                     ),
-                    user!.isSender
+                    user.isSender
                         ? UserList(
                             label: '送信者情報',
                             subtitle: Text(
@@ -185,6 +185,20 @@ class _UserScreenState extends State<UserScreen> {
                               );
                             },
                           ),
+                    user.isSender
+                        ? UserList(
+                            label: '送信先一覧 (0)',
+                            leading: const FaIcon(
+                              FontAwesomeIcons.userTag,
+                              size: 16,
+                            ),
+                            trailing: const FaIcon(
+                              FontAwesomeIcons.chevronRight,
+                              size: 16,
+                            ),
+                            onTap: () {},
+                          )
+                        : Container(),
                     SizedBox(height: 24),
                     Center(
                       child: LinkText(

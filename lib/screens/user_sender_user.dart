@@ -79,7 +79,7 @@ class _UserSenderUserScreenState extends State<UserSenderUserScreen> {
                   return CustomCheckList(
                     label: senderUser.name,
                     subtitle: Text(
-                      '送信者番号: ${senderUser.id}',
+                      '送信者番号: ${senderUser.number}',
                       style: TextStyle(fontSize: 14),
                     ),
                     value: value,

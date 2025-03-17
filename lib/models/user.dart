@@ -8,10 +8,12 @@ class UserModel {
   String _password = '';
   List<String> tokens = [];
   List<SenderUserModel> senderUsers = [];
+  List<String> receiveDestinationUsers = [];
   bool _isSender = false;
   String _senderNumber = '';
   String _senderName = '';
   int _sendUserLimit = 0;
+  List<String> sendDestinationUsers = [];
 
   String get id => _id;
   String get name => _name;
