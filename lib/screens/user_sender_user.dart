@@ -26,19 +26,20 @@ class _UserSenderUserScreenState extends State<UserSenderUserScreen> {
   List<SenderUserModel> senderUsers = [];
   List<SenderUserModel> deleteSenderUsers = [];
 
-  void _init() {
-    senderUsers = widget.user.senderUsers;
+  void _reloadSenderUsers(UserModel user) {
+    senderUsers = user.senderUsers;
     setState(() {});
   }
 
   @override
   void initState() {
+    senderUsers = widget.user.senderUsers;
     super.initState();
-    _init();
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -54,7 +55,13 @@ class _UserSenderUserScreenState extends State<UserSenderUserScreen> {
         actions: [
           deleteSenderUsers.isNotEmpty
               ? TextButton(
-                  onPressed: () {},
+                  onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) => DelDialog(
+                      deleteSenderUsers: deleteSenderUsers,
+                      reloadSenderUsers: _reloadSenderUsers,
+                    ),
+                  ),
                   child: Text(
                     '選択項目を削除',
                     style: TextStyle(color: kRedColor),
@@ -69,10 +76,18 @@ class _UserSenderUserScreenState extends State<UserSenderUserScreen> {
                 itemCount: senderUsers.length,
                 itemBuilder: (context, index) {
                   SenderUserModel senderUser = senderUsers[index];
+                  bool value = deleteSenderUsers.contains(senderUser);
                   return CustomCheckList(
                     label: senderUser.name,
-                    value: false,
-                    onChanged: (value) {},
+                    value: value,
+                    onChanged: (value) {
+                      if (!deleteSenderUsers.contains(senderUser)) {
+                        deleteSenderUsers.add(senderUser);
+                      } else {
+                        deleteSenderUsers.remove(senderUser);
+                      }
+                      setState(() {});
+                    },
                     activeColor: kRedColor,
                   );
                 },
@@ -83,7 +98,7 @@ class _UserSenderUserScreenState extends State<UserSenderUserScreen> {
         onPressed: () => showDialog(
           context: context,
           builder: (context) => AddDialog(
-            init: _init,
+            reloadSenderUsers: _reloadSenderUsers,
           ),
         ),
         icon: const FaIcon(
@@ -100,10 +115,10 @@ class _UserSenderUserScreenState extends State<UserSenderUserScreen> {
 }
 
 class AddDialog extends StatefulWidget {
-  final Function() init;
+  final Function(UserModel) reloadSenderUsers;
 
   const AddDialog({
-    required this.init,
+    required this.reloadSenderUsers,
     super.key,
   });
 
@@ -154,8 +169,63 @@ class _AddDialogState extends State<AddDialog> {
               return;
             }
             await userProvider.reload();
-            widget.init();
+            widget.reloadSenderUsers(userProvider.user!);
             if (!mounted) return;
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class DelDialog extends StatelessWidget {
+  final List<SenderUserModel> deleteSenderUsers;
+  final Function(UserModel) reloadSenderUsers;
+
+  const DelDialog({
+    required this.deleteSenderUsers,
+    required this.reloadSenderUsers,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    return CustomAlertDialog(
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8),
+          Text(
+            '本当に削除しますか？',
+            style: TextStyle(color: kRedColor),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: '削除する',
+          labelColor: kWhiteColor,
+          backgroundColor: kRedColor,
+          onPressed: () async {
+            String? error = await userProvider.removeSenderUsers(
+              deleteSenderUsers: deleteSenderUsers,
+            );
+            if (error != null) {
+              return;
+            }
+            await userProvider.reload();
+            reloadSenderUsers(userProvider.user!);
             Navigator.pop(context);
           },
         ),

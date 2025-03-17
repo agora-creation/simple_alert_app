@@ -189,6 +189,30 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
+  Future<String?> removeSenderUsers({
+    required List<SenderUserModel> deleteSenderUsers,
+  }) async {
+    String? error;
+    if (deleteSenderUsers.isEmpty) return '受信先の削除に失敗しました';
+    try {
+      List<Map> senderUsers = [];
+      if (_user!.senderUsers.isNotEmpty) {
+        for (SenderUserModel senderUser in _user!.senderUsers) {
+          if (!deleteSenderUsers.contains(senderUser)) {
+            senderUsers.add(senderUser.toMap());
+          }
+        }
+      }
+      _userService.update({
+        'id': _user?.id,
+        'senderUsers': senderUsers,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
   Future<String?> senderRegistration({
     required String senderName,
   }) async {
