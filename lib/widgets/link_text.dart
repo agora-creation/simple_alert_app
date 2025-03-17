@@ -8,7 +8,7 @@ class LinkText extends StatelessWidget {
 
   const LinkText({
     required this.label,
-    this.color = kRedColor,
+    this.color = kBlueColor,
     this.onTap,
     super.key,
   });

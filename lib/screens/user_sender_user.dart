@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/sender_user.dart';
 import 'package:simple_alert_app/models/user.dart';
+import 'package:simple_alert_app/widgets/custom_check_list.dart';
 
 class UserSenderUserScreen extends StatefulWidget {
   final UserModel user;
@@ -16,6 +18,15 @@ class UserSenderUserScreen extends StatefulWidget {
 }
 
 class _UserSenderUserScreenState extends State<UserSenderUserScreen> {
+  List<SenderUserModel> senderUsers = [];
+  List<SenderUserModel> deleteSenderUsers = [];
+
+  @override
+  void initState() {
+    senderUsers = widget.user.senderUsers;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,36 +42,32 @@ class _UserSenderUserScreenState extends State<UserSenderUserScreen> {
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              '選択項目を削除',
-              style: TextStyle(color: kRedColor),
-            ),
-          ),
+          deleteSenderUsers.isNotEmpty
+              ? TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    '選択項目を削除',
+                    style: TextStyle(color: kRedColor),
+                  ),
+                )
+              : Container(),
         ],
       ),
       body: SafeArea(
-        child: ListView.builder(
-          itemCount: 10,
-          itemBuilder: (context, index) {
-            return Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: kBlackColor.withOpacity(0.5),
-                  ),
-                ),
-              ),
-              child: CheckboxListTile(
-                title: Text('受信太郎'),
-                value: true,
-                onChanged: (value) {},
-                activeColor: kRedColor,
-              ),
-            );
-          },
-        ),
+        child: senderUsers.isNotEmpty
+            ? ListView.builder(
+                itemCount: senderUsers.length,
+                itemBuilder: (context, index) {
+                  SenderUserModel senderUser = senderUsers[index];
+                  return CustomCheckList(
+                    label: senderUser.name,
+                    value: false,
+                    onChanged: (value) {},
+                    activeColor: kRedColor,
+                  );
+                },
+              )
+            : Center(child: Text('受信先はありません')),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},

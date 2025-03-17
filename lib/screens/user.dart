@@ -10,7 +10,6 @@ import 'package:simple_alert_app/screens/user_email.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/screens/user_password.dart';
 import 'package:simple_alert_app/screens/user_sender.dart';
-import 'package:simple_alert_app/screens/user_sender_name.dart';
 import 'package:simple_alert_app/screens/user_sender_user.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -127,38 +126,15 @@ class _UserScreenState extends State<UserScreen> {
                         );
                       },
                     ),
-                    UserList(
-                      label: '送信者として登録',
-                      subtitle: Text(
-                        user!.isSender ? '登録済' : 'サブスク課金が必要になります',
-                        style: TextStyle(
-                          color: kRedColor,
-                          fontSize: 14,
-                        ),
-                      ),
-                      trailing: const FaIcon(
-                        FontAwesomeIcons.chevronRight,
-                        size: 16,
-                      ),
-                      tileColor: kRedColor.withOpacity(0.3),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: UserSenderScreen(
-                              user: userProvider.user!,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    user.isSender
+                    user!.isSender
                         ? UserList(
-                            label: '送信者名',
+                            label: '送信者情報',
                             subtitle: Text(
                               'アゴラクリエーション',
-                              style: TextStyle(fontSize: 14),
+                              style: TextStyle(
+                                color: kRedColor,
+                                fontSize: 14,
+                              ),
                             ),
                             trailing: const FaIcon(
                               FontAwesomeIcons.pen,
@@ -169,16 +145,46 @@ class _UserScreenState extends State<UserScreen> {
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
-                                  child: UserSenderNameScreen(),
+                                  child: UserSenderScreen(
+                                    user: userProvider.user!,
+                                  ),
                                 ),
                               );
                             },
                           )
-                        : Container(),
+                        : UserList(
+                            label: '送信者として登録',
+                            subtitle: Text(
+                              '※サブスク課金が必要になります',
+                              style: TextStyle(
+                                color: kRedColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'SourceHanSansJP-Bold',
+                              ),
+                            ),
+                            trailing: const FaIcon(
+                              FontAwesomeIcons.chevronRight,
+                              size: 16,
+                            ),
+                            tileColor: kRedColor.withOpacity(0.3),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: UserSenderScreen(
+                                    user: userProvider.user!,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                     SizedBox(height: 24),
                     Center(
                       child: LinkText(
                         label: 'ログアウト',
+                        color: kRedColor,
                         onTap: () => showDialog(
                           context: context,
                           builder: (context) => LogoutDialog(),

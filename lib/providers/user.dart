@@ -91,6 +91,7 @@ class UserProvider with ChangeNotifier {
         'tokens': [],
         'senderUsers': [],
         'isSender': false,
+        'senderNumber': '',
         'senderName': '',
         'sendUserLimit': 0,
       });
@@ -148,6 +149,41 @@ class UserProvider with ChangeNotifier {
       _userService.update({
         'id': _user?.id,
         'password': password,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> senderRegistration({
+    required String senderName,
+  }) async {
+    String? error;
+    if (senderName == '') return '送信者名は必須入力です';
+    try {
+      _userService.update({
+        'id': _user?.id,
+        'isSender': true,
+        'senderNumber': '10000001',
+        'senderName': senderName,
+        'sendUserLimit': 10,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> senderReset() async {
+    String? error;
+    try {
+      _userService.update({
+        'id': _user?.id,
+        'isSender': false,
+        'senderNumber': '',
+        'senderName': '',
+        'sendUserLimit': 0,
       });
     } catch (e) {
       error = e.toString();
