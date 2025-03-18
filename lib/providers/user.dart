@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/models/receive_user.dart';
+import 'package:simple_alert_app/models/send_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/services/user.dart';
 
@@ -163,12 +164,13 @@ class UserProvider with ChangeNotifier {
     required String senderNumber,
   }) async {
     String? error;
-    if (senderNumber == '') return '発信者番号は必須入力です';
+    if (senderNumber == '') return '送信者番号は必須入力です';
     try {
-      UserModel? tmpUser = await _userService.selectData(
+      //受信者側の追加
+      UserModel? senderUser = await _userService.selectData(
         senderNumber: senderNumber,
       );
-      if (tmpUser == null) return '受信先の追加に失敗しました';
+      if (senderUser == null) return '送信者番号が見つかりませんでした';
       List<Map> receiveUsers = [];
       if (_user!.receiveUsers.isNotEmpty) {
         for (ReceiveUserModel receiveUser in _user!.receiveUsers) {
@@ -176,13 +178,29 @@ class UserProvider with ChangeNotifier {
         }
       }
       receiveUsers.add({
-        'id': tmpUser.id,
-        'senderNumber': tmpUser.senderNumber,
-        'senderName': tmpUser.senderName,
+        'id': senderUser.id,
+        'senderNumber': senderUser.senderNumber,
+        'senderName': senderUser.senderName,
       });
       _userService.update({
         'id': _user?.id,
         'receiveUsers': receiveUsers,
+      });
+      //送信者側の追加
+      List<Map> sendUsers = [];
+      if (senderUser.sendUsers.isNotEmpty) {
+        for (SendUserModel sendUser in senderUser.sendUsers) {
+          sendUsers.add(sendUser.toMap());
+        }
+      }
+      sendUsers.add({
+        'id': _user!.id,
+        'name': _user!.name,
+        'email': _user!.email,
+      });
+      _userService.update({
+        'id': senderUser.id,
+        'sendUsers': sendUsers,
       });
     } catch (e) {
       error = e.toString();
@@ -196,6 +214,7 @@ class UserProvider with ChangeNotifier {
     String? error;
     if (deleteReceiveUsers.isEmpty) return '受信先の削除に失敗しました';
     try {
+      //受信者側の削除
       List<Map> receiveUsers = [];
       if (_user!.receiveUsers.isNotEmpty) {
         for (ReceiveUserModel receiveUser in _user!.receiveUsers) {
@@ -208,6 +227,25 @@ class UserProvider with ChangeNotifier {
         'id': _user?.id,
         'receiveUsers': receiveUsers,
       });
+      //送信者側の削除
+      for (ReceiveUserModel receiveUser in deleteReceiveUsers) {
+        UserModel? senderUser = await _userService.selectData(
+          id: receiveUser.id,
+        );
+        if (senderUser == null) continue;
+        List<Map> sendUsers = [];
+        if (senderUser.sendUsers.isNotEmpty) {
+          for (SendUserModel sendUser in senderUser.sendUsers) {
+            if (sendUser.id != _user!.id) {
+              sendUsers.add(sendUser.toMap());
+            }
+          }
+        }
+        _userService.update({
+          'id': receiveUser.id,
+          'sendUsers': sendUsers,
+        });
+      }
     } catch (e) {
       error = e.toString();
     }
@@ -247,6 +285,61 @@ class UserProvider with ChangeNotifier {
     } catch (e) {
       error = e.toString();
     }
+    return error;
+  }
+
+  Future<String?> addSendUsers({
+    required String email,
+  }) async {
+    String? error;
+    if (email == '') return 'メールアドレスは必須入力です';
+    try {
+      //送信者側の追加
+      UserModel? receiveUser = await _userService.selectData(
+        email: email,
+      );
+      if (receiveUser == null) return 'メールアドレスが見つかりませんでした';
+      List<Map> sendUsers = [];
+      if (_user!.sendUsers.isNotEmpty) {
+        for (SendUserModel sendUser in _user!.sendUsers) {
+          sendUsers.add(sendUser.toMap());
+        }
+      }
+      sendUsers.add({
+        'id': receiveUser.id,
+        'name': receiveUser.name,
+        'email': receiveUser.email,
+      });
+      _userService.update({
+        'id': _user?.id,
+        'sendUsers': sendUsers,
+      });
+      //受信者側の追加
+      List<Map> receiveUsers = [];
+      if (receiveUser.receiveUsers.isNotEmpty) {
+        for (ReceiveUserModel receiveUser in receiveUser.receiveUsers) {
+          receiveUsers.add(receiveUser.toMap());
+        }
+      }
+      receiveUsers.add({
+        'id': _user!.id,
+        'senderNumber': _user!.senderNumber,
+        'senderName': _user!.senderName,
+      });
+      _userService.update({
+        'id': receiveUser.id,
+        'receiveUsers': receiveUsers,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> removeSendUsers({
+    required List<SendUserModel> deleteSendUsers,
+  }) async {
+    String? error;
     return error;
   }
 
