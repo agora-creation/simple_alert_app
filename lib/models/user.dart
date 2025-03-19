@@ -7,7 +7,7 @@ class UserModel {
   String _name = '';
   String _email = '';
   String _password = '';
-  List<String> tokens = [];
+  String _token = '';
   List<MapNoticeUserModel> mapNoticeUsers = [];
   bool _isSender = false;
   String _senderNumber = '';
@@ -19,6 +19,7 @@ class UserModel {
   String get name => _name;
   String get email => _email;
   String get password => _password;
+  String get token => _token;
   bool get isSender => _isSender;
   String get senderNumber => _senderNumber;
   String get senderName => _senderName;
@@ -31,21 +32,13 @@ class UserModel {
     _name = data['name'] ?? '';
     _email = data['email'] ?? '';
     _password = data['password'] ?? '';
-    tokens = _convertTokens(data['tokens'] ?? []);
+    _token = data['token'] ?? '';
     mapNoticeUsers = _convertMapNoticeUsers(data['mapNoticeUsers'] ?? []);
     _isSender = data['isSender'] ?? false;
     _senderNumber = data['senderNumber'] ?? '';
     _senderName = data['senderName'] ?? '';
     _sendUserLimit = data['sendUserLimit'] ?? 0;
     mapSendUsers = _convertMapSendUsers(data['mapSendUsers'] ?? []);
-  }
-
-  List<String> _convertTokens(List list) {
-    List<String> ret = [];
-    for (dynamic id in list) {
-      ret.add('$id');
-    }
-    return ret;
   }
 
   List<MapNoticeUserModel> _convertMapNoticeUsers(List list) {

@@ -6,6 +6,7 @@ class UserNoticeModel {
   String _title = '';
   String _content = '';
   bool _read = false;
+  String _token = '';
   String _createdUserId = '';
   String _createdUserName = '';
   DateTime _createdAt = DateTime.now();
@@ -15,6 +16,7 @@ class UserNoticeModel {
   String get title => _title;
   String get content => _content;
   bool get read => _read;
+  String get token => _token;
   String get createdUserId => _createdUserId;
   String get createdUserName => _createdUserName;
   DateTime get createdAt => _createdAt;
@@ -29,6 +31,7 @@ class UserNoticeModel {
     _title = data['title'] ?? '';
     _content = data['content'] ?? '';
     _read = data['read'] ?? false;
+    _token = data['token'] ?? '';
     _createdUserId = data['createdUserId'] ?? '';
     _createdUserName = data['createdUserName'] ?? '';
     _createdAt = data['createdAt'].toDate() ?? DateTime.now();

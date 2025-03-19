@@ -69,11 +69,9 @@ class UserProvider with ChangeNotifier {
       if (tmpUser == null) return 'ログインに失敗しました';
       String? token = await _pushService.getFcmToken();
       if (token == null) return 'ログインに失敗しました';
-      List<String> tokens = tmpUser.tokens;
-      tokens.add(token);
       _userService.update({
         'id': tmpUser.id,
-        'tokens': tokens,
+        'token': token,
       });
       _authUser = result.user;
     } catch (e) {
@@ -108,7 +106,7 @@ class UserProvider with ChangeNotifier {
         'name': name,
         'email': email,
         'password': password,
-        'tokens': [token],
+        'token': token,
         'receiveUsers': [],
         'isSender': false,
         'senderNumber': '',
@@ -513,6 +511,10 @@ class UserProvider with ChangeNotifier {
         });
       }
       for (MapSendUserModel mapSendUser in sendMapSendUsers) {
+        UserModel? noticeUser = await _userService.selectData(
+          id: mapSendUser.id,
+        );
+        if (noticeUser == null) continue;
         String id = _userNoticeService.id(userId: mapSendUser.id);
         _userNoticeService.create({
           'id': id,
@@ -520,11 +522,11 @@ class UserProvider with ChangeNotifier {
           'title': title,
           'content': content,
           'read': false,
+          'token': noticeUser.token,
           'createdUserId': _user!.id,
           'createdUserName': _user!.senderName,
           'createdAt': DateTime.now(),
         });
-        //通知を送信
       }
     } catch (e) {
       error = e.toString();
