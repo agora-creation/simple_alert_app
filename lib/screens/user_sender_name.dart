@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
+import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class UserSenderNameScreen extends StatefulWidget {
@@ -27,6 +30,7 @@ class _UserSenderNameScreenState extends State<UserSenderNameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -41,7 +45,17 @@ class _UserSenderNameScreenState extends State<UserSenderNameScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
+            onPressed: () async {
+              String? error = await userProvider.updateSenderName(
+                senderName: senderNameController.text,
+              );
+              if (error != null) {
+                if (!mounted) return;
+                showMessage(context, error, false);
+                return;
+              }
+              await userProvider.reload();
+              if (!mounted) return;
               Navigator.pop(context);
             },
             child: Text('保存'),

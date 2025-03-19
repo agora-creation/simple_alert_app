@@ -1,9 +1,11 @@
 import 'dart:math';
 
+import 'package:alert_banner/exports.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:simple_alert_app/widgets/custom_alert_banner.dart';
 
 Future showBottomUpScreen(BuildContext context, Widget widget) async {
   await showMaterialModalBottomSheet(
@@ -41,4 +43,13 @@ String randomNumber(int length) {
     },
   );
   return String.fromCharCodes(codeUnits);
+}
+
+void showMessage(BuildContext context, String msg, bool success) {
+  showAlertBanner(
+    context,
+    () {},
+    CustomAlertBanner(msg: msg, success: success),
+    alertBannerLocation: AlertBannerLocation.top,
+  );
 }

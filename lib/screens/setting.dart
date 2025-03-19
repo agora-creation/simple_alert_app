@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_switch_list.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
 
@@ -12,7 +10,6 @@ class SettingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -64,7 +61,6 @@ class SettingScreen extends StatelessWidget {
                   );
                 },
               ),
-              onTap: () {},
             ),
           ],
         ),

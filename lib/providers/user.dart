@@ -165,6 +165,22 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
+  Future<String?> updateSenderName({
+    required String senderName,
+  }) async {
+    String? error;
+    if (senderName == '') return '送信者名は必須入力です';
+    try {
+      _userService.update({
+        'id': _user?.id,
+        'senderName': senderName,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
   Future<String?> addMapNoticeUsers({
     required String senderNumber,
   }) async {
@@ -355,7 +371,14 @@ class UserProvider with ChangeNotifier {
     String? error;
     if (senderName == '') return '送信者名は必須入力です';
     try {
+      UserModel? tmpUser;
       String senderNumber = randomNumber(8);
+      while (tmpUser == null) {
+        tmpUser = await _userService.selectData(
+          senderNumber: senderNumber,
+        );
+        senderNumber = randomNumber(8);
+      }
       _userService.update({
         'id': _user?.id,
         'isSender': true,

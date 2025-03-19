@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_send_user.dart';
 import 'package:simple_alert_app/models/user.dart';
@@ -169,6 +170,8 @@ class _AddDialogState extends State<AddDialog> {
               email: emailController.text,
             );
             if (error != null) {
+              if (!mounted) return;
+              showMessage(context, error, false);
               return;
             }
             await userProvider.reload();
@@ -225,6 +228,7 @@ class DelDialog extends StatelessWidget {
               deleteMapSendUsers: deleteMapSendUsers,
             );
             if (error != null) {
+              showMessage(context, error, false);
               return;
             }
             await userProvider.reload();

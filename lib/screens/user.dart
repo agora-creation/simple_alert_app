@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
@@ -276,6 +277,8 @@ class _UserScreenState extends State<UserScreen> {
                                 password: passwordController.text,
                               );
                               if (error != null) {
+                                if (!mounted) return;
+                                showMessage(context, error, false);
                                 return;
                               }
                               await userProvider.reload();
@@ -327,6 +330,8 @@ class _UserScreenState extends State<UserScreen> {
                                 password: passwordController.text,
                               );
                               if (error != null) {
+                                if (!mounted) return;
+                                showMessage(context, error, false);
                                 return;
                               }
                               await userProvider.reload();
