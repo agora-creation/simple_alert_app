@@ -4,7 +4,6 @@ import 'package:simple_alert_app/common/style.dart';
 class CustomCheckList extends StatelessWidget {
   final String label;
   final Widget? subtitle;
-
   final bool? value;
   final Function(bool?)? onChanged;
   final Color? activeColor;
@@ -33,7 +32,7 @@ class CustomCheckList extends StatelessWidget {
         subtitle: subtitle,
         value: value,
         onChanged: onChanged,
-        activeColor: kRedColor,
+        activeColor: activeColor,
       ),
     );
   }

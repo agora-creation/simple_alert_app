@@ -1,4 +1,4 @@
-class ReceiveUserModel {
+class MapNoticeUserModel {
   String _id = '';
   String _senderNumber = '';
   String _senderName = '';
@@ -7,7 +7,7 @@ class ReceiveUserModel {
   String get senderNumber => _senderNumber;
   String get senderName => _senderName;
 
-  ReceiveUserModel.fromMap(Map data) {
+  MapNoticeUserModel.fromMap(Map data) {
     _id = data['id'] ?? '';
     _senderNumber = data['senderNumber'] ?? '';
     _senderName = data['senderName'] ?? '';

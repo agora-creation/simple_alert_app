@@ -7,10 +7,10 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/user_email.dart';
+import 'package:simple_alert_app/screens/user_map_notice_user.dart';
+import 'package:simple_alert_app/screens/user_map_send_user.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/screens/user_password.dart';
-import 'package:simple_alert_app/screens/user_receive_user.dart';
-import 'package:simple_alert_app/screens/user_send_user.dart';
 import 'package:simple_alert_app/screens/user_sender.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -110,7 +110,7 @@ class _UserScreenState extends State<UserScreen> {
                       },
                     ),
                     UserList(
-                      label: '受信先一覧 (${user!.receiveUsers.length})',
+                      label: '受信先一覧 (${user!.mapNoticeUsers.length})',
                       trailing: const FaIcon(
                         FontAwesomeIcons.chevronRight,
                         size: 16,
@@ -120,7 +120,7 @@ class _UserScreenState extends State<UserScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: UserReceiveUserScreen(
+                            child: UserMapNoticeUserScreen(
                               user: userProvider.user!,
                             ),
                           ),
@@ -188,7 +188,7 @@ class _UserScreenState extends State<UserScreen> {
                           ),
                     user.isSender
                         ? UserList(
-                            label: '送信先一覧 (${user.sendUsers.length})',
+                            label: '送信先一覧 (${user.mapSendUsers.length})',
                             leading: const FaIcon(
                               FontAwesomeIcons.userTag,
                               size: 16,
@@ -202,7 +202,7 @@ class _UserScreenState extends State<UserScreen> {
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
-                                  child: UserSendUserScreen(
+                                  child: UserMapSendUserScreen(
                                     user: userProvider.user!,
                                   ),
                                 ),

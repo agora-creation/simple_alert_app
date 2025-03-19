@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simple_alert_app/models/user_notice.dart';
+import 'package:simple_alert_app/models/user_send.dart';
 
-class UserNoticeService {
+class UserSendService {
   String collection = 'user';
-  String subCollection = 'notice';
+  String subCollection = 'send';
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   String id({
@@ -55,12 +55,12 @@ class UserNoticeService {
         .snapshots();
   }
 
-  List<UserNoticeModel> generateList({
+  List<UserSendModel> generateList({
     required QuerySnapshot<Map<String, dynamic>>? data,
   }) {
-    List<UserNoticeModel> ret = [];
+    List<UserSendModel> ret = [];
     for (DocumentSnapshot<Map<String, dynamic>> doc in data!.docs) {
-      ret.add(UserNoticeModel.fromSnapshot(doc));
+      ret.add(UserSendModel.fromSnapshot(doc));
     }
     return ret;
   }

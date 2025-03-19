@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simple_alert_app/models/receive_user.dart';
-import 'package:simple_alert_app/models/send_user.dart';
+import 'package:simple_alert_app/models/map_notice_user.dart';
+import 'package:simple_alert_app/models/map_send_user.dart';
 
 class UserModel {
   String _id = '';
@@ -8,12 +8,12 @@ class UserModel {
   String _email = '';
   String _password = '';
   List<String> tokens = [];
-  List<ReceiveUserModel> receiveUsers = [];
+  List<MapNoticeUserModel> mapNoticeUsers = [];
   bool _isSender = false;
   String _senderNumber = '';
   String _senderName = '';
   int _sendUserLimit = 0;
-  List<SendUserModel> sendUsers = [];
+  List<MapSendUserModel> mapSendUsers = [];
 
   String get id => _id;
   String get name => _name;
@@ -32,12 +32,12 @@ class UserModel {
     _email = data['email'] ?? '';
     _password = data['password'] ?? '';
     tokens = _convertTokens(data['tokens'] ?? []);
-    receiveUsers = _convertReceiveUsers(data['receiveUsers'] ?? []);
+    mapNoticeUsers = _convertMapNoticeUsers(data['mapNoticeUsers'] ?? []);
     _isSender = data['isSender'] ?? false;
     _senderNumber = data['senderNumber'] ?? '';
     _senderName = data['senderName'] ?? '';
     _sendUserLimit = data['sendUserLimit'] ?? 0;
-    sendUsers = _convertSendUsers(data['sendUsers'] ?? []);
+    mapSendUsers = _convertMapSendUsers(data['mapSendUsers'] ?? []);
   }
 
   List<String> _convertTokens(List list) {
@@ -48,18 +48,18 @@ class UserModel {
     return ret;
   }
 
-  List<ReceiveUserModel> _convertReceiveUsers(List list) {
-    List<ReceiveUserModel> ret = [];
+  List<MapNoticeUserModel> _convertMapNoticeUsers(List list) {
+    List<MapNoticeUserModel> ret = [];
     for (Map data in list) {
-      ret.add(ReceiveUserModel.fromMap(data));
+      ret.add(MapNoticeUserModel.fromMap(data));
     }
     return ret;
   }
 
-  List<SendUserModel> _convertSendUsers(List list) {
-    List<SendUserModel> ret = [];
+  List<MapSendUserModel> _convertMapSendUsers(List list) {
+    List<MapSendUserModel> ret = [];
     for (Map data in list) {
-      ret.add(SendUserModel.fromMap(data));
+      ret.add(MapSendUserModel.fromMap(data));
     }
     return ret;
   }

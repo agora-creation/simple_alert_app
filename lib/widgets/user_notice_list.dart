@@ -35,7 +35,7 @@ class UserNoticeList extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          dateText('yyyy/MM/dd HH:mm', userNotice.createdAt),
+          '受信日時: ${dateText('yyyy/MM/dd HH:mm', userNotice.createdAt)}',
           style: TextStyle(
             color: kBlackColor.withOpacity(0.8),
             fontSize: 14,

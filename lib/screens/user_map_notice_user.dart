@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/models/receive_user.dart';
+import 'package:simple_alert_app/models/map_notice_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
@@ -10,30 +10,31 @@ import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
-class UserReceiveUserScreen extends StatefulWidget {
+class UserMapNoticeUserScreen extends StatefulWidget {
   final UserModel user;
 
-  const UserReceiveUserScreen({
+  const UserMapNoticeUserScreen({
     required this.user,
     super.key,
   });
 
   @override
-  State<UserReceiveUserScreen> createState() => _UserReceiveUserScreenState();
+  State<UserMapNoticeUserScreen> createState() =>
+      _UserMapNoticeUserScreenState();
 }
 
-class _UserReceiveUserScreenState extends State<UserReceiveUserScreen> {
-  List<ReceiveUserModel> receiveUsers = [];
-  List<ReceiveUserModel> deleteReceiveUsers = [];
+class _UserMapNoticeUserScreenState extends State<UserMapNoticeUserScreen> {
+  List<MapNoticeUserModel> mapNoticeUsers = [];
+  List<MapNoticeUserModel> deleteMapNoticeUsers = [];
 
-  void _reloadReceiveUsers(UserModel user) {
-    receiveUsers = user.receiveUsers;
+  void _reload(UserModel user) {
+    mapNoticeUsers = user.mapNoticeUsers;
     setState(() {});
   }
 
   @override
   void initState() {
-    receiveUsers = widget.user.receiveUsers;
+    mapNoticeUsers = widget.user.mapNoticeUsers;
     super.initState();
   }
 
@@ -52,13 +53,13 @@ class _UserReceiveUserScreenState extends State<UserReceiveUserScreen> {
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
-          deleteReceiveUsers.isNotEmpty
+          deleteMapNoticeUsers.isNotEmpty
               ? TextButton(
                   onPressed: () => showDialog(
                     context: context,
                     builder: (context) => DelDialog(
-                      deleteReceiveUsers: deleteReceiveUsers,
-                      reloadReceiveUsers: _reloadReceiveUsers,
+                      deleteMapNoticeUsers: deleteMapNoticeUsers,
+                      reload: _reload,
                     ),
                   ),
                   child: Text(
@@ -70,24 +71,24 @@ class _UserReceiveUserScreenState extends State<UserReceiveUserScreen> {
         ],
       ),
       body: SafeArea(
-        child: receiveUsers.isNotEmpty
+        child: mapNoticeUsers.isNotEmpty
             ? ListView.builder(
-                itemCount: receiveUsers.length,
+                itemCount: mapNoticeUsers.length,
                 itemBuilder: (context, index) {
-                  ReceiveUserModel receiveUser = receiveUsers[index];
-                  bool value = deleteReceiveUsers.contains(receiveUser);
+                  MapNoticeUserModel mapNoticeUser = mapNoticeUsers[index];
+                  bool value = deleteMapNoticeUsers.contains(mapNoticeUser);
                   return CustomCheckList(
-                    label: receiveUser.senderName,
+                    label: mapNoticeUser.senderName,
                     subtitle: Text(
-                      '送信者番号: ${receiveUser.senderNumber}',
+                      '送信者番号: ${mapNoticeUser.senderNumber}',
                       style: TextStyle(fontSize: 14),
                     ),
                     value: value,
                     onChanged: (value) {
-                      if (!deleteReceiveUsers.contains(receiveUser)) {
-                        deleteReceiveUsers.add(receiveUser);
+                      if (!deleteMapNoticeUsers.contains(mapNoticeUser)) {
+                        deleteMapNoticeUsers.add(mapNoticeUser);
                       } else {
-                        deleteReceiveUsers.remove(receiveUser);
+                        deleteMapNoticeUsers.remove(mapNoticeUser);
                       }
                       setState(() {});
                     },
@@ -101,7 +102,7 @@ class _UserReceiveUserScreenState extends State<UserReceiveUserScreen> {
         onPressed: () => showDialog(
           context: context,
           builder: (context) => AddDialog(
-            reloadReceiveUsers: _reloadReceiveUsers,
+            reload: _reload,
           ),
         ),
         icon: const FaIcon(
@@ -118,10 +119,10 @@ class _UserReceiveUserScreenState extends State<UserReceiveUserScreen> {
 }
 
 class AddDialog extends StatefulWidget {
-  final Function(UserModel) reloadReceiveUsers;
+  final Function(UserModel) reload;
 
   const AddDialog({
-    required this.reloadReceiveUsers,
+    required this.reload,
     super.key,
   });
 
@@ -165,14 +166,14 @@ class _AddDialogState extends State<AddDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
-            String? error = await userProvider.addReceiveUsers(
+            String? error = await userProvider.addMapNoticeUsers(
               senderNumber: senderNumberController.text,
             );
             if (error != null) {
               return;
             }
             await userProvider.reload();
-            widget.reloadReceiveUsers(userProvider.user!);
+            widget.reload(userProvider.user!);
             if (!mounted) return;
             Navigator.pop(context);
           },
@@ -183,12 +184,12 @@ class _AddDialogState extends State<AddDialog> {
 }
 
 class DelDialog extends StatelessWidget {
-  final List<ReceiveUserModel> deleteReceiveUsers;
-  final Function(UserModel) reloadReceiveUsers;
+  final List<MapNoticeUserModel> deleteMapNoticeUsers;
+  final Function(UserModel) reload;
 
   const DelDialog({
-    required this.deleteReceiveUsers,
-    required this.reloadReceiveUsers,
+    required this.deleteMapNoticeUsers,
+    required this.reload,
     super.key,
   });
 
@@ -221,14 +222,14 @@ class DelDialog extends StatelessWidget {
           labelColor: kWhiteColor,
           backgroundColor: kRedColor,
           onPressed: () async {
-            String? error = await userProvider.removeReceiveUsers(
-              deleteReceiveUsers: deleteReceiveUsers,
+            String? error = await userProvider.removeMapNoticeUsers(
+              deleteMapNoticeUsers: deleteMapNoticeUsers,
             );
             if (error != null) {
               return;
             }
             await userProvider.reload();
-            reloadReceiveUsers(userProvider.user!);
+            reload(userProvider.user!);
             Navigator.pop(context);
           },
         ),

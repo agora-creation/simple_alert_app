@@ -75,8 +75,6 @@ class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Divider(height: 0, color: kBlackColor.withOpacity(0.5)),
-                const SizedBox(height: 8),
                 Text(
                   widget.userNotice.title,
                   style: TextStyle(

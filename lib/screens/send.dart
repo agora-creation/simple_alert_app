@@ -1,9 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/send_create.dart';
+import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
+import 'package:simple_alert_app/widgets/user_send_list.dart';
 
 class SendScreen extends StatelessWidget {
   const SendScreen({super.key});
@@ -33,57 +38,60 @@ class SendScreen extends StatelessWidget {
                             label: '送信する',
                             labelColor: kWhiteColor,
                             backgroundColor: kBlueColor,
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: SendCreateScreen(),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
                     ),
                     Divider(height: 0, color: kBlackColor.withOpacity(0.5)),
                     Expanded(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: 100,
-                        itemBuilder: (context, index) {
-                          bool draft = false;
-                          if (index % 5 == 0) {
-                            draft = true;
+                      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                        stream: UserSendService().streamList(
+                          userId: userProvider.user?.id ?? 'error',
+                        ),
+                        builder: (context, snapshot) {
+                          List<UserSendModel> userSends = [];
+                          if (snapshot.hasData) {
+                            userSends = UserSendService().generateList(
+                              data: snapshot.data,
+                            );
                           }
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: kBlackColor.withOpacity(0.5),
-                                ),
+                          if (userSends.isEmpty) {
+                            return Center(
+                              child: Text(
+                                '送信履歴はありません',
+                                style: TextStyle(fontSize: 14),
                               ),
-                              color: draft
-                                  ? kRedColor.withOpacity(0.3)
-                                  : kWhiteColor,
-                            ),
-                            child: ListTile(
-                              title: Text('今日の出店のお知らせ'),
-                              subtitle: draft
-                                  ? null
-                                  : Text(
-                                      '送信日時: 2023/01/01 10:00',
-                                      style: TextStyle(
-                                        color: kBlackColor.withOpacity(0.8),
-                                        fontSize: 14,
+                            );
+                          }
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: userSends.length,
+                            itemBuilder: (context, index) {
+                              UserSendModel userSend = userSends[index];
+                              return UserSendList(
+                                userSend: userSend,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                      type: PageTransitionType.rightToLeft,
+                                      child: SendCreateScreen(
+                                        userSend: userSend,
                                       ),
                                     ),
-                              trailing: draft
-                                  ? Text(
-                                      '未送信',
-                                      style: TextStyle(
-                                        color: kRedColor,
-                                        fontSize: 14,
-                                      ),
-                                    )
-                                  : const FaIcon(
-                                      FontAwesomeIcons.chevronRight,
-                                      size: 16,
-                                    ),
-                              onTap: () {},
-                            ),
+                                  );
+                                },
+                              );
+                            },
                           );
                         },
                       ),
