@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/widgets/custom_switch_list.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -29,11 +28,6 @@ class SettingScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            CustomSwitchList(
-              label: 'PUSH通知のON/OFF',
-              value: false,
-              onChanged: (value) {},
-            ),
             SettingList(
               label: '利用規約',
               trailing: const FaIcon(

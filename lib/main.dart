@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
+import 'package:simple_alert_app/services/push.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,8 @@ Future main() async {
           ),
         )
       : await Firebase.initializeApp();
+  //通知サービスの初期化
+  PushService().init();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
@@ -51,7 +54,7 @@ class MyApp extends StatelessWidget {
         ],
         supportedLocales: const [Locale('ja')],
         locale: const Locale('ja'),
-        title: 'B-Alert',
+        title: kAppShortName,
         theme: customTheme(),
         home: const HomeScreen(),
       ),

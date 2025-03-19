@@ -5,6 +5,7 @@ import 'package:simple_alert_app/models/map_notice_user.dart';
 import 'package:simple_alert_app/models/map_send_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/services/push.dart';
 import 'package:simple_alert_app/services/user.dart';
 import 'package:simple_alert_app/services/user_notice.dart';
 import 'package:simple_alert_app/services/user_send.dart';
@@ -23,6 +24,7 @@ class UserProvider with ChangeNotifier {
   User? _authUser;
   User? get authUser => _authUser;
 
+  final PushService _pushService = PushService();
   final UserService _userService = UserService();
   final UserNoticeService _userNoticeService = UserNoticeService();
   final UserSendService _userSendService = UserSendService();
@@ -65,6 +67,14 @@ class UserProvider with ChangeNotifier {
         id: result.user!.uid,
       );
       if (tmpUser == null) return 'ログインに失敗しました';
+      String? token = await _pushService.getFcmToken();
+      if (token == null) return 'ログインに失敗しました';
+      List<String> tokens = tmpUser.tokens;
+      tokens.add(token);
+      _userService.update({
+        'id': tmpUser.id,
+        'tokens': tokens,
+      });
       _authUser = result.user;
     } catch (e) {
       _status = AuthStatus.unauthenticated;
@@ -91,12 +101,14 @@ class UserProvider with ChangeNotifier {
         password: password,
       );
       if (result == null) return '登録に失敗しました';
+      String? token = await _pushService.getFcmToken();
+      if (token == null) return '登録に失敗しました';
       _userService.create({
         'id': result.user!.uid,
         'name': name,
         'email': email,
         'password': password,
-        'tokens': [],
+        'tokens': [token],
         'receiveUsers': [],
         'isSender': false,
         'senderNumber': '',
@@ -512,6 +524,7 @@ class UserProvider with ChangeNotifier {
           'createdUserName': _user!.senderName,
           'createdAt': DateTime.now(),
         });
+        //通知を送信
       }
     } catch (e) {
       error = e.toString();
