@@ -129,8 +129,8 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
                       const SizedBox(height: 16),
                       CustomButton(
                         type: ButtonSizeType.lg,
-                        label: '登録する',
-                        labelColor: kBlueColor,
+                        label: 'フリープラン',
+                        labelColor: kWhiteColor,
                         backgroundColor: kBlueColor,
                         onPressed: () async {
                           String? error =
@@ -148,6 +148,30 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
                             notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
                           );
                         },
+                      ),
+                      const SizedBox(height: 16),
+                      CustomButton(
+                        type: ButtonSizeType.lg,
+                        label: '900円プラン',
+                        labelColor: kWhiteColor,
+                        backgroundColor: kBlueColor,
+                        onPressed: () async {},
+                      ),
+                      const SizedBox(height: 16),
+                      CustomButton(
+                        type: ButtonSizeType.lg,
+                        label: '1800円プラン',
+                        labelColor: kWhiteColor,
+                        backgroundColor: kBlueColor,
+                        onPressed: () async {},
+                      ),
+                      const SizedBox(height: 16),
+                      CustomButton(
+                        type: ButtonSizeType.lg,
+                        label: '3000円プラン',
+                        labelColor: kWhiteColor,
+                        backgroundColor: kBlueColor,
+                        onPressed: () async {},
                       ),
                     ],
                   ),
