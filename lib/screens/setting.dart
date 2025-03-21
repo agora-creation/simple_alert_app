@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -34,7 +35,13 @@ class SettingScreen extends StatelessWidget {
                 FontAwesomeIcons.chevronRight,
                 size: 16,
               ),
-              onTap: () {},
+              onTap: () async {
+                if (!await launchUrl(Uri.parse(
+                  'https://docs.google.com/document/d/18yzTySjHTdCE_VHS6NjAeP8OfTpfqyh5VZjaqBgdP78/edit?usp=sharing',
+                ))) {
+                  throw Exception('Could not launch');
+                }
+              },
             ),
             SettingList(
               label: 'プライバシーポリシー',
@@ -42,7 +49,13 @@ class SettingScreen extends StatelessWidget {
                 FontAwesomeIcons.chevronRight,
                 size: 16,
               ),
-              onTap: () {},
+              onTap: () async {
+                if (!await launchUrl(Uri.parse(
+                  'https://docs.google.com/document/d/1HIbeGeI1HEl1JnVBTiFjrJk0JZeUWSehahu4WfApWR4/edit?usp=sharing',
+                ))) {
+                  throw Exception('Could not launch');
+                }
+              },
             ),
             SettingList(
               label: 'アプリのバージョン',

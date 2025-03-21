@@ -23,6 +23,7 @@ dependencies:
   page_transition: ^2.2.1
   modal_bottom_sheet: ^3.0.0
   alert_banner: ^1.0.1
+  url_launcher: ^6.3.1
   package_info_plus: ^8.3.0
   version: ^3.0.2
   in_app_review: ^2.0.10
