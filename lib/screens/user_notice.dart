@@ -68,9 +68,18 @@ class UserNoticeScreen extends StatelessWidget {
                   },
                 )
               : Center(
-                  child: Text(
-                    'マイページから登録・ログインしてください',
-                    style: TextStyle(fontSize: 14),
+                  child: Container(
+                    color: kRedColor,
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      'マイページから登録・ログインしてください',
+                      style: TextStyle(
+                        color: kWhiteColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'SourceHanSansJP-Bold',
+                      ),
+                    ),
                   ),
                 ),
         ),

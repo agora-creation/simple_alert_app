@@ -130,8 +130,8 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
                       CustomButton(
                         type: ButtonSizeType.lg,
                         label: '登録する',
-                        labelColor: kBlackColor,
-                        backgroundColor: kBackgroundColor,
+                        labelColor: kBlueColor,
+                        backgroundColor: kBlueColor,
                         onPressed: () async {
                           String? error =
                               await widget.userProvider.senderRegistration(

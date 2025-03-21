@@ -275,8 +275,8 @@ class _UserScreenState extends State<UserScreen> {
                           CustomButton(
                             type: ButtonSizeType.lg,
                             label: '登録して始める',
-                            labelColor: kBlackColor,
-                            backgroundColor: kBackgroundColor,
+                            labelColor: kWhiteColor,
+                            backgroundColor: kBlueColor,
                             onPressed: () async {
                               String? error =
                                   await widget.userProvider.registration(
@@ -330,8 +330,8 @@ class _UserScreenState extends State<UserScreen> {
                           CustomButton(
                             type: ButtonSizeType.lg,
                             label: 'ログイン',
-                            labelColor: kBlackColor,
-                            backgroundColor: kBackgroundColor,
+                            labelColor: kWhiteColor,
+                            backgroundColor: kBlueColor,
                             onPressed: () async {
                               String? error = await widget.userProvider.login(
                                 email: emailController.text,
