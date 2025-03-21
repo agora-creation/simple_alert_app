@@ -23,7 +23,7 @@ class SendScreen extends StatelessWidget {
     UserModel user = userProvider.user!;
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
         child: Card(
           color: kWhiteColor,
           elevation: 0,

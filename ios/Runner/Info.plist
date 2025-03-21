@@ -2,18 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<key>CFBundleURLTypes</key>
+    <key>GADApplicationIdentifier</key>
+    <string>ca-app-pub-9791675225952080~8910711523</string>
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
+    <key>CFBundleURLTypes</key>
     <array>
-      <dict>
-        <key>CFBundleTypeRole</key>
-        <string>Editor</string>
-        <key>CFBundleURLName</key>
-        <string>com.agoracreation.simpleAlertApp</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>B-Alert</string>
-        </array>
-      </dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>com.agoracreation.simpleAlertApp</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>B-Alert</string>
+            </array>
+        </dict>
     </array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>

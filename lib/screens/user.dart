@@ -41,7 +41,7 @@ class _UserScreenState extends State<UserScreen> {
     UserModel? user = widget.userProvider.user;
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
         child: Card(
           color: kWhiteColor,
           elevation: 0,

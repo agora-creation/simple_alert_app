@@ -1,6 +1,7 @@
 import 'package:floating_navigation_bar/floating_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/models/user.dart';
@@ -9,6 +10,7 @@ import 'package:simple_alert_app/screens/send.dart';
 import 'package:simple_alert_app/screens/setting.dart';
 import 'package:simple_alert_app/screens/user.dart';
 import 'package:simple_alert_app/screens/user_notice.dart';
+import 'package:simple_alert_app/services/ad.dart';
 import 'package:simple_alert_app/widgets/custom_navigation_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  BannerAd bannerAd = AdService.createBannerAd();
   int currentIndex = 0;
   List<Widget> screenWidgets = [];
   List<String> headerNames = [];
@@ -72,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     _init();
     super.initState();
+    bannerAd.load();
   }
 
   @override
@@ -89,7 +93,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: screenWidgets[currentIndex],
+      body: Column(
+        children: [
+          SizedBox(
+            width: bannerAd.size.width.toDouble(),
+            height: bannerAd.size.height.toDouble(),
+            child: AdWidget(ad: bannerAd),
+          ),
+          Expanded(child: screenWidgets[currentIndex]),
+        ],
+      ),
       extendBody: true,
       bottomNavigationBar: CustomNavigationBar(
         items: navItems,
