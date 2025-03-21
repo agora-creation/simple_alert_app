@@ -16,6 +16,7 @@
             <key>CFBundleURLSchemes</key>
             <array>
                 <string>B-Alert</string>
+                <string>com.googleusercontent.apps.REDACTED</string>
             </array>
         </dict>
     </array>
