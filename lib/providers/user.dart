@@ -515,10 +515,10 @@ class UserProvider with ChangeNotifier {
           id: mapSendUser.id,
         );
         if (noticeUser == null) continue;
-        String id = _userNoticeService.id(userId: mapSendUser.id);
+        String id = _userNoticeService.id(userId: noticeUser.id);
         _userNoticeService.create({
           'id': id,
-          'userId': mapSendUser.id,
+          'userId': noticeUser.id,
           'title': title,
           'content': content,
           'read': false,

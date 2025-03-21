@@ -17,10 +17,9 @@
 //   logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
-const functions = require('firebase-functions')
+const functions = require('firebase-functions/v1')
 const admin = require('firebase-admin')
 admin.initializeApp()
-const firestore = admin.firestore()
 
 exports.createUserNotice = functions.region('asia-northeast2').firestore.document('user/{userId}/notice/{noticeId}')
     .onCreate(async (snap, context) => {

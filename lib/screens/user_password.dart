@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class UserPasswordScreen extends StatefulWidget {
-  const UserPasswordScreen({super.key});
+  final UserProvider userProvider;
+
+  const UserPasswordScreen({
+    required this.userProvider,
+    super.key,
+  });
 
   @override
   State<UserPasswordScreen> createState() => _UserPasswordScreenState();
@@ -18,7 +22,6 @@ class _UserPasswordScreenState extends State<UserPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -34,7 +37,7 @@ class _UserPasswordScreenState extends State<UserPasswordScreen> {
         actions: [
           TextButton(
             onPressed: () async {
-              String? error = await userProvider.updatePassword(
+              String? error = await widget.userProvider.updatePassword(
                 password: passwordController.text,
               );
               if (error != null) {
@@ -42,7 +45,7 @@ class _UserPasswordScreenState extends State<UserPasswordScreen> {
                 showMessage(context, error, false);
                 return;
               }
-              await userProvider.reload();
+              await widget.userProvider.reload();
               if (!mounted) return;
               Navigator.pop(context);
             },

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_send_user.dart';
@@ -10,13 +9,13 @@ import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
 
 class SendConfScreen extends StatefulWidget {
-  final UserModel user;
+  final UserProvider userProvider;
   final UserSendModel? userSend;
   final String title;
   final String content;
 
   const SendConfScreen({
-    required this.user,
+    required this.userProvider,
     this.userSend,
     required this.title,
     required this.content,
@@ -33,13 +32,13 @@ class _SendConfScreenState extends State<SendConfScreen> {
 
   @override
   void initState() {
-    mapSendUsers = widget.user.mapSendUsers;
+    UserModel user = widget.userProvider.user!;
+    mapSendUsers = user.mapSendUsers;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -122,7 +121,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          String? error = await userProvider.send(
+          String? error = await widget.userProvider.send(
             userSend: widget.userSend,
             title: widget.title,
             content: widget.content,

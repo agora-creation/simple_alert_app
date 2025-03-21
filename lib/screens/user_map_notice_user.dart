@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_notice_user.dart';
@@ -12,10 +11,10 @@ import 'package:simple_alert_app/widgets/custom_check_list.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class UserMapNoticeUserScreen extends StatefulWidget {
-  final UserModel user;
+  final UserProvider userProvider;
 
   const UserMapNoticeUserScreen({
-    required this.user,
+    required this.userProvider,
     super.key,
   });
 
@@ -35,7 +34,8 @@ class _UserMapNoticeUserScreenState extends State<UserMapNoticeUserScreen> {
 
   @override
   void initState() {
-    mapNoticeUsers = widget.user.mapNoticeUsers;
+    UserModel user = widget.userProvider.user!;
+    mapNoticeUsers = user.mapNoticeUsers;
     super.initState();
   }
 
@@ -59,6 +59,7 @@ class _UserMapNoticeUserScreenState extends State<UserMapNoticeUserScreen> {
                   onPressed: () => showDialog(
                     context: context,
                     builder: (context) => DelDialog(
+                      userProvider: widget.userProvider,
                       deleteMapNoticeUsers: deleteMapNoticeUsers,
                       reload: _reload,
                     ),
@@ -103,6 +104,7 @@ class _UserMapNoticeUserScreenState extends State<UserMapNoticeUserScreen> {
         onPressed: () => showDialog(
           context: context,
           builder: (context) => AddDialog(
+            userProvider: widget.userProvider,
             reload: _reload,
           ),
         ),
@@ -120,9 +122,11 @@ class _UserMapNoticeUserScreenState extends State<UserMapNoticeUserScreen> {
 }
 
 class AddDialog extends StatefulWidget {
+  final UserProvider userProvider;
   final Function(UserModel) reload;
 
   const AddDialog({
+    required this.userProvider,
     required this.reload,
     super.key,
   });
@@ -136,7 +140,6 @@ class _AddDialogState extends State<AddDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return CustomAlertDialog(
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -167,7 +170,7 @@ class _AddDialogState extends State<AddDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
-            String? error = await userProvider.addMapNoticeUsers(
+            String? error = await widget.userProvider.addMapNoticeUsers(
               senderNumber: senderNumberController.text,
             );
             if (error != null) {
@@ -175,8 +178,8 @@ class _AddDialogState extends State<AddDialog> {
               showMessage(context, error, false);
               return;
             }
-            await userProvider.reload();
-            widget.reload(userProvider.user!);
+            await widget.userProvider.reload();
+            widget.reload(widget.userProvider.user!);
             if (!mounted) return;
             Navigator.pop(context);
           },
@@ -187,10 +190,12 @@ class _AddDialogState extends State<AddDialog> {
 }
 
 class DelDialog extends StatelessWidget {
+  final UserProvider userProvider;
   final List<MapNoticeUserModel> deleteMapNoticeUsers;
   final Function(UserModel) reload;
 
   const DelDialog({
+    required this.userProvider,
     required this.deleteMapNoticeUsers,
     required this.reload,
     super.key,
@@ -198,7 +203,6 @@ class DelDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return CustomAlertDialog(
       content: const Column(
         mainAxisSize: MainAxisSize.min,

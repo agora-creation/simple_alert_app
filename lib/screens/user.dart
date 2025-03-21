@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
@@ -21,7 +20,12 @@ import 'package:simple_alert_app/widgets/sign_panel.dart';
 import 'package:simple_alert_app/widgets/user_list.dart';
 
 class UserScreen extends StatefulWidget {
-  const UserScreen({super.key});
+  final UserProvider userProvider;
+
+  const UserScreen({
+    required this.userProvider,
+    super.key,
+  });
 
   @override
   State<UserScreen> createState() => _UserScreenState();
@@ -34,8 +38,7 @@ class _UserScreenState extends State<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
-    UserModel? user = userProvider.user;
+    UserModel? user = widget.userProvider.user;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -43,7 +46,7 @@ class _UserScreenState extends State<UserScreen> {
           color: kWhiteColor,
           elevation: 0,
           shape: RoundedRectangleBorder(),
-          child: userProvider.loginCheck()
+          child: widget.userProvider.loginCheck()
               ? ListView(
                   children: [
                     UserList(
@@ -62,7 +65,7 @@ class _UserScreenState extends State<UserScreen> {
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
                             child: UserNameScreen(
-                              user: userProvider.user!,
+                              userProvider: widget.userProvider,
                             ),
                           ),
                         );
@@ -84,7 +87,7 @@ class _UserScreenState extends State<UserScreen> {
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
                             child: UserEmailScreen(
-                              user: userProvider.user!,
+                              userProvider: widget.userProvider,
                             ),
                           ),
                         );
@@ -105,7 +108,9 @@ class _UserScreenState extends State<UserScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: UserPasswordScreen(),
+                            child: UserPasswordScreen(
+                              userProvider: widget.userProvider,
+                            ),
                           ),
                         );
                       },
@@ -122,7 +127,7 @@ class _UserScreenState extends State<UserScreen> {
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
                             child: UserMapNoticeUserScreen(
-                              user: userProvider.user!,
+                              userProvider: widget.userProvider,
                             ),
                           ),
                         );
@@ -132,7 +137,7 @@ class _UserScreenState extends State<UserScreen> {
                         ? UserList(
                             label: '送信者情報',
                             subtitle: Text(
-                              userProvider.user!.senderName,
+                              user.senderName,
                               style: TextStyle(fontSize: 14),
                             ),
                             leading: const FaIcon(
@@ -149,7 +154,7 @@ class _UserScreenState extends State<UserScreen> {
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
                                   child: UserSenderScreen(
-                                    user: userProvider.user!,
+                                    userProvider: widget.userProvider,
                                   ),
                                 ),
                               );
@@ -181,7 +186,7 @@ class _UserScreenState extends State<UserScreen> {
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
                                   child: UserSenderScreen(
-                                    user: userProvider.user!,
+                                    userProvider: widget.userProvider,
                                   ),
                                 ),
                               );
@@ -204,7 +209,7 @@ class _UserScreenState extends State<UserScreen> {
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
                                   child: UserMapSendUserScreen(
-                                    user: userProvider.user!,
+                                    userProvider: widget.userProvider,
                                   ),
                                 ),
                               );
@@ -218,7 +223,9 @@ class _UserScreenState extends State<UserScreen> {
                         color: kRedColor,
                         onTap: () => showDialog(
                           context: context,
-                          builder: (context) => LogoutDialog(),
+                          builder: (context) => LogoutDialog(
+                            userProvider: widget.userProvider,
+                          ),
                         ),
                       ),
                     ),
@@ -271,7 +278,8 @@ class _UserScreenState extends State<UserScreen> {
                             labelColor: kBlackColor,
                             backgroundColor: kBackgroundColor,
                             onPressed: () async {
-                              String? error = await userProvider.registration(
+                              String? error =
+                                  await widget.userProvider.registration(
                                 name: nameController.text,
                                 email: emailController.text,
                                 password: passwordController.text,
@@ -281,7 +289,7 @@ class _UserScreenState extends State<UserScreen> {
                                 showMessage(context, error, false);
                                 return;
                               }
-                              await userProvider.reload();
+                              await widget.userProvider.reload();
                               Restart.restartApp(
                                 notificationTitle: 'アプリの再起動',
                                 notificationBody:
@@ -325,7 +333,7 @@ class _UserScreenState extends State<UserScreen> {
                             labelColor: kBlackColor,
                             backgroundColor: kBackgroundColor,
                             onPressed: () async {
-                              String? error = await userProvider.login(
+                              String? error = await widget.userProvider.login(
                                 email: emailController.text,
                                 password: passwordController.text,
                               );
@@ -334,7 +342,7 @@ class _UserScreenState extends State<UserScreen> {
                                 showMessage(context, error, false);
                                 return;
                               }
-                              await userProvider.reload();
+                              await widget.userProvider.reload();
                               Restart.restartApp(
                                 notificationTitle: 'アプリの再起動',
                                 notificationBody:
@@ -354,11 +362,15 @@ class _UserScreenState extends State<UserScreen> {
 }
 
 class LogoutDialog extends StatelessWidget {
-  const LogoutDialog({super.key});
+  final UserProvider userProvider;
+
+  const LogoutDialog({
+    required this.userProvider,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return CustomAlertDialog(
       content: const Column(
         mainAxisSize: MainAxisSize.min,

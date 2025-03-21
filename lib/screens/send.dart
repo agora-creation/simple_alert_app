@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send_create.dart';
@@ -11,12 +11,16 @@ import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
 
 class SendScreen extends StatelessWidget {
-  const SendScreen({super.key});
+  final UserProvider userProvider;
+
+  const SendScreen({
+    required this.userProvider,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
-    bool isSender = userProvider.user?.isSender ?? false;
+    UserModel user = userProvider.user!;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -24,7 +28,7 @@ class SendScreen extends StatelessWidget {
           color: kWhiteColor,
           elevation: 0,
           shape: RoundedRectangleBorder(),
-          child: isSender
+          child: user.isSender
               ? Column(
                   children: [
                     Padding(
@@ -43,7 +47,9 @@ class SendScreen extends StatelessWidget {
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
-                                  child: SendCreateScreen(),
+                                  child: SendCreateScreen(
+                                    userProvider: userProvider,
+                                  ),
                                 ),
                               );
                             },
@@ -55,7 +61,7 @@ class SendScreen extends StatelessWidget {
                     Expanded(
                       child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                         stream: UserSendService().streamList(
-                          userId: userProvider.user?.id ?? 'error',
+                          userId: user.id,
                         ),
                         builder: (context, snapshot) {
                           List<UserSendModel> userSends = [];
@@ -85,6 +91,7 @@ class SendScreen extends StatelessWidget {
                                     PageTransition(
                                       type: PageTransitionType.rightToLeft,
                                       child: SendCreateScreen(
+                                        userProvider: userProvider,
                                         userSend: userSend,
                                       ),
                                     ),

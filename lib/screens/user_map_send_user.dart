@@ -12,10 +12,10 @@ import 'package:simple_alert_app/widgets/custom_check_list.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class UserMapSendUserScreen extends StatefulWidget {
-  final UserModel user;
+  final UserProvider userProvider;
 
   const UserMapSendUserScreen({
-    required this.user,
+    required this.userProvider,
     super.key,
   });
 
@@ -34,7 +34,8 @@ class _UserMapSendUserScreenState extends State<UserMapSendUserScreen> {
 
   @override
   void initState() {
-    mapSendUsers = widget.user.mapSendUsers;
+    UserModel user = widget.userProvider.user!;
+    mapSendUsers = user.mapSendUsers;
     super.initState();
   }
 
@@ -58,6 +59,7 @@ class _UserMapSendUserScreenState extends State<UserMapSendUserScreen> {
                   onPressed: () => showDialog(
                     context: context,
                     builder: (context) => DelDialog(
+                      userProvider: widget.userProvider,
                       deleteMapSendUsers: deleteMapSendUsers,
                       reload: _reload,
                     ),
@@ -102,6 +104,7 @@ class _UserMapSendUserScreenState extends State<UserMapSendUserScreen> {
         onPressed: () => showDialog(
           context: context,
           builder: (context) => AddDialog(
+            userProvider: widget.userProvider,
             reload: _reload,
           ),
         ),
@@ -119,9 +122,11 @@ class _UserMapSendUserScreenState extends State<UserMapSendUserScreen> {
 }
 
 class AddDialog extends StatefulWidget {
+  final UserProvider userProvider;
   final Function(UserModel) reload;
 
   const AddDialog({
+    required this.userProvider,
     required this.reload,
     super.key,
   });
@@ -135,7 +140,6 @@ class _AddDialogState extends State<AddDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return CustomAlertDialog(
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -166,7 +170,7 @@ class _AddDialogState extends State<AddDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
-            String? error = await userProvider.addMapSendUsers(
+            String? error = await widget.userProvider.addMapSendUsers(
               email: emailController.text,
             );
             if (error != null) {
@@ -174,8 +178,8 @@ class _AddDialogState extends State<AddDialog> {
               showMessage(context, error, false);
               return;
             }
-            await userProvider.reload();
-            widget.reload(userProvider.user!);
+            await widget.userProvider.reload();
+            widget.reload(widget.userProvider.user!);
             if (!mounted) return;
             Navigator.pop(context);
           },
@@ -186,10 +190,12 @@ class _AddDialogState extends State<AddDialog> {
 }
 
 class DelDialog extends StatelessWidget {
+  final UserProvider userProvider;
   final List<MapSendUserModel> deleteMapSendUsers;
   final Function(UserModel) reload;
 
   const DelDialog({
+    required this.userProvider,
     required this.deleteMapSendUsers,
     required this.reload,
     super.key,

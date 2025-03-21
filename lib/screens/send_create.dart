@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
@@ -10,9 +9,11 @@ import 'package:simple_alert_app/screens/send_conf.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class SendCreateScreen extends StatefulWidget {
+  final UserProvider userProvider;
   final UserSendModel? userSend;
 
   const SendCreateScreen({
+    required this.userProvider,
     this.userSend,
     super.key,
   });
@@ -36,7 +37,6 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     bool draft = widget.userSend?.draft ?? false;
     return Scaffold(
       backgroundColor: kWhiteColor,
@@ -50,7 +50,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
           widget.userSend != null && draft
               ? TextButton(
                   onPressed: () async {
-                    String? error = await userProvider.deleteSendDraft(
+                    String? error = await widget.userProvider.deleteSendDraft(
                       userSend: widget.userSend!,
                     );
                     if (error != null) {
@@ -70,7 +70,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
           widget.userSend != null && draft
               ? TextButton(
                   onPressed: () async {
-                    String? error = await userProvider.updateSendDraft(
+                    String? error = await widget.userProvider.updateSendDraft(
                       userSend: widget.userSend!,
                       title: titleController.text,
                       content: contentController.text,
@@ -91,7 +91,8 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
               : draft
                   ? TextButton(
                       onPressed: () async {
-                        String? error = await userProvider.createSendDraft(
+                        String? error =
+                            await widget.userProvider.createSendDraft(
                           title: titleController.text,
                           content: contentController.text,
                         );
@@ -153,7 +154,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                   PageTransition(
                     type: PageTransitionType.rightToLeft,
                     child: SendConfScreen(
-                      user: userProvider.user!,
+                      userProvider: widget.userProvider,
                       userSend: widget.userSend,
                       title: titleController.text,
                       content: contentController.text,

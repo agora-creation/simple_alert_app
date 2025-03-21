@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_notice.dart';
 import 'package:simple_alert_app/providers/user.dart';
@@ -10,11 +9,15 @@ import 'package:simple_alert_app/services/user_notice.dart';
 import 'package:simple_alert_app/widgets/user_notice_list.dart';
 
 class UserNoticeScreen extends StatelessWidget {
-  const UserNoticeScreen({super.key});
+  final UserProvider userProvider;
+
+  const UserNoticeScreen({
+    required this.userProvider,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),

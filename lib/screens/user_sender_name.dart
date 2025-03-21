@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
@@ -8,10 +7,10 @@ import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class UserSenderNameScreen extends StatefulWidget {
-  final UserModel user;
+  final UserProvider userProvider;
 
   const UserSenderNameScreen({
-    required this.user,
+    required this.userProvider,
     super.key,
   });
 
@@ -24,13 +23,13 @@ class _UserSenderNameScreenState extends State<UserSenderNameScreen> {
 
   @override
   void initState() {
-    senderNameController.text = widget.user.senderName;
+    UserModel user = widget.userProvider.user!;
+    senderNameController.text = user.senderName;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -46,7 +45,7 @@ class _UserSenderNameScreenState extends State<UserSenderNameScreen> {
         actions: [
           TextButton(
             onPressed: () async {
-              String? error = await userProvider.updateSenderName(
+              String? error = await widget.userProvider.updateSenderName(
                 senderName: senderNameController.text,
               );
               if (error != null) {
@@ -54,7 +53,7 @@ class _UserSenderNameScreenState extends State<UserSenderNameScreen> {
                 showMessage(context, error, false);
                 return;
               }
-              await userProvider.reload();
+              await widget.userProvider.reload();
               if (!mounted) return;
               Navigator.pop(context);
             },

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/user_sender_name.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -13,10 +12,10 @@ import 'package:simple_alert_app/widgets/link_text.dart';
 import 'package:simple_alert_app/widgets/user_list.dart';
 
 class UserSenderScreen extends StatefulWidget {
-  final UserModel user;
+  final UserProvider userProvider;
 
   const UserSenderScreen({
-    required this.user,
+    required this.userProvider,
     super.key,
   });
 
@@ -29,7 +28,6 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -39,22 +37,24 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          widget.user.isSender ? '送信者情報' : '送信者として登録',
+          widget.userProvider.user!.isSender ? '送信者情報' : '送信者として登録',
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
-          widget.user.isSender
+          widget.userProvider.user!.isSender
               ? TextButton(
                   onPressed: () async {
-                    String? error = await userProvider.senderReset();
+                    String? error = await widget.userProvider.senderReset();
                     if (error != null) {
                       if (!mounted) return;
                       showMessage(context, error, false);
                       return;
                     }
-                    await userProvider.reload();
-                    if (!mounted) return;
-                    Navigator.pop(context);
+                    await widget.userProvider.reload();
+                    Restart.restartApp(
+                      notificationTitle: 'アプリの再起動',
+                      notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
+                    );
                   },
                   child: Text(
                     '登録を解除',
@@ -68,13 +68,13 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         behavior: HitTestBehavior.opaque,
         child: SafeArea(
-          child: widget.user.isSender
+          child: widget.userProvider.user!.isSender
               ? Column(
                   children: [
                     UserList(
                       label: '送信者番号',
                       subtitle: Text(
-                        widget.user.senderNumber,
+                        widget.userProvider.user!.senderNumber,
                         style: TextStyle(fontSize: 14),
                       ),
                       trailing: LinkText(
@@ -85,7 +85,7 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
                     UserList(
                       label: '送信者名',
                       subtitle: Text(
-                        widget.user.senderName,
+                        widget.userProvider.user!.senderName,
                         style: TextStyle(fontSize: 14),
                       ),
                       trailing: const FaIcon(
@@ -98,7 +98,7 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
                             child: UserSenderNameScreen(
-                              user: userProvider.user!,
+                              userProvider: widget.userProvider,
                             ),
                           ),
                         );
@@ -133,7 +133,8 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
                         labelColor: kBlackColor,
                         backgroundColor: kBackgroundColor,
                         onPressed: () async {
-                          String? error = await userProvider.senderRegistration(
+                          String? error =
+                              await widget.userProvider.senderRegistration(
                             senderName: senderNameController.text,
                           );
                           if (error != null) {
@@ -141,9 +142,11 @@ class _UserSenderScreenState extends State<UserSenderScreen> {
                             showMessage(context, error, false);
                             return;
                           }
-                          await userProvider.reload();
-                          if (!mounted) return;
-                          Navigator.pop(context);
+                          await widget.userProvider.reload();
+                          Restart.restartApp(
+                            notificationTitle: 'アプリの再起動',
+                            notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
+                          );
                         },
                       ),
                     ],

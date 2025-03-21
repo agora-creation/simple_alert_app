@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         locale: const Locale('ja'),
         title: kAppShortName,
         theme: customTheme(),
-        home: const HomeScreen(),
+        home: HomeScreen(),
       ),
     );
   }
