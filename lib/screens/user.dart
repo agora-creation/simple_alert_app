@@ -42,8 +42,11 @@ class _UserScreenState extends State<UserScreen> {
     if (offerings.isEmpty) {
       print('No Plan Found');
     } else {
-      final offer = offerings.first;
-      print('Offer: $offer');
+      final packages = offerings
+          .map((offer) => offer.availablePackages)
+          .expand((pair) => pair)
+          .toList();
+      //課金一覧
     }
   }
 
