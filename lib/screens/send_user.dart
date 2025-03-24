@@ -11,19 +11,19 @@ import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
-class UserMapSendUserScreen extends StatefulWidget {
+class SendUserScreen extends StatefulWidget {
   final UserProvider userProvider;
 
-  const UserMapSendUserScreen({
+  const SendUserScreen({
     required this.userProvider,
     super.key,
   });
 
   @override
-  State<UserMapSendUserScreen> createState() => _UserMapSendUserScreenState();
+  State<SendUserScreen> createState() => _SendUserScreenState();
 }
 
-class _UserMapSendUserScreenState extends State<UserMapSendUserScreen> {
+class _SendUserScreenState extends State<SendUserScreen> {
   List<MapSendUserModel> mapSendUsers = [];
   List<MapSendUserModel> deleteMapSendUsers = [];
 

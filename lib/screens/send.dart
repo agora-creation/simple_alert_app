@@ -6,6 +6,7 @@ import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send_create.dart';
+import 'package:simple_alert_app/screens/send_user.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
@@ -20,7 +21,7 @@ class SendScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserModel user = userProvider.user!;
+    UserModel? user = userProvider.user;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
@@ -28,89 +29,98 @@ class SendScreen extends StatelessWidget {
           color: kWhiteColor,
           elevation: 0,
           shape: RoundedRectangleBorder(),
-          child: user.isSender
-              ? Column(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('送信履歴一覧'),
-                          CustomButton(
-                            type: ButtonSizeType.sm,
-                            label: '送信する',
-                            labelColor: kWhiteColor,
-                            backgroundColor: kBlueColor,
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: SendCreateScreen(
-                                    userProvider: userProvider,
-                                  ),
-                                ),
-                              );
-                            },
+                    CustomButton(
+                      type: ButtonSizeType.sm,
+                      label: '送信先一覧 (${user?.mapSendUsers.length})',
+                      labelColor: kBlackColor,
+                      backgroundColor: kBlackColor.withOpacity(0.3),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: SendUserScreen(
+                              userProvider: userProvider,
+                            ),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                    Divider(height: 0, color: kBlackColor.withOpacity(0.5)),
-                    Expanded(
-                      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                        stream: UserSendService().streamList(
-                          userId: user.id,
-                        ),
-                        builder: (context, snapshot) {
-                          List<UserSendModel> userSends = [];
-                          if (snapshot.hasData) {
-                            userSends = UserSendService().generateList(
-                              data: snapshot.data,
-                            );
-                          }
-                          if (userSends.isEmpty) {
-                            return Center(
-                              child: Text(
-                                '送信履歴はありません',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            );
-                          }
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: userSends.length,
-                            itemBuilder: (context, index) {
-                              UserSendModel userSend = userSends[index];
-                              return UserSendList(
-                                userSend: userSend,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      type: PageTransitionType.rightToLeft,
-                                      child: SendCreateScreen(
-                                        userProvider: userProvider,
-                                        userSend: userSend,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        },
-                      ),
+                    CustomButton(
+                      type: ButtonSizeType.sm,
+                      label: '送信する',
+                      labelColor: kWhiteColor,
+                      backgroundColor: kBlueColor,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: SendCreateScreen(
+                              userProvider: userProvider,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
-                )
-              : Center(
-                  child: Text(
-                    '送信者として登録すると利用可能になります',
-                    style: TextStyle(fontSize: 14),
-                  ),
                 ),
+              ),
+              Divider(height: 0, color: kBlackColor.withOpacity(0.5)),
+              Expanded(
+                child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: UserSendService().streamList(
+                    userId: user?.id ?? 'error',
+                  ),
+                  builder: (context, snapshot) {
+                    List<UserSendModel> userSends = [];
+                    if (snapshot.hasData) {
+                      userSends = UserSendService().generateList(
+                        data: snapshot.data,
+                      );
+                    }
+                    if (userSends.isEmpty) {
+                      return Center(
+                        child: Text(
+                          '送信履歴はありません',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: userSends.length,
+                      itemBuilder: (context, index) {
+                        UserSendModel userSend = userSends[index];
+                        return UserSendList(
+                          userSend: userSend,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: SendCreateScreen(
+                                  userProvider: userProvider,
+                                  userSend: userSend,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

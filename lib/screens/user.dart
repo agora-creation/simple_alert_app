@@ -7,11 +7,10 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/user_email.dart';
-import 'package:simple_alert_app/screens/user_map_notice_user.dart';
-import 'package:simple_alert_app/screens/user_map_send_user.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/screens/user_password.dart';
-import 'package:simple_alert_app/screens/user_sender.dart';
+import 'package:simple_alert_app/screens/user_sender_create.dart';
+import 'package:simple_alert_app/screens/user_sender_detail.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
@@ -115,25 +114,7 @@ class _UserScreenState extends State<UserScreen> {
                         );
                       },
                     ),
-                    UserList(
-                      label: '受信先一覧 (${user!.mapNoticeUsers.length})',
-                      trailing: const FaIcon(
-                        FontAwesomeIcons.chevronRight,
-                        size: 16,
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: UserMapNoticeUserScreen(
-                              userProvider: widget.userProvider,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    user.isSender
+                    user!.isSender
                         ? UserList(
                             label: '送信者情報',
                             subtitle: Text(
@@ -141,19 +122,20 @@ class _UserScreenState extends State<UserScreen> {
                               style: TextStyle(fontSize: 14),
                             ),
                             leading: const FaIcon(
-                              FontAwesomeIcons.userTag,
+                              FontAwesomeIcons.paperPlane,
                               size: 16,
                             ),
                             trailing: const FaIcon(
                               FontAwesomeIcons.chevronRight,
                               size: 16,
                             ),
+                            tileColor: kBlueColor.withOpacity(0.3),
                             onTap: () {
                               Navigator.push(
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
-                                  child: UserSenderScreen(
+                                  child: UserSenderDetailScreen(
                                     userProvider: widget.userProvider,
                                   ),
                                 ),
@@ -172,7 +154,7 @@ class _UserScreenState extends State<UserScreen> {
                               ),
                             ),
                             leading: const FaIcon(
-                              FontAwesomeIcons.userTag,
+                              FontAwesomeIcons.paperPlane,
                               size: 16,
                             ),
                             trailing: const FaIcon(
@@ -185,37 +167,13 @@ class _UserScreenState extends State<UserScreen> {
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
-                                  child: UserSenderScreen(
+                                  child: UserSenderCreateScreen(
                                     userProvider: widget.userProvider,
                                   ),
                                 ),
                               );
                             },
                           ),
-                    user.isSender
-                        ? UserList(
-                            label: '送信先一覧 (${user.mapSendUsers.length})',
-                            leading: const FaIcon(
-                              FontAwesomeIcons.userTag,
-                              size: 16,
-                            ),
-                            trailing: const FaIcon(
-                              FontAwesomeIcons.chevronRight,
-                              size: 16,
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: UserMapSendUserScreen(
-                                    userProvider: widget.userProvider,
-                                  ),
-                                ),
-                              );
-                            },
-                          )
-                        : Container(),
                     SizedBox(height: 24),
                     Center(
                       child: LinkText(

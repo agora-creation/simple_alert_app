@@ -10,20 +10,19 @@ import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
-class UserMapNoticeUserScreen extends StatefulWidget {
+class UserNoticeUserScreen extends StatefulWidget {
   final UserProvider userProvider;
 
-  const UserMapNoticeUserScreen({
+  const UserNoticeUserScreen({
     required this.userProvider,
     super.key,
   });
 
   @override
-  State<UserMapNoticeUserScreen> createState() =>
-      _UserMapNoticeUserScreenState();
+  State<UserNoticeUserScreen> createState() => _UserNoticeUserScreenState();
 }
 
-class _UserMapNoticeUserScreenState extends State<UserMapNoticeUserScreen> {
+class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
   List<MapNoticeUserModel> mapNoticeUsers = [];
   List<MapNoticeUserModel> deleteMapNoticeUsers = [];
 

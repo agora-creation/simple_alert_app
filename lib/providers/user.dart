@@ -383,11 +383,13 @@ class UserProvider with ChangeNotifier {
     try {
       UserModel? tmpUser;
       String senderNumber = randomNumber(8);
-      while (tmpUser == null) {
+      while (tmpUser != null) {
         tmpUser = await _userService.selectData(
           senderNumber: senderNumber,
         );
-        senderNumber = randomNumber(8);
+        if (tmpUser == null) {
+          senderNumber = randomNumber(8);
+        }
       }
       _userService.update({
         'id': _user?.id,
