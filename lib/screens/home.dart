@@ -85,7 +85,11 @@ class HomeAppbarTitle extends StatelessWidget {
     if (user != null && user!.isSender) {
       titles = ['受信履歴', '送信機能', 'マイページ'];
     }
-    return Text(titles[currentIndex]);
+    if (titles.length > currentIndex) {
+      return Text(titles[currentIndex]);
+    } else {
+      return Text(titles[0]);
+    }
   }
 }
 
@@ -115,16 +119,29 @@ class HomeBody extends StatelessWidget {
         UserScreen(userProvider: userProvider),
       ];
     }
-    return Column(
-      children: [
-        SizedBox(
-          width: bannerAd.size.width.toDouble(),
-          height: bannerAd.size.height.toDouble(),
-          child: AdWidget(ad: bannerAd),
-        ),
-        Expanded(child: bodies[currentIndex]),
-      ],
-    );
+    if (bodies.length > currentIndex) {
+      return Column(
+        children: [
+          SizedBox(
+            width: bannerAd.size.width.toDouble(),
+            height: bannerAd.size.height.toDouble(),
+            child: AdWidget(ad: bannerAd),
+          ),
+          Expanded(child: bodies[currentIndex]),
+        ],
+      );
+    } else {
+      return Column(
+        children: [
+          SizedBox(
+            width: bannerAd.size.width.toDouble(),
+            height: bannerAd.size.height.toDouble(),
+            child: AdWidget(ad: bannerAd),
+          ),
+          Expanded(child: bodies[0]),
+        ],
+      );
+    }
   }
 }
 

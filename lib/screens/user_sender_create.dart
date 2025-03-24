@@ -37,64 +37,43 @@ class _UserSenderCreateScreenState extends State<UserSenderCreateScreen> {
           style: TextStyle(color: kBlackColor),
         ),
       ),
-      body: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        behavior: HitTestBehavior.opaque,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                const SizedBox(height: 16),
-                CustomTextFormField(
-                  controller: senderNameController,
-                  textInputType: TextInputType.name,
-                  maxLines: 1,
-                  label: '送信者名',
-                  color: kBlackColor,
-                  prefix: Icons.account_box,
-                ),
-                const SizedBox(height: 16),
-                CustomButton(
-                  type: ButtonSizeType.lg,
-                  label: 'フリープラン',
-                  labelColor: kWhiteColor,
-                  backgroundColor: kBlueColor,
-                  onPressed: () async {
-                    String? error =
-                        await widget.userProvider.senderRegistration(
-                      senderName: senderNameController.text,
-                    );
-                    if (error != null) {
-                      if (!mounted) return;
-                      showMessage(context, error, false);
-                      return;
-                    }
-                    await widget.userProvider.reload();
-                    Restart.restartApp(
-                      notificationTitle: 'アプリの再起動',
-                      notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                CustomButton(
-                  type: ButtonSizeType.lg,
-                  label: '900円プラン',
-                  labelColor: kWhiteColor,
-                  backgroundColor: kBlueColor,
-                  onPressed: () async {},
-                ),
-                const SizedBox(height: 16),
-                CustomButton(
-                  type: ButtonSizeType.lg,
-                  label: '1800円プラン',
-                  labelColor: kWhiteColor,
-                  backgroundColor: kBlueColor,
-                  onPressed: () async {},
-                ),
-              ],
-            ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              CustomTextFormField(
+                controller: senderNameController,
+                textInputType: TextInputType.name,
+                maxLines: 1,
+                label: '送信者名',
+                color: kBlackColor,
+                prefix: Icons.account_box,
+              ),
+              const SizedBox(height: 16),
+              CustomButton(
+                type: ButtonSizeType.lg,
+                label: '登録する',
+                labelColor: kWhiteColor,
+                backgroundColor: kBlueColor,
+                onPressed: () async {
+                  String? error = await widget.userProvider.senderRegistration(
+                    senderName: senderNameController.text,
+                  );
+                  if (error != null) {
+                    if (!mounted) return;
+                    showMessage(context, error, false);
+                    return;
+                  }
+                  await widget.userProvider.reload();
+                  Restart.restartApp(
+                    notificationTitle: 'アプリの再起動',
+                    notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),

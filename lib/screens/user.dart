@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:simple_alert_app/api/purchase.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
@@ -34,6 +35,17 @@ class _UserScreenState extends State<UserScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  Future fetchOffers() async {
+    final offerings = await PurchaseApi.fetchOffers();
+
+    if (offerings.isEmpty) {
+      print('No Plan Found');
+    } else {
+      final offer = offerings.first;
+      print('Offer: $offer');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
