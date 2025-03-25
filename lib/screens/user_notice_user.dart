@@ -99,23 +99,23 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
               )
             : Center(child: Text('受信先はありません')),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) => AddDialog(
-            userProvider: widget.userProvider,
-            reload: _reload,
-          ),
-        ),
-        icon: const FaIcon(
-          FontAwesomeIcons.plus,
-          color: kWhiteColor,
-        ),
-        label: Text(
-          '受信先を追加',
-          style: TextStyle(color: kWhiteColor),
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () => showDialog(
+      //     context: context,
+      //     builder: (context) => AddDialog(
+      //       userProvider: widget.userProvider,
+      //       reload: _reload,
+      //     ),
+      //   ),
+      //   icon: const FaIcon(
+      //     FontAwesomeIcons.plus,
+      //     color: kWhiteColor,
+      //   ),
+      //   label: Text(
+      //     '受信先を追加',
+      //     style: TextStyle(color: kWhiteColor),
+      //   ),
+      // ),
     );
   }
 }

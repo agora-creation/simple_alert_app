@@ -9,6 +9,7 @@ import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/user_email.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/screens/user_password.dart';
+import 'package:simple_alert_app/screens/user_subscription.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
@@ -115,9 +116,9 @@ class _UserScreenState extends State<UserScreen> {
                     UserList(
                       label: 'ご利用中のプラン',
                       subtitle: Text(
-                        'フリープラン',
+                        user?.subscriptionName() ?? '',
                         style: TextStyle(
-                          color: kRedColor,
+                          color: kBlackColor,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'SourceHanSansJP-Bold',
@@ -131,8 +132,17 @@ class _UserScreenState extends State<UserScreen> {
                         FontAwesomeIcons.pen,
                         size: 16,
                       ),
-                      tileColor: kRedColor.withOpacity(0.3),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: UserSubscriptionScreen(
+                              userProvider: widget.userProvider,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     SizedBox(height: 24),
                     Center(

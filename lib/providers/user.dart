@@ -107,6 +107,7 @@ class UserProvider with ChangeNotifier {
         'token': token,
         'noticeMapUsers': [],
         'sendMapUsers': [],
+        'subscription': 0,
       });
       _authUser = result.user;
     } catch (e) {
@@ -162,6 +163,21 @@ class UserProvider with ChangeNotifier {
       _userService.update({
         'id': _user?.id,
         'password': password,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateSubscription({
+    required int subscription,
+  }) async {
+    String? error;
+    try {
+      _userService.update({
+        'id': _user?.id,
+        'subscription': subscription,
       });
     } catch (e) {
       error = e.toString();
@@ -272,6 +288,9 @@ class UserProvider with ChangeNotifier {
         email: email,
       );
       if (noticeUser == null) return '受信者が見つかりませんでした';
+      if (_user!.sendMapUsers.length >= _user!.subscriptionSendUsersLimit()) {
+        return '現在のプランでは送信者上限に達しています';
+      }
       List<Map> sendMapUsers = [];
       if (_user!.sendMapUsers.isNotEmpty) {
         for (MapUserModel mapUser in _user!.sendMapUsers) {
@@ -347,18 +366,6 @@ class UserProvider with ChangeNotifier {
           'noticeMapUsers': noticeMapUsers,
         });
       }
-    } catch (e) {
-      error = e.toString();
-    }
-    return error;
-  }
-
-  Future<String?> senderReset() async {
-    String? error;
-    try {
-      _userService.update({
-        'id': _user?.id,
-      });
     } catch (e) {
       error = e.toString();
     }

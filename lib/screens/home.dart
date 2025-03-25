@@ -5,6 +5,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send.dart';
 import 'package:simple_alert_app/screens/setting.dart';
@@ -33,6 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    UserModel? user = userProvider.user;
+    bool subscriptionAdView = user?.subscriptionAdView() ?? true;
     List<String> titles = ['受信履歴', '送信機能', 'マイページ'];
     List<Widget> bodies = [
       UserNoticeScreen(userProvider: userProvider),
@@ -54,11 +57,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          SizedBox(
-            width: bannerAd.size.width.toDouble(),
-            height: bannerAd.size.height.toDouble(),
-            child: AdWidget(ad: bannerAd),
-          ),
+          subscriptionAdView
+              ? SizedBox(
+                  width: bannerAd.size.width.toDouble(),
+                  height: bannerAd.size.height.toDouble(),
+                  child: AdWidget(ad: bannerAd),
+                )
+              : Container(),
           Expanded(child: bodies[currentIndex]),
         ],
       ),
