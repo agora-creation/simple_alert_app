@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/models/map_send_user.dart';
+import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
@@ -24,18 +23,18 @@ class SendUserScreen extends StatefulWidget {
 }
 
 class _SendUserScreenState extends State<SendUserScreen> {
-  List<MapSendUserModel> mapSendUsers = [];
-  List<MapSendUserModel> deleteMapSendUsers = [];
+  List<MapUserModel> sendMapUsers = [];
+  List<MapUserModel> selectedSendMapUsers = [];
 
   void _reload(UserModel user) {
-    mapSendUsers = user.mapSendUsers;
+    sendMapUsers = user.sendMapUsers;
     setState(() {});
   }
 
   @override
   void initState() {
     UserModel user = widget.userProvider.user!;
-    mapSendUsers = user.mapSendUsers;
+    sendMapUsers = user.sendMapUsers;
     super.initState();
   }
 
@@ -54,13 +53,13 @@ class _SendUserScreenState extends State<SendUserScreen> {
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
-          deleteMapSendUsers.isNotEmpty
+          selectedSendMapUsers.isNotEmpty
               ? TextButton(
                   onPressed: () => showDialog(
                     context: context,
                     builder: (context) => DelDialog(
                       userProvider: widget.userProvider,
-                      deleteMapSendUsers: deleteMapSendUsers,
+                      selectedSendMapUsers: selectedSendMapUsers,
                       reload: _reload,
                     ),
                   ),
@@ -73,24 +72,24 @@ class _SendUserScreenState extends State<SendUserScreen> {
         ],
       ),
       body: SafeArea(
-        child: mapSendUsers.isNotEmpty
+        child: sendMapUsers.isNotEmpty
             ? ListView.builder(
-                itemCount: mapSendUsers.length,
+                itemCount: sendMapUsers.length,
                 itemBuilder: (context, index) {
-                  MapSendUserModel mapSendUser = mapSendUsers[index];
-                  bool value = deleteMapSendUsers.contains(mapSendUser);
+                  MapUserModel mapUser = sendMapUsers[index];
+                  bool value = selectedSendMapUsers.contains(mapUser);
                   return CustomCheckList(
-                    label: mapSendUser.name,
+                    label: mapUser.name,
                     subtitle: Text(
-                      mapSendUser.email,
+                      mapUser.email,
                       style: TextStyle(fontSize: 14),
                     ),
                     value: value,
                     onChanged: (value) {
-                      if (!deleteMapSendUsers.contains(mapSendUser)) {
-                        deleteMapSendUsers.add(mapSendUser);
+                      if (!selectedSendMapUsers.contains(mapUser)) {
+                        selectedSendMapUsers.add(mapUser);
                       } else {
-                        deleteMapSendUsers.remove(mapSendUser);
+                        selectedSendMapUsers.remove(mapUser);
                       }
                       setState(() {});
                     },
@@ -170,7 +169,7 @@ class _AddDialogState extends State<AddDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
-            String? error = await widget.userProvider.addMapSendUsers(
+            String? error = await widget.userProvider.addSendMapUsers(
               email: emailController.text,
             );
             if (error != null) {
@@ -191,19 +190,18 @@ class _AddDialogState extends State<AddDialog> {
 
 class DelDialog extends StatelessWidget {
   final UserProvider userProvider;
-  final List<MapSendUserModel> deleteMapSendUsers;
+  final List<MapUserModel> selectedSendMapUsers;
   final Function(UserModel) reload;
 
   const DelDialog({
     required this.userProvider,
-    required this.deleteMapSendUsers,
+    required this.selectedSendMapUsers,
     required this.reload,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return CustomAlertDialog(
       content: const Column(
         mainAxisSize: MainAxisSize.min,
@@ -230,8 +228,8 @@ class DelDialog extends StatelessWidget {
           labelColor: kWhiteColor,
           backgroundColor: kRedColor,
           onPressed: () async {
-            String? error = await userProvider.removeMapSendUsers(
-              deleteMapSendUsers: deleteMapSendUsers,
+            String? error = await userProvider.removeSendMapUsers(
+              selectedSendMapUsers: selectedSendMapUsers,
             );
             if (error != null) {
               showMessage(context, error, false);

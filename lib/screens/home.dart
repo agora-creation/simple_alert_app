@@ -5,7 +5,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send.dart';
 import 'package:simple_alert_app/screens/setting.dart';
@@ -27,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    currentIndex = 0;
     super.initState();
     bannerAd.load();
   }
@@ -35,12 +33,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    List<String> titles = ['受信履歴', '送信機能', 'マイページ'];
+    List<Widget> bodies = [
+      UserNoticeScreen(userProvider: userProvider),
+      SendScreen(userProvider: userProvider),
+      UserScreen(userProvider: userProvider),
+    ];
     return Scaffold(
       appBar: AppBar(
-        title: HomeAppbarTitle(
-          user: userProvider.user,
-          currentIndex: currentIndex,
-        ),
+        title: Text(titles[currentIndex]),
         actions: [
           IconButton(
             icon: const FaIcon(FontAwesomeIcons.ellipsisVertical),
@@ -51,76 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: HomeBody(
-        userProvider: userProvider,
-        currentIndex: currentIndex,
-        bannerAd: bannerAd,
-      ),
-      extendBody: true,
-      bottomNavigationBar: HomeBottomNavigationBar(
-        user: userProvider.user,
-        onChanged: (value) {
-          currentIndex = value;
-          setState(() {});
-        },
-      ),
-      bottomSheet: CustomBottomSheet(),
-    );
-  }
-}
-
-class HomeAppbarTitle extends StatelessWidget {
-  final UserModel? user;
-  final int currentIndex;
-
-  const HomeAppbarTitle({
-    required this.user,
-    required this.currentIndex,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    List<String> titles = ['受信履歴', 'マイページ'];
-    if (user != null && user!.isSender) {
-      titles = ['受信履歴', '送信機能', 'マイページ'];
-    }
-    if (titles.length > currentIndex) {
-      return Text(titles[currentIndex]);
-    } else {
-      return Text(titles[0]);
-    }
-  }
-}
-
-class HomeBody extends StatelessWidget {
-  final UserProvider userProvider;
-  final int currentIndex;
-  final BannerAd bannerAd;
-
-  const HomeBody({
-    required this.userProvider,
-    required this.currentIndex,
-    required this.bannerAd,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> bodies = [
-      UserNoticeScreen(userProvider: userProvider),
-      UserScreen(userProvider: userProvider),
-    ];
-    UserModel? user = userProvider.user;
-    if (user != null && user.isSender) {
-      bodies = [
-        UserNoticeScreen(userProvider: userProvider),
-        SendScreen(userProvider: userProvider),
-        UserScreen(userProvider: userProvider),
-      ];
-    }
-    if (bodies.length > currentIndex) {
-      return Column(
+      body: Column(
         children: [
           SizedBox(
             width: bannerAd.size.width.toDouble(),
@@ -129,78 +61,44 @@ class HomeBody extends StatelessWidget {
           ),
           Expanded(child: bodies[currentIndex]),
         ],
-      );
-    } else {
-      return Column(
-        children: [
-          SizedBox(
-            width: bannerAd.size.width.toDouble(),
-            height: bannerAd.size.height.toDouble(),
-            child: AdWidget(ad: bannerAd),
+      ),
+      extendBody: true,
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 16),
+        child: FloatingNavigationBar(
+          backgroundColor: kWhiteColor,
+          barHeight: 80,
+          barWidth: MediaQuery.of(context).size.width - 40,
+          iconColor: kBlackColor,
+          textStyle: TextStyle(
+            color: kBlackColor,
+            fontSize: 14,
           ),
-          Expanded(child: bodies[0]),
-        ],
-      );
-    }
-  }
-}
-
-class HomeBottomNavigationBar extends StatelessWidget {
-  final UserModel? user;
-  final Function(int) onChanged;
-
-  const HomeBottomNavigationBar({
-    required this.user,
-    required this.onChanged,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    List<NavBarItems> items = [
-      NavBarItems(
-        icon: FontAwesomeIcons.rectangleList,
-        title: '受信履歴',
+          iconSize: 18,
+          indicatorColor: kRedColor,
+          indicatorHeight: 4,
+          indicatorWidth: 20,
+          items: [
+            NavBarItems(
+              icon: FontAwesomeIcons.rectangleList,
+              title: '受信履歴',
+            ),
+            NavBarItems(
+              icon: FontAwesomeIcons.paperPlane,
+              title: '送信機能',
+            ),
+            NavBarItems(
+              icon: FontAwesomeIcons.user,
+              title: 'マイページ',
+            ),
+          ],
+          onChanged: (value) {
+            currentIndex = value;
+            setState(() {});
+          },
+        ),
       ),
-      NavBarItems(
-        icon: FontAwesomeIcons.user,
-        title: 'マイページ',
-      ),
-    ];
-    if (user != null && user!.isSender) {
-      items = [
-        NavBarItems(
-          icon: FontAwesomeIcons.rectangleList,
-          title: '受信履歴',
-        ),
-        NavBarItems(
-          icon: FontAwesomeIcons.paperPlane,
-          title: '送信機能',
-        ),
-        NavBarItems(
-          icon: FontAwesomeIcons.user,
-          title: 'マイページ',
-        ),
-      ];
-    }
-    return Padding(
-      padding: EdgeInsets.only(bottom: 16),
-      child: FloatingNavigationBar(
-        backgroundColor: kWhiteColor,
-        barHeight: 80,
-        barWidth: MediaQuery.of(context).size.width - 40,
-        iconColor: kBlackColor,
-        textStyle: TextStyle(
-          color: kBlackColor,
-          fontSize: 14,
-        ),
-        iconSize: 18,
-        indicatorColor: kRedColor,
-        indicatorHeight: 4,
-        indicatorWidth: 20,
-        items: items,
-        onChanged: onChanged,
-      ),
+      bottomSheet: CustomBottomSheet(),
     );
   }
 }

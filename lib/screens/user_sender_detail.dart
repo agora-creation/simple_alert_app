@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/user_sender_name.dart';
-import 'package:simple_alert_app/widgets/link_text.dart';
-import 'package:simple_alert_app/widgets/user_list.dart';
 
 class UserSenderDetailScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -64,46 +60,46 @@ class _UserSenderDetailScreenState extends State<UserSenderDetailScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              UserList(
-                label: '送信者番号',
-                subtitle: Text(
-                  widget.userProvider.user!.senderNumber,
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: LinkText(
-                  label: '共有',
-                  onTap: () {},
-                ),
-              ),
-              UserList(
-                label: '送信者名',
-                subtitle: Text(
-                  widget.userProvider.user!.senderName,
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: const FaIcon(
-                  FontAwesomeIcons.pen,
-                  size: 16,
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      type: PageTransitionType.rightToLeft,
-                      child: UserSenderNameScreen(
-                        userProvider: widget.userProvider,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              UserList(
-                label: '登録プラン',
-                subtitle: Text(
-                  'スタンダード',
-                  style: TextStyle(fontSize: 14),
-                ),
-              ),
+              // UserList(
+              //   label: '送信者番号',
+              //   subtitle: Text(
+              //     widget.userProvider.user!.senderNumber,
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: LinkText(
+              //     label: '共有',
+              //     onTap: () {},
+              //   ),
+              // ),
+              // UserList(
+              //   label: '送信者名',
+              //   subtitle: Text(
+              //     widget.userProvider.user!.senderName,
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: const FaIcon(
+              //     FontAwesomeIcons.pen,
+              //     size: 16,
+              //   ),
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       PageTransition(
+              //         type: PageTransitionType.rightToLeft,
+              //         child: UserSenderNameScreen(
+              //           userProvider: widget.userProvider,
+              //         ),
+              //       ),
+              //     );
+              //   },
+              // ),
+              // UserList(
+              //   label: '登録プラン',
+              //   subtitle: Text(
+              //     'スタンダード',
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              // ),
             ],
           ),
         ),

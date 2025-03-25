@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:restart_app/restart_app.dart';
-import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -58,19 +56,19 @@ class _UserSenderCreateScreenState extends State<UserSenderCreateScreen> {
                 labelColor: kWhiteColor,
                 backgroundColor: kBlueColor,
                 onPressed: () async {
-                  String? error = await widget.userProvider.senderRegistration(
-                    senderName: senderNameController.text,
-                  );
-                  if (error != null) {
-                    if (!mounted) return;
-                    showMessage(context, error, false);
-                    return;
-                  }
-                  await widget.userProvider.reload();
-                  Restart.restartApp(
-                    notificationTitle: 'アプリの再起動',
-                    notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
-                  );
+                  // String? error = await widget.userProvider.senderRegistration(
+                  //   senderName: senderNameController.text,
+                  // );
+                  // if (error != null) {
+                  //   if (!mounted) return;
+                  //   showMessage(context, error, false);
+                  //   return;
+                  // }
+                  // await widget.userProvider.reload();
+                  // Restart.restartApp(
+                  //   notificationTitle: 'アプリの再起動',
+                  //   notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
+                  // );
                 },
               ),
             ],

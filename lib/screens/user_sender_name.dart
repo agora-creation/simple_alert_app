@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
@@ -24,7 +23,7 @@ class _UserSenderNameScreenState extends State<UserSenderNameScreen> {
   @override
   void initState() {
     UserModel user = widget.userProvider.user!;
-    senderNameController.text = user.senderName;
+    // senderNameController.text = user.senderName;
     super.initState();
   }
 
@@ -45,14 +44,14 @@ class _UserSenderNameScreenState extends State<UserSenderNameScreen> {
         actions: [
           TextButton(
             onPressed: () async {
-              String? error = await widget.userProvider.updateSenderName(
-                senderName: senderNameController.text,
-              );
-              if (error != null) {
-                if (!mounted) return;
-                showMessage(context, error, false);
-                return;
-              }
+              // String? error = await widget.userProvider.updateSenderName(
+              //   senderName: senderNameController.text,
+              // );
+              // if (error != null) {
+              //   if (!mounted) return;
+              //   showMessage(context, error, false);
+              //   return;
+              // }
               await widget.userProvider.reload();
               if (!mounted) return;
               Navigator.pop(context);

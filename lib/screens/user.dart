@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:restart_app/restart_app.dart';
-import 'package:simple_alert_app/api/purchase.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
@@ -10,8 +9,6 @@ import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/user_email.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/screens/user_password.dart';
-import 'package:simple_alert_app/screens/user_sender_create.dart';
-import 'package:simple_alert_app/screens/user_sender_detail.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
@@ -35,20 +32,6 @@ class _UserScreenState extends State<UserScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  Future fetchOffers() async {
-    final offerings = await PurchaseApi.fetchOffers();
-
-    if (offerings.isEmpty) {
-      print('No Plan Found');
-    } else {
-      final packages = offerings
-          .map((offer) => offer.availablePackages)
-          .expand((pair) => pair)
-          .toList();
-      //課金一覧
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,66 +112,28 @@ class _UserScreenState extends State<UserScreen> {
                         );
                       },
                     ),
-                    user!.isSender
-                        ? UserList(
-                            label: '送信者情報',
-                            subtitle: Text(
-                              user.senderName,
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            leading: const FaIcon(
-                              FontAwesomeIcons.paperPlane,
-                              size: 16,
-                            ),
-                            trailing: const FaIcon(
-                              FontAwesomeIcons.chevronRight,
-                              size: 16,
-                            ),
-                            tileColor: kBlueColor.withOpacity(0.3),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: UserSenderDetailScreen(
-                                    userProvider: widget.userProvider,
-                                  ),
-                                ),
-                              );
-                            },
-                          )
-                        : UserList(
-                            label: '送信者として登録',
-                            subtitle: Text(
-                              '※サブスク課金が必要になります',
-                              style: TextStyle(
-                                color: kRedColor,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'SourceHanSansJP-Bold',
-                              ),
-                            ),
-                            leading: const FaIcon(
-                              FontAwesomeIcons.paperPlane,
-                              size: 16,
-                            ),
-                            trailing: const FaIcon(
-                              FontAwesomeIcons.chevronRight,
-                              size: 16,
-                            ),
-                            tileColor: kRedColor.withOpacity(0.3),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: UserSenderCreateScreen(
-                                    userProvider: widget.userProvider,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                    UserList(
+                      label: 'ご利用中のプラン',
+                      subtitle: Text(
+                        'フリープラン',
+                        style: TextStyle(
+                          color: kRedColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'SourceHanSansJP-Bold',
+                        ),
+                      ),
+                      leading: const FaIcon(
+                        FontAwesomeIcons.userTag,
+                        size: 16,
+                      ),
+                      trailing: const FaIcon(
+                        FontAwesomeIcons.pen,
+                        size: 16,
+                      ),
+                      tileColor: kRedColor.withOpacity(0.3),
+                      onTap: () {},
+                    ),
                     SizedBox(height: 24),
                     Center(
                       child: LinkText(

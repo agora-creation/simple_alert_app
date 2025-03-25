@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/models/map_notice_user.dart';
+import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
@@ -23,18 +23,18 @@ class UserNoticeUserScreen extends StatefulWidget {
 }
 
 class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
-  List<MapNoticeUserModel> mapNoticeUsers = [];
-  List<MapNoticeUserModel> deleteMapNoticeUsers = [];
+  List<MapUserModel> noticeMapUsers = [];
+  List<MapUserModel> selectedNoticeMapUsers = [];
 
   void _reload(UserModel user) {
-    mapNoticeUsers = user.mapNoticeUsers;
+    noticeMapUsers = user.noticeMapUsers;
     setState(() {});
   }
 
   @override
   void initState() {
     UserModel user = widget.userProvider.user!;
-    mapNoticeUsers = user.mapNoticeUsers;
+    noticeMapUsers = user.noticeMapUsers;
     super.initState();
   }
 
@@ -53,13 +53,13 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
-          deleteMapNoticeUsers.isNotEmpty
+          selectedNoticeMapUsers.isNotEmpty
               ? TextButton(
                   onPressed: () => showDialog(
                     context: context,
                     builder: (context) => DelDialog(
                       userProvider: widget.userProvider,
-                      deleteMapNoticeUsers: deleteMapNoticeUsers,
+                      selectedNoticeMapUsers: selectedNoticeMapUsers,
                       reload: _reload,
                     ),
                   ),
@@ -72,24 +72,24 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
         ],
       ),
       body: SafeArea(
-        child: mapNoticeUsers.isNotEmpty
+        child: noticeMapUsers.isNotEmpty
             ? ListView.builder(
-                itemCount: mapNoticeUsers.length,
+                itemCount: noticeMapUsers.length,
                 itemBuilder: (context, index) {
-                  MapNoticeUserModel mapNoticeUser = mapNoticeUsers[index];
-                  bool value = deleteMapNoticeUsers.contains(mapNoticeUser);
+                  MapUserModel mapUser = noticeMapUsers[index];
+                  bool value = selectedNoticeMapUsers.contains(mapUser);
                   return CustomCheckList(
-                    label: mapNoticeUser.senderName,
+                    label: mapUser.name,
                     subtitle: Text(
-                      '送信者番号: ${mapNoticeUser.senderNumber}',
+                      mapUser.email,
                       style: TextStyle(fontSize: 14),
                     ),
                     value: value,
                     onChanged: (value) {
-                      if (!deleteMapNoticeUsers.contains(mapNoticeUser)) {
-                        deleteMapNoticeUsers.add(mapNoticeUser);
+                      if (!selectedNoticeMapUsers.contains(mapUser)) {
+                        selectedNoticeMapUsers.add(mapUser);
                       } else {
-                        deleteMapNoticeUsers.remove(mapNoticeUser);
+                        selectedNoticeMapUsers.remove(mapUser);
                       }
                       setState(() {});
                     },
@@ -135,7 +135,7 @@ class AddDialog extends StatefulWidget {
 }
 
 class _AddDialogState extends State<AddDialog> {
-  TextEditingController senderNumberController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -146,12 +146,12 @@ class _AddDialogState extends State<AddDialog> {
         children: [
           SizedBox(height: 8),
           CustomTextFormField(
-            controller: senderNumberController,
-            textInputType: TextInputType.number,
+            controller: emailController,
+            textInputType: TextInputType.emailAddress,
             maxLines: 1,
-            label: '送信者番号',
+            label: 'メールアドレス',
             color: kBlackColor,
-            prefix: Icons.numbers,
+            prefix: Icons.email,
           ),
         ],
       ),
@@ -169,8 +169,8 @@ class _AddDialogState extends State<AddDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
-            String? error = await widget.userProvider.addMapNoticeUsers(
-              senderNumber: senderNumberController.text,
+            String? error = await widget.userProvider.addNoticeMapUsers(
+              email: emailController.text,
             );
             if (error != null) {
               if (!mounted) return;
@@ -190,12 +190,12 @@ class _AddDialogState extends State<AddDialog> {
 
 class DelDialog extends StatelessWidget {
   final UserProvider userProvider;
-  final List<MapNoticeUserModel> deleteMapNoticeUsers;
+  final List<MapUserModel> selectedNoticeMapUsers;
   final Function(UserModel) reload;
 
   const DelDialog({
     required this.userProvider,
-    required this.deleteMapNoticeUsers,
+    required this.selectedNoticeMapUsers,
     required this.reload,
     super.key,
   });
@@ -228,8 +228,8 @@ class DelDialog extends StatelessWidget {
           labelColor: kWhiteColor,
           backgroundColor: kRedColor,
           onPressed: () async {
-            String? error = await userProvider.removeMapNoticeUsers(
-              deleteMapNoticeUsers: deleteMapNoticeUsers,
+            String? error = await userProvider.removeNoticeMapUsers(
+              selectedNoticeMapUsers: selectedNoticeMapUsers,
             );
             if (error != null) {
               showMessage(context, error, false);

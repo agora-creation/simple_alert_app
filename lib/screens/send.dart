@@ -29,98 +29,114 @@ class SendScreen extends StatelessWidget {
           color: kWhiteColor,
           elevation: 0,
           shape: RoundedRectangleBorder(),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: userProvider.loginCheck()
+              ? Column(
                   children: [
-                    CustomButton(
-                      type: ButtonSizeType.sm,
-                      label: '送信先一覧 (${user?.mapSendUsers.length})',
-                      labelColor: kBlackColor,
-                      backgroundColor: kBlackColor.withOpacity(0.3),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: SendUserScreen(
-                              userProvider: userProvider,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    CustomButton(
-                      type: ButtonSizeType.sm,
-                      label: '送信する',
-                      labelColor: kWhiteColor,
-                      backgroundColor: kBlueColor,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: SendCreateScreen(
-                              userProvider: userProvider,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Divider(height: 0, color: kBlackColor.withOpacity(0.5)),
-              Expanded(
-                child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                  stream: UserSendService().streamList(
-                    userId: user?.id ?? 'error',
-                  ),
-                  builder: (context, snapshot) {
-                    List<UserSendModel> userSends = [];
-                    if (snapshot.hasData) {
-                      userSends = UserSendService().generateList(
-                        data: snapshot.data,
-                      );
-                    }
-                    if (userSends.isEmpty) {
-                      return Center(
-                        child: Text(
-                          '送信履歴はありません',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      );
-                    }
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: userSends.length,
-                      itemBuilder: (context, index) {
-                        UserSendModel userSend = userSends[index];
-                        return UserSendList(
-                          userSend: userSend,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              PageTransition(
-                                type: PageTransitionType.rightToLeft,
-                                child: SendCreateScreen(
-                                  userProvider: userProvider,
-                                  userSend: userSend,
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CustomButton(
+                            type: ButtonSizeType.sm,
+                            label: '送信先一覧 (${user?.sendMapUsers.length})',
+                            labelColor: kBlackColor,
+                            backgroundColor: kBlackColor.withOpacity(0.3),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: SendUserScreen(
+                                    userProvider: userProvider,
+                                  ),
                                 ),
+                              );
+                            },
+                          ),
+                          CustomButton(
+                            type: ButtonSizeType.sm,
+                            label: '送信する',
+                            labelColor: kWhiteColor,
+                            backgroundColor: kBlueColor,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: SendCreateScreen(
+                                    userProvider: userProvider,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(height: 0, color: kBlackColor.withOpacity(0.5)),
+                    Expanded(
+                      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                        stream: UserSendService().streamList(
+                          userId: user?.id ?? 'error',
+                        ),
+                        builder: (context, snapshot) {
+                          List<UserSendModel> userSends = [];
+                          if (snapshot.hasData) {
+                            userSends = UserSendService().generateList(
+                              data: snapshot.data,
+                            );
+                          }
+                          if (userSends.isEmpty) {
+                            return Center(
+                              child: Text(
+                                '送信履歴はありません',
+                                style: TextStyle(fontSize: 14),
                               ),
                             );
-                          },
-                        );
-                      },
-                    );
-                  },
+                          }
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: userSends.length,
+                            itemBuilder: (context, index) {
+                              UserSendModel userSend = userSends[index];
+                              return UserSendList(
+                                userSend: userSend,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                      type: PageTransitionType.rightToLeft,
+                                      child: SendCreateScreen(
+                                        userProvider: userProvider,
+                                        userSend: userSend,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                )
+              : Center(
+                  child: Container(
+                    color: kRedColor,
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      'マイページから登録・ログインしてください',
+                      style: TextStyle(
+                        color: kWhiteColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'SourceHanSansJP-Bold',
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
         ),
       ),
     );

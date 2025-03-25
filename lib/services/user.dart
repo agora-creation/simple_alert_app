@@ -20,7 +20,6 @@ class UserService {
   Future<UserModel?> selectData({
     String? id,
     String? email,
-    String? senderNumber,
   }) async {
     UserModel? ret;
     if (id != null) {
@@ -32,17 +31,6 @@ class UserService {
       await firestore
           .collection(collection)
           .where('email', isEqualTo: email)
-          .get()
-          .then((value) {
-        if (value.docs.isNotEmpty) {
-          ret = UserModel.fromSnapshot(value.docs.first);
-        }
-      });
-    }
-    if (senderNumber != null) {
-      await firestore
-          .collection(collection)
-          .where('senderNumber', isEqualTo: senderNumber)
           .get()
           .then((value) {
         if (value.docs.isNotEmpty) {

@@ -39,7 +39,7 @@ class UserNoticeScreen extends StatelessWidget {
                         children: [
                           CustomButton(
                             type: ButtonSizeType.sm,
-                            label: '受信先一覧 (${user?.mapNoticeUsers.length})',
+                            label: '受信先一覧 (${user?.noticeMapUsers.length})',
                             labelColor: kBlackColor,
                             backgroundColor: kBlackColor.withOpacity(0.3),
                             onPressed: () {

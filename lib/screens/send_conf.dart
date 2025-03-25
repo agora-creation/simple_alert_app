@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/models/map_send_user.dart';
+import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
@@ -27,13 +27,14 @@ class SendConfScreen extends StatefulWidget {
 }
 
 class _SendConfScreenState extends State<SendConfScreen> {
-  List<MapSendUserModel> mapSendUsers = [];
-  List<MapSendUserModel> sendMapSendUsers = [];
+  List<MapUserModel> sendMapUsers = [];
+  List<MapUserModel> selectedSendMapUsers = [];
 
   @override
   void initState() {
     UserModel user = widget.userProvider.user!;
-    mapSendUsers = user.mapSendUsers;
+    sendMapUsers = user.sendMapUsers;
+    selectedSendMapUsers = sendMapUsers;
     super.initState();
   }
 
@@ -87,25 +88,25 @@ class _SendConfScreenState extends State<SendConfScreen> {
                     fontFamily: 'SourceHanSansJP-Bold',
                   ),
                 ),
-                mapSendUsers.isNotEmpty
+                sendMapUsers.isNotEmpty
                     ? ListView.builder(
                         shrinkWrap: true,
-                        itemCount: mapSendUsers.length,
+                        itemCount: sendMapUsers.length,
                         itemBuilder: (context, index) {
-                          MapSendUserModel mapSendUser = mapSendUsers[index];
-                          bool value = sendMapSendUsers.contains(mapSendUser);
+                          MapUserModel mapUser = sendMapUsers[index];
+                          bool value = selectedSendMapUsers.contains(mapUser);
                           return CustomCheckList(
-                            label: mapSendUser.name,
+                            label: mapUser.name,
                             subtitle: Text(
-                              mapSendUser.email,
+                              mapUser.email,
                               style: TextStyle(fontSize: 14),
                             ),
                             value: value,
                             onChanged: (value) {
-                              if (!sendMapSendUsers.contains(mapSendUser)) {
-                                sendMapSendUsers.add(mapSendUser);
+                              if (!selectedSendMapUsers.contains(mapUser)) {
+                                selectedSendMapUsers.add(mapUser);
                               } else {
-                                sendMapSendUsers.remove(mapSendUser);
+                                selectedSendMapUsers.remove(mapUser);
                               }
                               setState(() {});
                             },
@@ -125,7 +126,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
             userSend: widget.userSend,
             title: widget.title,
             content: widget.content,
-            sendMapSendUsers: sendMapSendUsers,
+            selectedSendMapUsers: selectedSendMapUsers,
           );
           if (error != null) {
             if (!mounted) return;

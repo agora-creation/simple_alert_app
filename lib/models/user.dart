@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simple_alert_app/models/map_notice_user.dart';
-import 'package:simple_alert_app/models/map_send_user.dart';
+import 'package:simple_alert_app/models/map_user.dart';
 
 class UserModel {
   String _id = '';
@@ -8,22 +7,14 @@ class UserModel {
   String _email = '';
   String _password = '';
   String _token = '';
-  List<MapNoticeUserModel> mapNoticeUsers = [];
-  bool _isSender = false;
-  String _senderNumber = '';
-  String _senderName = '';
-  int _sendUserLimit = 0;
-  List<MapSendUserModel> mapSendUsers = [];
+  List<MapUserModel> noticeMapUsers = [];
+  List<MapUserModel> sendMapUsers = [];
 
   String get id => _id;
   String get name => _name;
   String get email => _email;
   String get password => _password;
   String get token => _token;
-  bool get isSender => _isSender;
-  String get senderNumber => _senderNumber;
-  String get senderName => _senderName;
-  int get sendUserLimit => _sendUserLimit;
 
   UserModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot) {
     Map<String, dynamic>? data = snapshot.data();
@@ -33,26 +24,14 @@ class UserModel {
     _email = data['email'] ?? '';
     _password = data['password'] ?? '';
     _token = data['token'] ?? '';
-    mapNoticeUsers = _convertMapNoticeUsers(data['mapNoticeUsers'] ?? []);
-    _isSender = data['isSender'] ?? false;
-    _senderNumber = data['senderNumber'] ?? '';
-    _senderName = data['senderName'] ?? '';
-    _sendUserLimit = data['sendUserLimit'] ?? 0;
-    mapSendUsers = _convertMapSendUsers(data['mapSendUsers'] ?? []);
+    noticeMapUsers = _convertMapUsers(data['noticeMapUsers'] ?? []);
+    sendMapUsers = _convertMapUsers(data['sendMapUsers'] ?? []);
   }
 
-  List<MapNoticeUserModel> _convertMapNoticeUsers(List list) {
-    List<MapNoticeUserModel> ret = [];
+  List<MapUserModel> _convertMapUsers(List list) {
+    List<MapUserModel> ret = [];
     for (Map data in list) {
-      ret.add(MapNoticeUserModel.fromMap(data));
-    }
-    return ret;
-  }
-
-  List<MapSendUserModel> _convertMapSendUsers(List list) {
-    List<MapSendUserModel> ret = [];
-    for (Map data in list) {
-      ret.add(MapSendUserModel.fromMap(data));
+      ret.add(MapUserModel.fromMap(data));
     }
     return ret;
   }

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:alert_banner/exports.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -30,20 +28,6 @@ Future<String> getVersionInfo() async {
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   var text = '${packageInfo.version}(${packageInfo.buildNumber})';
   return text;
-}
-
-String randomNumber(int length) {
-  const randomChars = '0123456789';
-  const charsLength = randomChars.length;
-  final rand = Random();
-  final codeUnits = List.generate(
-    length,
-    (index) {
-      final n = rand.nextInt(charsLength);
-      return randomChars.codeUnitAt(n);
-    },
-  );
-  return String.fromCharCodes(codeUnits);
 }
 
 void showMessage(BuildContext context, String msg, bool success) {
