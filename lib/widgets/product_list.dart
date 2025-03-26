@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:simple_alert_app/common/style.dart';
 
-class ProductDetailsList extends StatelessWidget {
-  final ProductDetails productDetails;
-  final ProductDetails? selectedProductDetails;
+class ProductList extends StatelessWidget {
+  final ProductDetails product;
+  final ProductDetails? selectedProduct;
   final Function()? onTap;
 
-  const ProductDetailsList({
-    required this.productDetails,
-    this.selectedProductDetails,
+  const ProductList({
+    required this.product,
+    this.selectedProduct,
     this.onTap,
     super.key,
   });
@@ -31,14 +31,14 @@ class ProductDetailsList extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border: selectedProductDetails?.id == productDetails.id
+              border: selectedProduct?.id == product.id
                   ? Border.all(color: kBlueColor, width: 2)
                   : null,
             ),
             child: ListTile(
               dense: true,
               title: Text(
-                productDetails.title,
+                product.title,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -46,14 +46,14 @@ class ProductDetailsList extends StatelessWidget {
                 ),
               ),
               subtitle: Text(
-                productDetails.description,
+                product.description,
                 style: const TextStyle(fontSize: 12),
               ),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    productDetails.price,
+                    product.price,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

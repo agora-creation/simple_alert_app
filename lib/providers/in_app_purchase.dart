@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/services/user.dart';
 
 class InAppPurchaseProvider extends ChangeNotifier {
@@ -11,17 +12,17 @@ class InAppPurchaseProvider extends ChangeNotifier {
 
   final UserService _userService = UserService();
 
-  ProductDetails? _selectedProductDetails;
-  ProductDetails? get selectedProductDetails => _selectedProductDetails;
-  set selectedProductDetails(ProductDetails? productDetails) {
-    _selectedProductDetails = productDetails;
+  ProductDetails? _selectedProduct;
+  ProductDetails? get selectedProduct => _selectedProduct;
+  set selectedProduct(ProductDetails? product) {
+    _selectedProduct = product;
     notifyListeners();
   }
 
   bool isLoading = false;
 
   //利用可能な商品
-  List<ProductDetails> availableProducts = [];
+  List<ProductDetails> viewProducts = [];
 
   Completer<bool>? _purchaseCompleter;
 
@@ -42,16 +43,15 @@ class InAppPurchaseProvider extends ChangeNotifier {
       print('この端末ではアプリ内課金はご利用いただけません');
     }
 
-    final ProductDetailsResponse response =
-        await _inAppPurchase.queryProductDetails(productIds);
+    final response = await _inAppPurchase.queryProductDetails(productIds);
     if (response.notFoundIDs.isNotEmpty) {
       print('一部の商品が見つかりませんでした: ${response.notFoundIDs}');
     }
 
-    availableProducts = response.productDetails;
+    viewProducts = response.productDetails;
     notifyListeners();
 
-    if (availableProducts.isEmpty) {
+    if (viewProducts.isEmpty) {
       restorePurchases();
     }
   }
@@ -61,7 +61,7 @@ class InAppPurchaseProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
-      final PurchaseParam purchaseParam = PurchaseParam(
+      final purchaseParam = PurchaseParam(
         productDetails: product,
         applicationUserName: 'com.agoracreation.simple_alert_app',
       );
@@ -133,16 +133,19 @@ class InAppPurchaseProvider extends ChangeNotifier {
     }
 
     try {
-      if (purchaseDetails.productID == 'subscription_standard') {
-        // _userService.update({
-        //   'id': '',
-        //   'subscription': 1,
-        // });
-      } else if (purchaseDetails.productID == 'subscription_pro') {
-        // _userService.update({
-        //   'id': '',
-        //   'subscription': 2,
-        // });
+      String? uid = await getPrefsString('uid');
+      if (uid != null) {
+        if (purchaseDetails.productID == 'subscription_standard') {
+          _userService.update({
+            'id': uid,
+            'subscription': 1,
+          });
+        } else if (purchaseDetails.productID == 'subscription_pro') {
+          _userService.update({
+            'id': uid,
+            'subscription': 2,
+          });
+        }
       }
 
       _purchaseCompleter?.complete(true);
@@ -158,10 +161,13 @@ class InAppPurchaseProvider extends ChangeNotifier {
   //課金キャンセル処理
   Future _handlePurchaseCancellation(PurchaseDetails purchaseDetails) async {
     try {
-      // _userService.update({
-      //   'id': '',
-      //   'subscription': 0,
-      // });
+      String? uid = await getPrefsString('uid');
+      if (uid != null) {
+        _userService.update({
+          'id': '',
+          'subscription': 0,
+        });
+      }
       debugPrint('課金キャンセルは正常に処理されました');
     } catch (error) {
       debugPrint('課金キャンセル処理に失敗しました: $error');

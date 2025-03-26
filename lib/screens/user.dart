@@ -16,7 +16,7 @@ import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/link_text.dart';
-import 'package:simple_alert_app/widgets/product_details_list.dart';
+import 'package:simple_alert_app/widgets/product_list.dart';
 import 'package:simple_alert_app/widgets/sign_panel.dart';
 import 'package:simple_alert_app/widgets/user_list.dart';
 
@@ -138,12 +138,12 @@ class _UserScreenState extends State<UserScreen> {
                       onTap: () {
                         showSubscriptionDialog(
                           context,
-                          productDetailsResult: (details) async {
+                          result: (product) async {
                             final inAppPurchaseProvider =
                                 context.read<InAppPurchaseProvider>();
 
                             final purchaseResult = await inAppPurchaseProvider
-                                .purchaseProduct(details!);
+                                .purchaseProduct(product!);
 
                             if (purchaseResult.$1 && context.mounted) {
                             } else {
@@ -348,7 +348,7 @@ class LogoutDialog extends StatelessWidget {
 
 void showSubscriptionDialog(
   BuildContext context, {
-  required Function(ProductDetails?) productDetailsResult,
+  required Function(ProductDetails?) result,
 }) {
   showModalBottomSheet<bool?>(
     shape: const RoundedRectangleBorder(
@@ -390,15 +390,12 @@ void showSubscriptionDialog(
                   ),
                   const SizedBox(height: 16),
                   Column(
-                    children: inAppPurchaseProvider.availableProducts
-                        .map((productDetails) {
-                      return ProductDetailsList(
-                        productDetails: productDetails,
-                        selectedProductDetails:
-                            inAppPurchaseProvider.selectedProductDetails,
+                    children: inAppPurchaseProvider.viewProducts.map((product) {
+                      return ProductList(
+                        product: product,
+                        selectedProduct: inAppPurchaseProvider.selectedProduct,
                         onTap: () {
-                          inAppPurchaseProvider.selectedProductDetails =
-                              productDetails;
+                          inAppPurchaseProvider.selectedProduct = product;
                         },
                       );
                     }).toList(),
@@ -453,13 +450,13 @@ void showSubscriptionDialog(
     },
   ).then((value) async {
     if (value != true || !context.mounted) return;
-    if (context.read<InAppPurchaseProvider>().selectedProductDetails == null &&
+    if (context.read<InAppPurchaseProvider>().selectedProduct == null &&
         context.mounted) {
       return;
     }
 
-    productDetailsResult(
-      context.read<InAppPurchaseProvider>().selectedProductDetails,
+    result(
+      context.read<InAppPurchaseProvider>().selectedProduct,
     );
   });
 }

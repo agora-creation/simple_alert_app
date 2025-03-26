@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
@@ -72,6 +73,7 @@ class UserProvider with ChangeNotifier {
         'token': token,
       });
       _authUser = result.user;
+      await setPrefsString('uid', tmpUser.id);
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
@@ -110,6 +112,7 @@ class UserProvider with ChangeNotifier {
         'subscription': 0,
       });
       _authUser = result.user;
+      await setPrefsString('uid', result.user!.uid);
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
@@ -485,6 +488,7 @@ class UserProvider with ChangeNotifier {
   Future logout() async {
     await _auth?.signOut();
     _status = AuthStatus.unauthenticated;
+    await allRemovePrefs();
     _user = null;
     notifyListeners();
     return Future.delayed(Duration.zero);
