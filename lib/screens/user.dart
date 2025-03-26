@@ -16,6 +16,7 @@ import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/link_text.dart';
+import 'package:simple_alert_app/widgets/product_details_list.dart';
 import 'package:simple_alert_app/widgets/sign_panel.dart';
 import 'package:simple_alert_app/widgets/user_list.dart';
 
@@ -372,7 +373,7 @@ void showSubscriptionDialog(
                       Text(
                         'ご利用中のプランの切替',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'SourceHanSansJP-Bold',
                         ),
@@ -380,85 +381,29 @@ void showSubscriptionDialog(
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text('有料プランに切り替えることで、広告を非表示にできたり、送信先の登録上限を増やしたりできます。'),
-                  const SizedBox(height: 16),
-                  Column(
-                    children: [
-                      ...List.generate(
-                          inAppPurchaseProvider.availableProducts.length,
-                          (index) {
-                        final plan =
-                            inAppPurchaseProvider.availableProducts[index];
-                        return GestureDetector(
-                          onTap: () {
-                            inAppPurchaseProvider.selectedProductDetails = plan;
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.all(10),
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: inAppPurchaseProvider
-                                            .selectedProductDetails?.id ==
-                                        plan.id
-                                    ? Border.all(color: Colors.blue, width: 2)
-                                    : null,
-                              ),
-                              child: ListTile(
-                                dense: true,
-                                title: Text(
-                                  plan.title,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  plan.description,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                trailing: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      plan.price,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      'ひと月あたり',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      })
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      '利用規約',
-                      style: TextStyle(color: kBlueColor),
+                  Text(
+                    '有料プランに切り替えることで、利用可能な機能が増えます。',
+                    style: TextStyle(
+                      color: kBlackColor.withOpacity(0.5),
+                      fontSize: 14,
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  Column(
+                    children: inAppPurchaseProvider.availableProducts
+                        .map((productDetails) {
+                      return ProductDetailsList(
+                        productDetails: productDetails,
+                        selectedProductDetails:
+                            inAppPurchaseProvider.selectedProductDetails,
+                        onTap: () {
+                          inAppPurchaseProvider.selectedProductDetails =
+                              productDetails;
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
@@ -475,7 +420,7 @@ void showSubscriptionDialog(
                               Navigator.of(context).pop(true);
                             },
                             child: Text(
-                              '選択項目に切り替える',
+                              '選択プランに切り替える',
                               style: TextStyle(
                                 color: kWhiteColor,
                                 fontSize: 16,
@@ -494,7 +439,7 @@ void showSubscriptionDialog(
                       Navigator.of(context).pop();
                     },
                     child: Text(
-                      '過去の購入の復元',
+                      '購入の復元',
                       style: TextStyle(color: kBlueColor),
                     ),
                   ),

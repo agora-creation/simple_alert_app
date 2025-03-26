@@ -170,21 +170,6 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
-  Future<String?> updateSubscription({
-    required int subscription,
-  }) async {
-    String? error;
-    try {
-      _userService.update({
-        'id': _user?.id,
-        'subscription': subscription,
-      });
-    } catch (e) {
-      error = e.toString();
-    }
-    return error;
-  }
-
   Future<String?> addNoticeMapUsers({
     required UserModel? selectedUser,
   }) async {

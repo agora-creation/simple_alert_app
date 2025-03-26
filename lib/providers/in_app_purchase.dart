@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:simple_alert_app/services/user.dart';
 
 class InAppPurchaseProvider extends ChangeNotifier {
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
   StreamSubscription<List<PurchaseDetails>>? _purchaseSubscription;
+
+  final UserService _userService = UserService();
 
   ProductDetails? _selectedProductDetails;
   ProductDetails? get selectedProductDetails => _selectedProductDetails;
@@ -22,11 +25,11 @@ class InAppPurchaseProvider extends ChangeNotifier {
 
   Completer<bool>? _purchaseCompleter;
 
-  void inAppPurchaseService() {
+  InAppPurchaseProvider() {
     _listenToPurchaseUpdates();
   }
 
-  //サブスクリプションID
+  //商品ID
   Set<String> productIds = {
     'subscription_standard',
     'subscription_pro',
@@ -36,13 +39,13 @@ class InAppPurchaseProvider extends ChangeNotifier {
   Future initialize() async {
     final bool available = await _inAppPurchase.isAvailable();
     if (!available) {
-      print('この端末ではアプリ内課金ができません');
+      print('この端末ではアプリ内課金はご利用いただけません');
     }
 
     final ProductDetailsResponse response =
         await _inAppPurchase.queryProductDetails(productIds);
     if (response.notFoundIDs.isNotEmpty) {
-      throw Exception('一部の商品が見つかりませんでした: ${response.notFoundIDs}');
+      print('一部の商品が見つかりませんでした: ${response.notFoundIDs}');
     }
 
     availableProducts = response.productDetails;
@@ -60,7 +63,7 @@ class InAppPurchaseProvider extends ChangeNotifier {
     try {
       final PurchaseParam purchaseParam = PurchaseParam(
         productDetails: product,
-        applicationUserName: 'ap.screenshot.pro',
+        applicationUserName: 'com.agoracreation.simple_alert_app',
       );
 
       if (productIds.contains(product.id)) {
@@ -98,7 +101,7 @@ class InAppPurchaseProvider extends ChangeNotifier {
   //過去の課金を復元する
   Future restorePurchases() async {
     await _inAppPurchase.restorePurchases(
-      applicationUserName: 'ap.screenshot.pro',
+      applicationUserName: 'com.agoracreation.simple_alert_app',
     );
   }
 
@@ -131,9 +134,15 @@ class InAppPurchaseProvider extends ChangeNotifier {
 
     try {
       if (purchaseDetails.productID == 'subscription_standard') {
-        //Firestore更新
+        // _userService.update({
+        //   'id': '',
+        //   'subscription': 1,
+        // });
       } else if (purchaseDetails.productID == 'subscription_pro') {
-        //Firestore更新
+        // _userService.update({
+        //   'id': '',
+        //   'subscription': 2,
+        // });
       }
 
       _purchaseCompleter?.complete(true);
@@ -149,8 +158,10 @@ class InAppPurchaseProvider extends ChangeNotifier {
   //課金キャンセル処理
   Future _handlePurchaseCancellation(PurchaseDetails purchaseDetails) async {
     try {
-      //Firestore更新
-
+      // _userService.update({
+      //   'id': '',
+      //   'subscription': 0,
+      // });
       debugPrint('課金キャンセルは正常に処理されました');
     } catch (error) {
       debugPrint('課金キャンセル処理に失敗しました: $error');
