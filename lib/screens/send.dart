@@ -6,6 +6,7 @@ import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send_create.dart';
+import 'package:simple_alert_app/screens/send_detail.dart';
 import 'package:simple_alert_app/screens/send_user.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -56,7 +57,7 @@ class SendScreen extends StatelessWidget {
                           ),
                           CustomButton(
                             type: ButtonSizeType.sm,
-                            label: '送信する',
+                            label: '新規送信',
                             labelColor: kWhiteColor,
                             backgroundColor: kBlueColor,
                             onPressed: () {
@@ -103,16 +104,28 @@ class SendScreen extends StatelessWidget {
                               return UserSendList(
                                 userSend: userSend,
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      type: PageTransitionType.rightToLeft,
-                                      child: SendCreateScreen(
-                                        userProvider: userProvider,
-                                        userSend: userSend,
+                                  if (userSend.draft) {
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        type: PageTransitionType.rightToLeft,
+                                        child: SendCreateScreen(
+                                          userProvider: userProvider,
+                                          userSend: userSend,
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        type: PageTransitionType.rightToLeft,
+                                        child: SendDetailScreen(
+                                          userSend: userSend,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 },
                               );
                             },

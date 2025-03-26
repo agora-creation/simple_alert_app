@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/user_notice_user_add.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
-import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class UserNoticeUserScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -99,91 +100,28 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
               )
             : Center(child: Text('受信先はありません')),
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: () => showDialog(
-      //     context: context,
-      //     builder: (context) => AddDialog(
-      //       userProvider: widget.userProvider,
-      //       reload: _reload,
-      //     ),
-      //   ),
-      //   icon: const FaIcon(
-      //     FontAwesomeIcons.plus,
-      //     color: kWhiteColor,
-      //   ),
-      //   label: Text(
-      //     '受信先を追加',
-      //     style: TextStyle(color: kWhiteColor),
-      //   ),
-      // ),
-    );
-  }
-}
-
-class AddDialog extends StatefulWidget {
-  final UserProvider userProvider;
-  final Function(UserModel) reload;
-
-  const AddDialog({
-    required this.userProvider,
-    required this.reload,
-    super.key,
-  });
-
-  @override
-  State<AddDialog> createState() => _AddDialogState();
-}
-
-class _AddDialogState extends State<AddDialog> {
-  TextEditingController emailController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomAlertDialog(
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 8),
-          CustomTextFormField(
-            controller: emailController,
-            textInputType: TextInputType.emailAddress,
-            maxLines: 1,
-            label: 'メールアドレス',
-            color: kBlackColor,
-            prefix: Icons.email,
-          ),
-        ],
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            PageTransition(
+              type: PageTransitionType.rightToLeft,
+              child: UserNoticeUserAddScreen(
+                userProvider: widget.userProvider,
+                reload: _reload,
+              ),
+            ),
+          );
+        },
+        icon: const FaIcon(
+          FontAwesomeIcons.plus,
+          color: kWhiteColor,
+        ),
+        label: Text(
+          '受信先を追加',
+          style: TextStyle(color: kWhiteColor),
+        ),
       ),
-      actions: [
-        CustomButton(
-          type: ButtonSizeType.sm,
-          label: 'キャンセル',
-          labelColor: kWhiteColor,
-          backgroundColor: kBlackColor.withOpacity(0.5),
-          onPressed: () => Navigator.pop(context),
-        ),
-        CustomButton(
-          type: ButtonSizeType.sm,
-          label: '追加する',
-          labelColor: kWhiteColor,
-          backgroundColor: kBlueColor,
-          onPressed: () async {
-            String? error = await widget.userProvider.addNoticeMapUsers(
-              email: emailController.text,
-            );
-            if (error != null) {
-              if (!mounted) return;
-              showMessage(context, error, false);
-              return;
-            }
-            await widget.userProvider.reload();
-            widget.reload(widget.userProvider.user!);
-            if (!mounted) return;
-            Navigator.pop(context);
-          },
-        ),
-      ],
     );
   }
 }

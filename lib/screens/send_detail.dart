@@ -2,37 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/models/user_notice.dart';
-import 'package:simple_alert_app/services/user_notice.dart';
+import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
+import 'package:simple_alert_app/widgets/link_text.dart';
 
-class UserNoticeDetailScreen extends StatefulWidget {
-  final UserNoticeModel userNotice;
+class SendDetailScreen extends StatelessWidget {
+  final UserSendModel userSend;
 
-  const UserNoticeDetailScreen({
-    required this.userNotice,
+  const SendDetailScreen({
+    required this.userSend,
     super.key,
   });
-
-  @override
-  State<UserNoticeDetailScreen> createState() => _UserNoticeDetailScreenState();
-}
-
-class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
-  void _init() {
-    if (!widget.userNotice.read) {
-      UserNoticeService().update({
-        'id': widget.userNotice.id,
-        'userId': widget.userNotice.userId,
-        'read': true,
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,17 +37,19 @@ class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '受信日時: ${dateText('yyyy/MM/dd HH:mm', widget.userNotice.createdAt)}',
+                      '送信日時: ${dateText('yyyy/MM/dd HH:mm', userSend.createdAt)}',
                       style: TextStyle(
                         color: kBlackColor.withOpacity(0.8),
                         fontSize: 14,
                       ),
                     ),
-                    Text(
-                      '送信者名: ${widget.userNotice.createdUserName}',
-                      style: TextStyle(
-                        color: kBlackColor.withOpacity(0.8),
-                        fontSize: 14,
+                    LinkText(
+                      label: '送信先を確認',
+                      onTap: () => showDialog(
+                        context: context,
+                        builder: (context) => SendUsersDialog(
+                          userSend: userSend,
+                        ),
                       ),
                     ),
                   ],
@@ -83,7 +65,7 @@ class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          widget.userNotice.title,
+                          userSend.title,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -91,13 +73,52 @@ class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(widget.userNotice.content),
+                        Text(userSend.content),
                       ],
                     ),
                   ),
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SendUsersDialog extends StatelessWidget {
+  final UserSendModel userSend;
+
+  const SendUsersDialog({
+    required this.userSend,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomAlertDialog(
+      contentPadding: EdgeInsets.zero,
+      content: Container(
+        decoration: BoxDecoration(
+          border: Border.symmetric(
+            horizontal: BorderSide(color: kBlackColor.withOpacity(0.5)),
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: userSend.sendMapUsers.map((mapUser) {
+              return Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
+                  ),
+                ),
+                child: ListTile(title: Text(mapUser.name)),
+              );
+            }).toList(),
           ),
         ),
       ),

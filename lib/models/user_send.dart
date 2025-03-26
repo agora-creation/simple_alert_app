@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:simple_alert_app/models/map_user.dart';
 
 class UserSendModel {
   String _id = '';
@@ -7,6 +8,7 @@ class UserSendModel {
   String _content = '';
   bool _draft = false;
   DateTime _sendAt = DateTime.now();
+  List<MapUserModel> sendMapUsers = [];
   String _createdUserId = '';
   String _createdUserName = '';
   DateTime _createdAt = DateTime.now();
@@ -32,8 +34,17 @@ class UserSendModel {
     _content = data['content'] ?? '';
     _draft = data['draft'] ?? false;
     _sendAt = data['sendAt'].toDate() ?? DateTime.now();
+    sendMapUsers = _convertMapUsers(data['sendMapUsers'] ?? []);
     _createdUserId = data['createdUserId'] ?? '';
     _createdUserName = data['createdUserName'] ?? '';
     _createdAt = data['createdAt'].toDate() ?? DateTime.now();
+  }
+
+  List<MapUserModel> _convertMapUsers(List list) {
+    List<MapUserModel> ret = [];
+    for (Map data in list) {
+      ret.add(MapUserModel.fromMap(data));
+    }
+    return ret;
   }
 }

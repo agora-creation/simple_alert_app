@@ -54,71 +54,32 @@ class _SendConfScreenState extends State<SendConfScreen> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(8),
-                  color: kBlackColor.withOpacity(0.1),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'SourceHanSansJP-Bold',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(widget.content),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  '送信先一覧',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'SourceHanSansJP-Bold',
-                  ),
-                ),
-                sendMapUsers.isNotEmpty
-                    ? ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: sendMapUsers.length,
-                        itemBuilder: (context, index) {
-                          MapUserModel mapUser = sendMapUsers[index];
-                          bool value = selectedSendMapUsers.contains(mapUser);
-                          return CustomCheckList(
-                            label: mapUser.name,
-                            subtitle: Text(
-                              mapUser.email,
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            value: value,
-                            onChanged: (value) {
-                              if (!selectedSendMapUsers.contains(mapUser)) {
-                                selectedSendMapUsers.add(mapUser);
-                              } else {
-                                selectedSendMapUsers.remove(mapUser);
-                              }
-                              setState(() {});
-                            },
-                            activeColor: kBlueColor,
-                          );
-                        },
-                      )
-                    : Text('送信先はありません'),
-              ],
-            ),
-          ),
-        ),
+        child: sendMapUsers.isNotEmpty
+            ? ListView.builder(
+                itemCount: sendMapUsers.length,
+                itemBuilder: (context, index) {
+                  MapUserModel mapUser = sendMapUsers[index];
+                  bool value = selectedSendMapUsers.contains(mapUser);
+                  return CustomCheckList(
+                    label: mapUser.name,
+                    subtitle: Text(
+                      mapUser.email,
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    value: value,
+                    onChanged: (value) {
+                      if (!selectedSendMapUsers.contains(mapUser)) {
+                        selectedSendMapUsers.add(mapUser);
+                      } else {
+                        selectedSendMapUsers.remove(mapUser);
+                      }
+                      setState(() {});
+                    },
+                    activeColor: kBlueColor,
+                  );
+                },
+              )
+            : Center(child: Text('送信先はありません')),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {

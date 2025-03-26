@@ -36,10 +36,12 @@ class UserSendList extends StatelessWidget {
               ),
         trailing: userSend.draft
             ? Text(
-                '未送信',
+                '下書き保存中',
                 style: TextStyle(
                   color: kRedColor,
                   fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'SourceHanSansJP-Bold',
                 ),
               )
             : const FaIcon(

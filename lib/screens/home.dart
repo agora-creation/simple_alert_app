@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final userProvider = Provider.of<UserProvider>(context);
     UserModel? user = userProvider.user;
     bool subscriptionAdView = user?.subscriptionAdView() ?? true;
-    List<String> titles = ['受信履歴', '送信機能', 'マイページ'];
+    List<String> titles = ['受信履歴', '送信履歴', 'マイページ'];
     List<Widget> bodies = [
       UserNoticeScreen(userProvider: userProvider),
       SendScreen(userProvider: userProvider),
@@ -85,12 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
           indicatorWidth: 20,
           items: [
             NavBarItems(
-              icon: FontAwesomeIcons.rectangleList,
+              icon: FontAwesomeIcons.earListen,
               title: '受信履歴',
             ),
             NavBarItems(
               icon: FontAwesomeIcons.paperPlane,
-              title: '送信機能',
+              title: '送信履歴',
             ),
             NavBarItems(
               icon: FontAwesomeIcons.user,

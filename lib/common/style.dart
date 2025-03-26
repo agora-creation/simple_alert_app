@@ -8,6 +8,7 @@ const kWhiteColor = Color(0xFFFFFFFF);
 const kBlackColor = Color(0xFF333333);
 const kRedColor = Color(0xFFF44336);
 const kBlueColor = Color(0xFF2196F3);
+const kMsgBgColor = Color(0xFFF5F5F5);
 
 ThemeData customTheme() {
   return ThemeData(

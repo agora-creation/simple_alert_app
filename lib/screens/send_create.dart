@@ -37,7 +37,6 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool draft = widget.userSend?.draft ?? false;
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -46,8 +45,12 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
           icon: const FaIcon(FontAwesomeIcons.chevronLeft),
           onPressed: () => Navigator.pop(context),
         ),
+        title: const Text(
+          '新規送信',
+          style: TextStyle(color: kBlackColor),
+        ),
         actions: [
-          widget.userSend != null && draft
+          widget.userSend != null
               ? TextButton(
                   onPressed: () async {
                     String? error = await widget.userProvider.deleteSendDraft(
@@ -67,7 +70,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                   ),
                 )
               : Container(),
-          widget.userSend != null && draft
+          widget.userSend != null
               ? TextButton(
                   onPressed: () async {
                     String? error = await widget.userProvider.updateSendDraft(
@@ -88,28 +91,28 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                     style: TextStyle(color: kBlueColor),
                   ),
                 )
-              : draft
-                  ? TextButton(
-                      onPressed: () async {
-                        String? error =
-                            await widget.userProvider.createSendDraft(
-                          title: titleController.text,
-                          content: contentController.text,
-                        );
-                        if (error != null) {
-                          if (!mounted) return;
-                          showMessage(context, error, false);
-                          return;
-                        }
-                        if (!mounted) return;
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        '下書き保存',
-                        style: TextStyle(color: kBlueColor),
-                      ),
-                    )
-                  : Container(),
+              : Container(),
+          widget.userSend == null
+              ? TextButton(
+                  onPressed: () async {
+                    String? error = await widget.userProvider.createSendDraft(
+                      title: titleController.text,
+                      content: contentController.text,
+                    );
+                    if (error != null) {
+                      if (!mounted) return;
+                      showMessage(context, error, false);
+                      return;
+                    }
+                    if (!mounted) return;
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    '下書き保存',
+                    style: TextStyle(color: kBlueColor),
+                  ),
+                )
+              : Container(),
         ],
       ),
       body: GestureDetector(
@@ -128,7 +131,6 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                     label: '件名',
                     color: kBlackColor,
                     prefix: Icons.short_text,
-                    enabled: widget.userSend != null ? draft : true,
                   ),
                   const SizedBox(height: 8),
                   CustomTextFormField(
@@ -138,7 +140,6 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                     label: '内容',
                     color: kBlackColor,
                     prefix: Icons.wrap_text,
-                    enabled: widget.userSend != null ? draft : true,
                   ),
                 ],
               ),
@@ -146,7 +147,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
           ),
         ),
       ),
-      floatingActionButton: widget.userSend == null || draft
+      floatingActionButton: widget.userProvider.user!.sendMapUsers.isNotEmpty
           ? FloatingActionButton.extended(
               onPressed: () {
                 Navigator.push(
