@@ -33,6 +33,9 @@ class UserNoticeList extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontFamily: 'SourceHanSansJP-Bold',
           ),
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         subtitle: Text(
           '受信日時: ${dateText('yyyy/MM/dd HH:mm', userNotice.createdAt)}',

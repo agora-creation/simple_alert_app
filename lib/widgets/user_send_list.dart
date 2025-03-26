@@ -24,7 +24,17 @@ class UserSendList extends StatelessWidget {
         color: userSend.draft ? kRedColor.withOpacity(0.3) : kWhiteColor,
       ),
       child: ListTile(
-        title: Text(userSend.title),
+        title: Text(
+          userSend.title,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'SourceHanSansJP-Bold',
+          ),
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        ),
         subtitle: userSend.draft
             ? null
             : Text(
