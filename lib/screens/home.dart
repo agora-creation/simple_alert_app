@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
+import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send.dart';
 import 'package:simple_alert_app/screens/setting.dart';
@@ -29,6 +30,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     bannerAd.load();
+    context.read<InAppPurchaseProvider>().initialize();
+  }
+
+  @override
+  void dispose() {
+    context.read<InAppPurchaseProvider>().dispose();
+    super.dispose();
   }
 
   @override

@@ -191,6 +191,10 @@ class UserProvider with ChangeNotifier {
     String? error;
     if (selectedUser == null) return '受信先が見つかりませんでした';
     try {
+      if (selectedUser.sendMapUsers.length >=
+          selectedUser.subscriptionSendUsersLimit()) {
+        return '現在のプランでは送信者の登録数上限に達しています';
+      }
       //受信者側のデータ追加
       List<Map> noticeMapUsers = [];
       if (_user!.noticeMapUsers.isNotEmpty) {
@@ -280,7 +284,7 @@ class UserProvider with ChangeNotifier {
     if (selectedUser == null) return '送信先が見つかりませんでした';
     try {
       if (_user!.sendMapUsers.length >= _user!.subscriptionSendUsersLimit()) {
-        return '現在のプランでは送信者上限に達しています';
+        return '現在のプランでは送信者の登録数上限に達しています';
       }
       //送信側のデータ追加
       List<Map> sendMapUsers = [];

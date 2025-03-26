@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
+import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/user_email.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/screens/user_password.dart';
-import 'package:simple_alert_app/screens/user_subscription.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
@@ -133,14 +135,20 @@ class _UserScreenState extends State<UserScreen> {
                         size: 16,
                       ),
                       onTap: () {
-                        Navigator.push(
+                        showSubscriptionDialog(
                           context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: UserSubscriptionScreen(
-                              userProvider: widget.userProvider,
-                            ),
-                          ),
+                          productDetailsResult: (details) async {
+                            final inAppPurchaseProvider =
+                                context.read<InAppPurchaseProvider>();
+
+                            final purchaseResult = await inAppPurchaseProvider
+                                .purchaseProduct(details!);
+
+                            if (purchaseResult.$1 && context.mounted) {
+                            } else {
+                              if (context.mounted) {}
+                            }
+                          },
                         );
                       },
                     ),
@@ -335,4 +343,174 @@ class LogoutDialog extends StatelessWidget {
       ],
     );
   }
+}
+
+void showSubscriptionDialog(
+  BuildContext context, {
+  required Function(ProductDetails?) productDetailsResult,
+}) {
+  String _getDurationTitleByProductID(String idCode) {
+    if (idCode == "subscription_standard") {
+      return "per month";
+    }
+    return "per year";
+  }
+
+  showModalBottomSheet<bool?>(
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(16),
+        topRight: Radius.circular(16),
+      ),
+    ),
+    showDragHandle: true,
+    context: context,
+    builder: (BuildContext context) {
+      return Consumer<InAppPurchaseProvider>(
+        builder: (context, inAppPurchaseProvider, _) {
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        'ご利用中のプランの切替',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'SourceHanSansJP-Bold',
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text('有料プランに切り替えることで、広告を非表示にできたり、送信先の登録上限を増やしたりできます。'),
+                  const SizedBox(height: 16),
+                  Column(
+                    children: [
+                      ...List.generate(
+                          inAppPurchaseProvider.availableProducts.length,
+                          (index) {
+                        final plan =
+                            inAppPurchaseProvider.availableProducts[index];
+                        return GestureDetector(
+                          onTap: () {
+                            inAppPurchaseProvider.selectedProductDetails = plan;
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(10),
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: inAppPurchaseProvider
+                                            .selectedProductDetails?.id ==
+                                        plan.id
+                                    ? Border.all(color: Colors.blue, width: 2)
+                                    : null,
+                              ),
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  plan.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  plan.description,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      plan.price,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      _getDurationTitleByProductID(plan.id),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      })
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: kBlueColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () async {
+                              Navigator.of(context).pop(true);
+                            },
+                            child: Text(
+                              '登録する',
+                              style: TextStyle(
+                                color: kWhiteColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      inAppPurchaseProvider.restorePurchases();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                      '課金の復元',
+                      style: TextStyle(color: kBlueColor),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  ).then((value) async {
+    if (value != true || !context.mounted) return;
+    if (context.read<InAppPurchaseProvider>().selectedProductDetails == null &&
+        context.mounted) {
+      return;
+    }
+
+    productDetailsResult(
+        context.read<InAppPurchaseProvider>().selectedProductDetails);
+  });
 }
