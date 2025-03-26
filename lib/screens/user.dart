@@ -349,13 +349,6 @@ void showSubscriptionDialog(
   BuildContext context, {
   required Function(ProductDetails?) productDetailsResult,
 }) {
-  String _getDurationTitleByProductID(String idCode) {
-    if (idCode == "subscription_standard") {
-      return "per month";
-    }
-    return "per year";
-  }
-
   showModalBottomSheet<bool?>(
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
@@ -443,7 +436,7 @@ void showSubscriptionDialog(
                                       ),
                                     ),
                                     Text(
-                                      _getDurationTitleByProductID(plan.id),
+                                      'ひと月あたり',
                                       style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -459,6 +452,13 @@ void showSubscriptionDialog(
                     ],
                   ),
                   const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      '利用規約',
+                      style: TextStyle(color: kBlueColor),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
@@ -475,9 +475,12 @@ void showSubscriptionDialog(
                               Navigator.of(context).pop(true);
                             },
                             child: Text(
-                              '登録する',
+                              '選択項目に切り替える',
                               style: TextStyle(
                                 color: kWhiteColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'SourceHanSansJP-Bold',
                               ),
                             ),
                           ),
@@ -491,7 +494,7 @@ void showSubscriptionDialog(
                       Navigator.of(context).pop();
                     },
                     child: Text(
-                      '課金の復元',
+                      '過去の購入の復元',
                       style: TextStyle(color: kBlueColor),
                     ),
                   ),
@@ -511,6 +514,7 @@ void showSubscriptionDialog(
     }
 
     productDetailsResult(
-        context.read<InAppPurchaseProvider>().selectedProductDetails);
+      context.read<InAppPurchaseProvider>().selectedProductDetails,
+    );
   });
 }
