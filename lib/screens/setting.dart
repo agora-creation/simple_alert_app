@@ -58,6 +58,20 @@ class SettingScreen extends StatelessWidget {
               },
             ),
             SettingList(
+              label: 'アプリについての意見・要望',
+              trailing: const FaIcon(
+                FontAwesomeIcons.chevronRight,
+                size: 16,
+              ),
+              onTap: () async {
+                if (!await launchUrl(Uri.parse(
+                  'https://docs.google.com/forms/d/e/1FAIpQLSdWK2o3g03yquFPKnv-eBZy78_tShlYFZYMe_WAvgON7b3YUg/viewform?usp=sharing',
+                ))) {
+                  throw Exception('Could not launch');
+                }
+              },
+            ),
+            SettingList(
               label: 'アプリのバージョン',
               trailing: FutureBuilder<String>(
                 future: getVersionInfo(),
