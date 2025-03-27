@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/user_notice_user_add.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
-import 'package:simple_alert_app/widgets/custom_check_list.dart';
+import 'package:simple_alert_app/widgets/user_list.dart';
 
 class UserNoticeUserScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -78,50 +76,57 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
                 itemCount: noticeMapUsers.length,
                 itemBuilder: (context, index) {
                   MapUserModel mapUser = noticeMapUsers[index];
-                  bool value = selectedNoticeMapUsers.contains(mapUser);
-                  return CustomCheckList(
+                  return UserList(
                     label: mapUser.name,
                     subtitle: Text(
                       mapUser.email,
                       style: TextStyle(fontSize: 14),
                     ),
-                    value: value,
-                    onChanged: (value) {
-                      if (!selectedNoticeMapUsers.contains(mapUser)) {
-                        selectedNoticeMapUsers.add(mapUser);
-                      } else {
-                        selectedNoticeMapUsers.remove(mapUser);
-                      }
-                      setState(() {});
-                    },
-                    activeColor: kRedColor,
                   );
+                  // bool value = selectedNoticeMapUsers.contains(mapUser);
+                  // return CustomCheckList(
+                  //   label: mapUser.name,
+                  //   subtitle: Text(
+                  //     mapUser.email,
+                  //     style: TextStyle(fontSize: 14),
+                  //   ),
+                  //   value: value,
+                  //   onChanged: (value) {
+                  //     if (!selectedNoticeMapUsers.contains(mapUser)) {
+                  //       selectedNoticeMapUsers.add(mapUser);
+                  //     } else {
+                  //       selectedNoticeMapUsers.remove(mapUser);
+                  //     }
+                  //     setState(() {});
+                  //   },
+                  //   activeColor: kRedColor,
+                  // );
                 },
               )
             : Center(child: Text('受信先はありません')),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            PageTransition(
-              type: PageTransitionType.rightToLeft,
-              child: UserNoticeUserAddScreen(
-                userProvider: widget.userProvider,
-                reload: _reload,
-              ),
-            ),
-          );
-        },
-        icon: const FaIcon(
-          FontAwesomeIcons.plus,
-          color: kWhiteColor,
-        ),
-        label: Text(
-          '受信先を登録',
-          style: TextStyle(color: kWhiteColor),
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       PageTransition(
+      //         type: PageTransitionType.rightToLeft,
+      //         child: UserNoticeUserAddScreen(
+      //           userProvider: widget.userProvider,
+      //           reload: _reload,
+      //         ),
+      //       ),
+      //     );
+      //   },
+      //   icon: const FaIcon(
+      //     FontAwesomeIcons.plus,
+      //     color: kWhiteColor,
+      //   ),
+      //   label: Text(
+      //     '受信先を登録',
+      //     style: TextStyle(color: kWhiteColor),
+      //   ),
+      // ),
     );
   }
 }

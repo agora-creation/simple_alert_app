@@ -76,7 +76,6 @@ class InAppPurchaseProvider extends ChangeNotifier {
 
   //利用可能な商品の初期化
   Future initialize() async {
-    _plan = Plan.free;
     final bool available = await _inAppPurchase.isAvailable();
     if (!available) {
       print('この端末ではアプリ内課金はご利用いただけません');
@@ -90,9 +89,7 @@ class InAppPurchaseProvider extends ChangeNotifier {
     viewProducts = response.productDetails;
     notifyListeners();
 
-    if (viewProducts.isEmpty) {
-      restorePurchases();
-    }
+    restorePurchases();
   }
 
   //商品の課金処理

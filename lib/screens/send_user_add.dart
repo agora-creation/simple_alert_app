@@ -69,16 +69,13 @@ class _SendUserAddScreenState extends State<SendUserAddScreen> {
                     UserModel? tmpUser = await UserService().selectData(
                       email: emailController.text,
                     );
-                    if (tmpUser == null) {
-                      if (!mounted) return;
-                      showMessage(context, '送信先が見つかりませんでした', false);
-                      return;
-                    }
                     setState(() {
                       selectedUser = tmpUser;
                     });
                   },
                 ),
+                const SizedBox(height: 16),
+                Divider(color: kBlackColor.withOpacity(0.5)),
                 const SizedBox(height: 16),
                 selectedUser != null
                     ? Column(
@@ -92,7 +89,7 @@ class _SendUserAddScreenState extends State<SendUserAddScreen> {
                             ),
                             trailing: CustomButton(
                               type: ButtonSizeType.sm,
-                              label: '追加',
+                              label: '登録する',
                               labelColor: kWhiteColor,
                               backgroundColor: kBlueColor,
                               onPressed: () async {
@@ -114,7 +111,7 @@ class _SendUserAddScreenState extends State<SendUserAddScreen> {
                           ),
                         ],
                       )
-                    : Container(),
+                    : Text('送信先が見つかりませんでした'),
               ],
             ),
           ),

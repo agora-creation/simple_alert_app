@@ -482,23 +482,12 @@ class CancelDialog extends StatelessWidget {
           Platform.isIOS
               ? Text(
                   'このプランを解約する場合は、アプリを閉じて、[設定]>[AppleAccount]>[サブスクリプション]から解約を行ってください。',
-                  style: TextStyle(color: kRedColor),
                 )
               : Text(
                   'このプランを解約する場合は、アプリを閉じて、[Playストア]>[お支払いと定期購入]>[定期購入]から解約を行ってください。',
-                  style: TextStyle(color: kRedColor),
                 ),
         ],
       ),
-      actions: [
-        CustomButton(
-          type: ButtonSizeType.sm,
-          label: '閉じる',
-          labelColor: kWhiteColor,
-          backgroundColor: kBlackColor.withOpacity(0.5),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ],
     );
   }
 }

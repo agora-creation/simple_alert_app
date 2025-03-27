@@ -41,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
     List<String> titles = ['受信履歴', '送信履歴', 'マイページ'];
     List<Widget> bodies = [
       UserNoticeScreen(userProvider: userProvider),
@@ -62,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          context.read<InAppPurchaseProvider>().planAdView
+          inAppPurchaseProvider.planAdView
               ? SizedBox(
                   width: bannerAd.size.width.toDouble(),
                   height: bannerAd.size.height.toDouble(),

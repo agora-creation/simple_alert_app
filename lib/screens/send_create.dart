@@ -147,32 +147,30 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
           ),
         ),
       ),
-      floatingActionButton: widget.userProvider.user!.sendMapUsers.isNotEmpty
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: SendConfScreen(
-                      userProvider: widget.userProvider,
-                      userSend: widget.userSend,
-                      title: titleController.text,
-                      content: contentController.text,
-                    ),
-                  ),
-                );
-              },
-              icon: const FaIcon(
-                FontAwesomeIcons.paperPlane,
-                color: kWhiteColor,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            PageTransition(
+              type: PageTransitionType.rightToLeft,
+              child: SendConfScreen(
+                userProvider: widget.userProvider,
+                userSend: widget.userSend,
+                title: titleController.text,
+                content: contentController.text,
               ),
-              label: Text(
-                '送信先の確認',
-                style: TextStyle(color: kWhiteColor),
-              ),
-            )
-          : null,
+            ),
+          );
+        },
+        icon: const FaIcon(
+          FontAwesomeIcons.paperPlane,
+          color: kWhiteColor,
+        ),
+        label: Text(
+          '送信先の選択',
+          style: TextStyle(color: kWhiteColor),
+        ),
+      ),
     );
   }
 }

@@ -34,7 +34,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
   void initState() {
     UserModel user = widget.userProvider.user!;
     sendMapUsers = user.sendMapUsers;
-    selectedSendMapUsers = sendMapUsers;
+    //プランにより送信先を削除
     super.initState();
   }
 
@@ -49,7 +49,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          '送信先の確認',
+          '送信先の選択',
           style: TextStyle(color: kBlackColor),
         ),
       ),

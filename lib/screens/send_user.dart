@@ -38,11 +38,13 @@ class _SendUserScreenState extends State<SendUserScreen> {
   void initState() {
     UserModel user = widget.userProvider.user!;
     sendMapUsers = user.sendMapUsers;
+    //プランにより送信先を削除
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -83,8 +85,12 @@ class _SendUserScreenState extends State<SendUserScreen> {
               color: kRedColor,
               padding: EdgeInsets.all(8),
               child: Text(
-                '送信先は${context.read<InAppPurchaseProvider>().planLimit}人まで登録可能です',
-                style: TextStyle(color: kWhiteColor),
+                '送信先は${inAppPurchaseProvider.planLimit}個まで登録可能です',
+                style: TextStyle(
+                  color: kWhiteColor,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'SourceHanSansJP-Bold',
+                ),
               ),
             ),
             Expanded(
@@ -118,31 +124,31 @@ class _SendUserScreenState extends State<SendUserScreen> {
           ],
         ),
       ),
-      floatingActionButton: widget.userProvider.user!.sendMapUsers.length <
-              context.read<InAppPurchaseProvider>().planLimit
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: SendUserAddScreen(
-                      userProvider: widget.userProvider,
-                      reload: _reload,
-                    ),
+      floatingActionButton:
+          sendMapUsers.length < inAppPurchaseProvider.planLimit
+              ? FloatingActionButton.extended(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: SendUserAddScreen(
+                          userProvider: widget.userProvider,
+                          reload: _reload,
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const FaIcon(
+                    FontAwesomeIcons.plus,
+                    color: kWhiteColor,
                   ),
-                );
-              },
-              icon: const FaIcon(
-                FontAwesomeIcons.plus,
-                color: kWhiteColor,
-              ),
-              label: Text(
-                '送信先を登録',
-                style: TextStyle(color: kWhiteColor),
-              ),
-            )
-          : null,
+                  label: Text(
+                    '送信先を登録',
+                    style: TextStyle(color: kWhiteColor),
+                  ),
+                )
+              : null,
     );
   }
 }
