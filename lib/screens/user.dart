@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -39,6 +41,7 @@ class _UserScreenState extends State<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
     UserModel? user = widget.userProvider.user;
     return SafeArea(
       child: Padding(
@@ -119,7 +122,7 @@ class _UserScreenState extends State<UserScreen> {
                     UserList(
                       label: 'ご利用中のプラン',
                       subtitle: Text(
-                        user?.subscriptionName() ?? '',
+                        context.read<InAppPurchaseProvider>().planName,
                         style: TextStyle(
                           color: kBlackColor,
                           fontSize: 14,
@@ -132,25 +135,29 @@ class _UserScreenState extends State<UserScreen> {
                         size: 16,
                       ),
                       trailing: const FaIcon(
-                        FontAwesomeIcons.pen,
+                        FontAwesomeIcons.rotate,
                         size: 16,
                       ),
                       onTap: () {
-                        showSubscriptionDialog(
-                          context,
-                          result: (product) async {
-                            final inAppPurchaseProvider =
-                                context.read<InAppPurchaseProvider>();
-
-                            final purchaseResult = await inAppPurchaseProvider
-                                .purchaseProduct(product!);
-
-                            if (purchaseResult.$1 && context.mounted) {
-                            } else {
-                              if (context.mounted) {}
-                            }
-                          },
-                        );
+                        if (inAppPurchaseProvider.plan == Plan.free) {
+                          showSubscriptionDialog(
+                            context,
+                            result: (product) async {
+                              if (product == null) return;
+                              final result = await inAppPurchaseProvider
+                                  .purchaseProduct(product);
+                              if (result.$1 && context.mounted) {
+                              } else {
+                                if (context.mounted) {}
+                              }
+                            },
+                          );
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (context) => CancelDialog(),
+                          );
+                        }
                       },
                     ),
                     SizedBox(height: 24),
@@ -459,4 +466,39 @@ void showSubscriptionDialog(
       context.read<InAppPurchaseProvider>().selectedProduct,
     );
   });
+}
+
+class CancelDialog extends StatelessWidget {
+  const CancelDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomAlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8),
+          Platform.isIOS
+              ? Text(
+                  'このプランを解約する場合は、アプリを閉じて、[設定]>[AppleAccount]>[サブスクリプション]から解約を行ってください。',
+                  style: TextStyle(color: kRedColor),
+                )
+              : Text(
+                  'このプランを解約する場合は、アプリを閉じて、[Playストア]>[お支払いと定期購入]>[定期購入]から解約を行ってください。',
+                  style: TextStyle(color: kRedColor),
+                ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: '閉じる',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    );
+  }
 }

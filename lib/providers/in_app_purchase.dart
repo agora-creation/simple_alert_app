@@ -3,14 +3,52 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:simple_alert_app/common/functions.dart';
-import 'package:simple_alert_app/services/user.dart';
+
+enum Plan {
+  free,
+  standard,
+  pro,
+}
 
 class InAppPurchaseProvider extends ChangeNotifier {
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
   StreamSubscription<List<PurchaseDetails>>? _purchaseSubscription;
 
-  final UserService _userService = UserService();
+  Plan _plan = Plan.free;
+  Plan get plan => _plan;
+
+  String get planName {
+    switch (_plan) {
+      case Plan.free:
+        return 'フリープラン';
+      case Plan.standard:
+        return 'スタンダードプラン';
+      case Plan.pro:
+        return 'プロプラン';
+    }
+  }
+
+  int get planLimit {
+    switch (_plan) {
+      case Plan.free:
+        return 5;
+      case Plan.standard:
+        return 100;
+      case Plan.pro:
+        return 500;
+    }
+  }
+
+  bool get planAdView {
+    switch (_plan) {
+      case Plan.free:
+        return true;
+      case Plan.standard:
+        return false;
+      case Plan.pro:
+        return false;
+    }
+  }
 
   ProductDetails? _selectedProduct;
   ProductDetails? get selectedProduct => _selectedProduct;
@@ -38,6 +76,7 @@ class InAppPurchaseProvider extends ChangeNotifier {
 
   //利用可能な商品の初期化
   Future initialize() async {
+    _plan = Plan.free;
     final bool available = await _inAppPurchase.isAvailable();
     if (!available) {
       print('この端末ではアプリ内課金はご利用いただけません');
@@ -133,19 +172,10 @@ class InAppPurchaseProvider extends ChangeNotifier {
     }
 
     try {
-      String? uid = await getPrefsString('uid');
-      if (uid != null) {
-        if (purchaseDetails.productID == 'subscription_standard') {
-          _userService.update({
-            'id': uid,
-            'subscription': 1,
-          });
-        } else if (purchaseDetails.productID == 'subscription_pro') {
-          _userService.update({
-            'id': uid,
-            'subscription': 2,
-          });
-        }
+      if (purchaseDetails.productID == 'subscription_standard') {
+        _plan = Plan.standard;
+      } else if (purchaseDetails.productID == 'subscription_pro') {
+        _plan = Plan.pro;
       }
 
       _purchaseCompleter?.complete(true);
@@ -161,13 +191,8 @@ class InAppPurchaseProvider extends ChangeNotifier {
   //課金キャンセル処理
   Future _handlePurchaseCancellation(PurchaseDetails purchaseDetails) async {
     try {
-      String? uid = await getPrefsString('uid');
-      if (uid != null) {
-        _userService.update({
-          'id': '',
-          'subscription': 0,
-        });
-      }
+      _plan = Plan.free;
+
       debugPrint('課金キャンセルは正常に処理されました');
     } catch (error) {
       debugPrint('課金キャンセル処理に失敗しました: $error');

@@ -39,7 +39,7 @@ class _UserNoticeUserAddScreenState extends State<UserNoticeUserAddScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          '受信先の追加',
+          '受信先を登録',
           style: TextStyle(color: kBlackColor),
         ),
       ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
+import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send_user_add.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
@@ -73,55 +75,74 @@ class _SendUserScreenState extends State<SendUserScreen> {
         ],
       ),
       body: SafeArea(
-        child: sendMapUsers.isNotEmpty
-            ? ListView.builder(
-                itemCount: sendMapUsers.length,
-                itemBuilder: (context, index) {
-                  MapUserModel mapUser = sendMapUsers[index];
-                  bool value = selectedSendMapUsers.contains(mapUser);
-                  return CustomCheckList(
-                    label: mapUser.name,
-                    subtitle: Text(
-                      mapUser.email,
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    value: value,
-                    onChanged: (value) {
-                      if (!selectedSendMapUsers.contains(mapUser)) {
-                        selectedSendMapUsers.add(mapUser);
-                      } else {
-                        selectedSendMapUsers.remove(mapUser);
-                      }
-                      setState(() {});
-                    },
-                    activeColor: kRedColor,
-                  );
-                },
-              )
-            : Center(child: Text('送信先はありません')),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            PageTransition(
-              type: PageTransitionType.rightToLeft,
-              child: SendUserAddScreen(
-                userProvider: widget.userProvider,
-                reload: _reload,
+        child: Column(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              width: double.infinity,
+              color: kRedColor,
+              padding: EdgeInsets.all(8),
+              child: Text(
+                '送信先は${context.read<InAppPurchaseProvider>().planLimit}人まで登録可能です',
+                style: TextStyle(color: kWhiteColor),
               ),
             ),
-          );
-        },
-        icon: const FaIcon(
-          FontAwesomeIcons.plus,
-          color: kWhiteColor,
-        ),
-        label: Text(
-          '送信先を追加',
-          style: TextStyle(color: kWhiteColor),
+            Expanded(
+              child: sendMapUsers.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: sendMapUsers.length,
+                      itemBuilder: (context, index) {
+                        MapUserModel mapUser = sendMapUsers[index];
+                        bool value = selectedSendMapUsers.contains(mapUser);
+                        return CustomCheckList(
+                          label: mapUser.name,
+                          subtitle: Text(
+                            mapUser.email,
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          value: value,
+                          onChanged: (value) {
+                            if (!selectedSendMapUsers.contains(mapUser)) {
+                              selectedSendMapUsers.add(mapUser);
+                            } else {
+                              selectedSendMapUsers.remove(mapUser);
+                            }
+                            setState(() {});
+                          },
+                          activeColor: kRedColor,
+                        );
+                      },
+                    )
+                  : Center(child: Text('送信先はありません')),
+            ),
+          ],
         ),
       ),
+      floatingActionButton: widget.userProvider.user!.sendMapUsers.length <
+              context.read<InAppPurchaseProvider>().planLimit
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: SendUserAddScreen(
+                      userProvider: widget.userProvider,
+                      reload: _reload,
+                    ),
+                  ),
+                );
+              },
+              icon: const FaIcon(
+                FontAwesomeIcons.plus,
+                color: kWhiteColor,
+              ),
+              label: Text(
+                '送信先を登録',
+                style: TextStyle(color: kWhiteColor),
+              ),
+            )
+          : null,
     );
   }
 }

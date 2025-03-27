@@ -118,7 +118,7 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
           color: kWhiteColor,
         ),
         label: Text(
-          '受信先を追加',
+          '受信先を登録',
           style: TextStyle(color: kWhiteColor),
         ),
       ),

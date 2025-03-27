@@ -73,7 +73,6 @@ class UserProvider with ChangeNotifier {
         'token': token,
       });
       _authUser = result.user;
-      await setPrefsString('uid', tmpUser.id);
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
@@ -112,7 +111,6 @@ class UserProvider with ChangeNotifier {
         'subscription': 0,
       });
       _authUser = result.user;
-      await setPrefsString('uid', result.user!.uid);
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
@@ -179,10 +177,6 @@ class UserProvider with ChangeNotifier {
     String? error;
     if (selectedUser == null) return '受信先が見つかりませんでした';
     try {
-      if (selectedUser.sendMapUsers.length >=
-          selectedUser.subscriptionSendUsersLimit()) {
-        return '現在のプランでは送信者の登録数上限に達しています';
-      }
       //受信者側のデータ追加
       List<Map> noticeMapUsers = [];
       if (_user!.noticeMapUsers.isNotEmpty) {
@@ -271,9 +265,6 @@ class UserProvider with ChangeNotifier {
     String? error;
     if (selectedUser == null) return '送信先が見つかりませんでした';
     try {
-      if (_user!.sendMapUsers.length >= _user!.subscriptionSendUsersLimit()) {
-        return '現在のプランでは送信者の登録数上限に達しています';
-      }
       //送信側のデータ追加
       List<Map> sendMapUsers = [];
       if (_user!.sendMapUsers.isNotEmpty) {
