@@ -46,7 +46,7 @@ class UserSendList extends StatelessWidget {
               ),
         trailing: userSend.draft
             ? Text(
-                '下書き保存中',
+                '下書き中',
                 style: TextStyle(
                   color: kRedColor,
                   fontSize: 14,

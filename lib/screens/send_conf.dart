@@ -32,9 +32,10 @@ class _SendConfScreenState extends State<SendConfScreen> {
 
   @override
   void initState() {
+    //プランにより送信先を削除
+
     UserModel user = widget.userProvider.user!;
     sendMapUsers = user.sendMapUsers;
-    //プランにより送信先を削除
     super.initState();
   }
 
@@ -52,6 +53,22 @@ class _SendConfScreenState extends State<SendConfScreen> {
           '送信先の選択',
           style: TextStyle(color: kBlackColor),
         ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              if (selectedSendMapUsers.isEmpty) {
+                selectedSendMapUsers = sendMapUsers;
+              } else {
+                selectedSendMapUsers = [];
+              }
+              setState(() {});
+            },
+            child: Text(
+              '全選択',
+              style: TextStyle(color: kBlueColor),
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: sendMapUsers.isNotEmpty

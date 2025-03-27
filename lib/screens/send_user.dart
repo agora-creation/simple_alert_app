@@ -36,9 +36,10 @@ class _SendUserScreenState extends State<SendUserScreen> {
 
   @override
   void initState() {
+    //プランにより送信先を削除
+
     UserModel user = widget.userProvider.user!;
     sendMapUsers = user.sendMapUsers;
-    //プランにより送信先を削除
     super.initState();
   }
 
