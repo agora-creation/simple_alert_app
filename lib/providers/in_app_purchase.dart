@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -89,7 +90,9 @@ class InAppPurchaseProvider extends ChangeNotifier {
     viewProducts = response.productDetails;
     notifyListeners();
 
-    restorePurchases();
+    if (viewProducts.isEmpty) {
+      restorePurchases();
+    }
   }
 
   //商品の課金処理
@@ -99,7 +102,9 @@ class InAppPurchaseProvider extends ChangeNotifier {
     try {
       final purchaseParam = PurchaseParam(
         productDetails: product,
-        applicationUserName: 'com.agoracreation.simple_alert_app',
+        applicationUserName: Platform.isIOS
+            ? 'com.agoracreation.simpleAlertApp'
+            : 'com.agoracreation.simple_alert_app',
       );
 
       if (productIds.contains(product.id)) {
@@ -137,7 +142,9 @@ class InAppPurchaseProvider extends ChangeNotifier {
   //過去の課金を復元する
   Future restorePurchases() async {
     await _inAppPurchase.restorePurchases(
-      applicationUserName: 'com.agoracreation.simple_alert_app',
+      applicationUserName: Platform.isIOS
+          ? 'com.agoracreation.simpleAlertApp'
+          : 'com.agoracreation.simple_alert_app',
     );
   }
 
