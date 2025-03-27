@@ -1,5 +1,6 @@
 import 'package:alert_banner/exports.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -87,4 +88,11 @@ Future removePrefs(String key) async {
 Future allRemovePrefs() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.clear();
+}
+
+Future requestReview() async {
+  final inAppReview = InAppReview.instance;
+  if (await inAppReview.isAvailable()) {
+    inAppReview.requestReview();
+  }
 }

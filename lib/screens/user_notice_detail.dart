@@ -18,7 +18,7 @@ class UserNoticeDetailScreen extends StatefulWidget {
 }
 
 class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
-  void _init() {
+  void _init() async {
     if (!widget.userNotice.read) {
       UserNoticeService().update({
         'id': widget.userNotice.id,
@@ -26,6 +26,8 @@ class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
         'read': true,
       });
     }
+    //レビューの促し
+    await requestReview();
   }
 
   @override

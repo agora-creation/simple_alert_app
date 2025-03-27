@@ -111,6 +111,8 @@ class _SendConfScreenState extends State<SendConfScreen> {
             showMessage(context, error, false);
             return;
           }
+          //レビューの促し
+          await requestReview();
           if (!mounted) return;
           Navigator.pop(context);
           Navigator.pop(context);
