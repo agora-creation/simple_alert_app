@@ -108,7 +108,6 @@ class UserProvider with ChangeNotifier {
         'token': token,
         'noticeMapUsers': [],
         'sendMapUsers': [],
-        'subscription': 0,
       });
       _authUser = result.user;
     } catch (e) {
