@@ -488,6 +488,16 @@ class CancelDialog extends StatelessWidget {
                 ),
         ],
       ),
+      actionsAlignment: MainAxisAlignment.center,
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: '閉じる',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
     );
   }
 }

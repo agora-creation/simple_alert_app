@@ -4,11 +4,13 @@ import 'package:simple_alert_app/common/style.dart';
 class CustomAlertDialog extends StatelessWidget {
   final EdgeInsetsGeometry? contentPadding;
   final Widget? content;
+  final MainAxisAlignment actionsAlignment;
   final List<Widget>? actions;
 
   const CustomAlertDialog({
     this.contentPadding,
     required this.content,
+    this.actionsAlignment = MainAxisAlignment.spaceBetween,
     this.actions,
     super.key,
   });
@@ -24,7 +26,7 @@ class CustomAlertDialog extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       content: content,
-      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actionsAlignment: actionsAlignment,
       actions: actions,
     );
   }
