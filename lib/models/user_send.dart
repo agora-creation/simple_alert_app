@@ -6,6 +6,8 @@ class UserSendModel {
   String _userId = '';
   String _title = '';
   String _content = '';
+  bool _isChoice = false;
+  List<String> choices = [];
   bool _draft = false;
   DateTime _sendAt = DateTime.now();
   List<MapUserModel> sendMapUsers = [];
@@ -17,6 +19,7 @@ class UserSendModel {
   String get userId => _userId;
   String get title => _title;
   String get content => _content;
+  bool get isChoice => _isChoice;
   bool get draft => _draft;
   DateTime get sendAt => _sendAt;
   String get createdUserId => _createdUserId;
@@ -32,12 +35,22 @@ class UserSendModel {
     _userId = data['userId'] ?? '';
     _title = data['title'] ?? '';
     _content = data['content'] ?? '';
+    _isChoice = data['isChoice'] ?? false;
+    choices = _convertChoices(data['choices'] ?? []);
     _draft = data['draft'] ?? false;
     _sendAt = data['sendAt'].toDate() ?? DateTime.now();
     sendMapUsers = _convertMapUsers(data['sendMapUsers'] ?? []);
     _createdUserId = data['createdUserId'] ?? '';
     _createdUserName = data['createdUserName'] ?? '';
     _createdAt = data['createdAt'].toDate() ?? DateTime.now();
+  }
+
+  List<String> _convertChoices(List list) {
+    List<String> ret = [];
+    for (String data in list) {
+      ret.add(data);
+    }
+    return ret;
   }
 
   List<MapUserModel> _convertMapUsers(List list) {
