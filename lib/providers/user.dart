@@ -72,7 +72,7 @@ class UserProvider with ChangeNotifier {
             if (tmpUser == null) {
               _userService.create({
                 'id': result.user!.uid,
-                'name': '',
+                'name': '名無し',
                 'tel': tel,
                 'token': token,
                 'noticeMapUsers': [],

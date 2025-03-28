@@ -23,8 +23,14 @@ class UserService {
   }) async {
     UserModel? ret;
     if (id != null) {
-      await firestore.collection(collection).doc(id).get().then((value) {
-        ret = UserModel.fromSnapshot(value);
+      await firestore
+          .collection(collection)
+          .where('id', isEqualTo: id)
+          .get()
+          .then((value) {
+        if (value.docs.isNotEmpty) {
+          ret = UserModel.fromSnapshot(value.docs.first);
+        }
       });
     }
     if (tel != null) {
