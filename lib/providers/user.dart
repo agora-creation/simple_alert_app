@@ -170,42 +170,6 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
-  Future<String?> updateEmail({
-    required String email,
-  }) async {
-    String? error;
-    if (email == '') return 'メールアドレスは必須入力です';
-    try {
-      if (_authUser == null) return 'メールアドレスの変更に失敗しました';
-      await _authUser!.updateEmail(email);
-      _userService.update({
-        'id': _user?.id,
-        'email': email,
-      });
-    } catch (e) {
-      error = e.toString();
-    }
-    return error;
-  }
-
-  Future<String?> updatePassword({
-    required String password,
-  }) async {
-    String? error;
-    if (password == '') return 'パスワードは必須入力です';
-    try {
-      if (_authUser == null) return 'パスワードの変更に失敗しました';
-      await _authUser!.updatePassword(password);
-      _userService.update({
-        'id': _user?.id,
-        'password': password,
-      });
-    } catch (e) {
-      error = e.toString();
-    }
-    return error;
-  }
-
   Future<String?> addNoticeMapUsers({
     required UserModel? selectedUser,
   }) async {
@@ -396,6 +360,8 @@ class UserProvider with ChangeNotifier {
         'userId': _user?.id,
         'title': title,
         'content': content,
+        'isChoice': false,
+        'choices': [],
         'draft': true,
         'sendAt': DateTime.now(),
         'sendMapUsers': [],
@@ -423,6 +389,8 @@ class UserProvider with ChangeNotifier {
         'userId': userSend.userId,
         'title': title,
         'content': content,
+        'isChoice': false,
+        'choices': [],
       });
     } catch (e) {
       error = e.toString();
@@ -468,6 +436,8 @@ class UserProvider with ChangeNotifier {
           'userId': userSend.userId,
           'title': title,
           'content': content,
+          'isChoice': false,
+          'choices': [],
           'draft': false,
           'sendAt': DateTime.now(),
           'sendMapUsers': sendMapUsers,
@@ -479,6 +449,8 @@ class UserProvider with ChangeNotifier {
           'userId': _user?.id,
           'title': title,
           'content': content,
+          'isChoice': false,
+          'choices': [],
           'draft': false,
           'sendAt': DateTime.now(),
           'sendMapUsers': sendMapUsers,
@@ -498,6 +470,9 @@ class UserProvider with ChangeNotifier {
           'userId': noticeUser.id,
           'title': title,
           'content': content,
+          'isChoice': false,
+          'choices': [],
+          'answer': '',
           'read': false,
           'token': noticeUser.token,
           'createdUserId': _user!.id,
