@@ -104,7 +104,7 @@ class _SendUserScreenState extends State<SendUserScreen> {
                         return CustomCheckList(
                           label: mapUser.name,
                           subtitle: Text(
-                            mapUser.email,
+                            mapUser.tel,
                             style: TextStyle(fontSize: 14),
                           ),
                           value: value,

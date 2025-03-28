@@ -80,7 +80,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
                   return CustomCheckList(
                     label: mapUser.name,
                     subtitle: Text(
-                      mapUser.email,
+                      mapUser.tel,
                       style: TextStyle(fontSize: 14),
                     ),
                     value: value,

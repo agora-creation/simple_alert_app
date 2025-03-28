@@ -79,7 +79,7 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
                   return UserList(
                     label: mapUser.name,
                     subtitle: Text(
-                      mapUser.email,
+                      mapUser.tel,
                       style: TextStyle(fontSize: 14),
                     ),
                   );

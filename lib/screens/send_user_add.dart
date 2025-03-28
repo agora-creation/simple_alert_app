@@ -4,7 +4,6 @@ import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/services/user.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/user_list.dart';
@@ -66,12 +65,12 @@ class _SendUserAddScreenState extends State<SendUserAddScreen> {
                   labelColor: kWhiteColor,
                   backgroundColor: kBlueColor,
                   onPressed: () async {
-                    UserModel? tmpUser = await UserService().selectData(
-                      email: emailController.text,
-                    );
-                    setState(() {
-                      selectedUser = tmpUser;
-                    });
+                    // UserModel? tmpUser = await UserService().selectData(
+                    //   email: emailController.text,
+                    // );
+                    // setState(() {
+                    //   selectedUser = tmpUser;
+                    // });
                   },
                 ),
                 const SizedBox(height: 16),
@@ -84,7 +83,7 @@ class _SendUserAddScreenState extends State<SendUserAddScreen> {
                           UserList(
                             label: selectedUser!.name,
                             subtitle: Text(
-                              selectedUser!.email,
+                              selectedUser!.tel,
                               style: TextStyle(fontSize: 14),
                             ),
                             trailing: CustomButton(

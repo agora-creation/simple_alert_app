@@ -22,6 +22,8 @@ class UserProvider with ChangeNotifier {
   final FirebaseAuth? _auth;
   User? _authUser;
   User? get authUser => _authUser;
+  String _verificationId = '';
+  int? _verificationResendToken;
 
   final PushService _pushService = PushService();
   final UserService _userService = UserService();
@@ -47,74 +49,108 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<String?> login({
-    required String email,
-    required String password,
+  Future<({bool autoAuth, String? error})> signIn({
+    required String tel,
   }) async {
+    bool autoAuth = false;
     String? error;
-    if (email == '') return 'メールアドレスは必須入力です';
-    if (password == '') return 'パスワードは必須入力です';
+    if (tel == '') return (autoAuth: false, error: '電話番号は必須入力です');
     try {
-      _status = AuthStatus.authenticating;
-      notifyListeners();
-      final result = await _auth?.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+      String remove0Tel = tel.substring(1);
+      String phoneNumber = '+81$remove0Tel';
+      await _auth?.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (credential) async {
+          //Androidの自動認証が有効になっている場合
+          final result = await _auth.signInWithCredential(credential);
+          if (result.user != null) {
+            autoAuth = true;
+            String token = await _pushService.getFcmToken() ?? '';
+            UserModel? tmpUser = await _userService.selectData(
+              id: result.user!.uid,
+            );
+            if (tmpUser == null) {
+              _userService.create({
+                'id': result.user!.uid,
+                'name': '',
+                'tel': tel,
+                'token': token,
+                'noticeMapUsers': [],
+                'sendMapUsers': [],
+              });
+            } else {
+              _userService.update({
+                'id': tmpUser.id,
+                'token': token,
+              });
+            }
+            _authUser = result.user;
+          }
+        },
+        verificationFailed: (e) {
+          error = e.toString();
+        },
+        codeSent: (verificationId, resendToken) {
+          //SMS送信成功
+          _verificationId = verificationId;
+          _verificationResendToken = resendToken;
+        },
+        codeAutoRetrievalTimeout: (verificationId) {},
+        forceResendingToken: null,
       );
-      if (result == null) return 'ログインに失敗しました';
-      UserModel? tmpUser = await _userService.selectData(
-        id: result.user!.uid,
-      );
-      if (tmpUser == null) return 'ログインに失敗しました';
-      String? token = await _pushService.getFcmToken();
-      if (token == null) return 'ログインに失敗しました';
-      _userService.update({
-        'id': tmpUser.id,
-        'token': token,
-      });
-      _authUser = result.user;
     } catch (e) {
-      _status = AuthStatus.unauthenticated;
-      notifyListeners();
-      error = 'ログインに失敗しました';
+      error = '認証に失敗しました';
     }
-    return error;
+
+    notifyListeners();
+    return (autoAuth: autoAuth, error: error);
   }
 
-  Future<String?> registration({
-    required String name,
-    required String email,
-    required String password,
+  Future<String?> signInConf({
+    required String tel,
+    required String smsCode,
   }) async {
     String? error;
-    if (name == '') return '名前は必須入力です';
-    if (email == '') return 'メールアドレスは必須入力です';
-    if (password == '') return 'パスワードは必須入力です';
+    if (smsCode == '') return '認証コードは必須入力です';
     try {
       _status = AuthStatus.authenticating;
       notifyListeners();
-      final result = await _auth?.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
+      final credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId,
+        smsCode: smsCode,
       );
-      if (result == null) return '登録に失敗しました';
-      String? token = await _pushService.getFcmToken();
-      if (token == null) return '登録に失敗しました';
-      _userService.create({
-        'id': result.user!.uid,
-        'name': name,
-        'email': email,
-        'password': password,
-        'token': token,
-        'noticeMapUsers': [],
-        'sendMapUsers': [],
-      });
-      _authUser = result.user;
+      final result = await _auth?.signInWithCredential(credential);
+      if (result != null) {
+        if (result.user != null) {
+          String token = await _pushService.getFcmToken() ?? '';
+          UserModel? tmpUser = await _userService.selectData(
+            id: result.user!.uid,
+          );
+          if (tmpUser == null) {
+            _userService.create({
+              'id': result.user!.uid,
+              'name': '',
+              'tel': tel,
+              'token': token,
+              'noticeMapUsers': [],
+              'sendMapUsers': [],
+            });
+          } else {
+            _userService.update({
+              'id': tmpUser.id,
+              'token': token,
+            });
+          }
+          _authUser = result.user;
+        }
+      }
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
-      error = '登録に失敗しました';
+      print(e.toString());
+      error = e.toString();
     }
+    notifyListeners();
     return error;
   }
 
@@ -186,7 +222,7 @@ class UserProvider with ChangeNotifier {
       noticeMapUsers.add({
         'id': selectedUser.id,
         'name': selectedUser.name,
-        'email': selectedUser.email,
+        'tel': selectedUser.tel,
       });
       _userService.update({
         'id': _user?.id,
@@ -202,7 +238,7 @@ class UserProvider with ChangeNotifier {
       sendMapUsers.add({
         'id': _user!.id,
         'name': _user!.name,
-        'email': _user!.email,
+        'tel': _user!.tel,
       });
       _userService.update({
         'id': selectedUser.id,
@@ -274,7 +310,7 @@ class UserProvider with ChangeNotifier {
       sendMapUsers.add({
         'id': selectedUser.id,
         'name': selectedUser.name,
-        'email': selectedUser.email,
+        'tel': selectedUser.tel,
       });
       _userService.update({
         'id': _user?.id,
@@ -290,7 +326,7 @@ class UserProvider with ChangeNotifier {
       noticeMapUsers.add({
         'id': _user!.id,
         'name': _user!.name,
-        'email': _user!.email,
+        'tel': _user!.tel,
       });
       _userService.update({
         'id': selectedUser.id,
