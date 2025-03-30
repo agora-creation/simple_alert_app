@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
+import 'package:simple_alert_app/models/user_notice.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/services/push.dart';
 import 'package:simple_alert_app/services/user.dart';
@@ -23,7 +24,6 @@ class UserProvider with ChangeNotifier {
   User? _authUser;
   User? get authUser => _authUser;
   String _verificationId = '';
-  int? _verificationResendToken;
 
   final PushService _pushService = PushService();
   final UserService _userService = UserService();
@@ -93,7 +93,6 @@ class UserProvider with ChangeNotifier {
         codeSent: (verificationId, resendToken) {
           //SMS送信成功
           _verificationId = verificationId;
-          _verificationResendToken = resendToken;
         },
         codeAutoRetrievalTimeout: (verificationId) {},
         forceResendingToken: null,
@@ -129,7 +128,7 @@ class UserProvider with ChangeNotifier {
           if (tmpUser == null) {
             _userService.create({
               'id': result.user!.uid,
-              'name': '',
+              'name': '名無し',
               'tel': tel,
               'token': token,
               'noticeMapUsers': [],
@@ -349,10 +348,15 @@ class UserProvider with ChangeNotifier {
   Future<String?> createSendDraft({
     required String title,
     required String content,
+    required bool isChoice,
+    required List<String> choices,
   }) async {
     String? error;
     if (title == '') return '件名は必須入力です';
     if (content == '') return '内容は必須入力です';
+    if (isChoice && choices.isEmpty) {
+      return '選択肢が設定されていません';
+    }
     try {
       String id = _userSendService.id(userId: _user!.id);
       _userSendService.create({
@@ -360,8 +364,8 @@ class UserProvider with ChangeNotifier {
         'userId': _user?.id,
         'title': title,
         'content': content,
-        'isChoice': false,
-        'choices': [],
+        'isChoice': isChoice,
+        'choices': choices,
         'draft': true,
         'sendAt': DateTime.now(),
         'sendMapUsers': [],
@@ -379,18 +383,23 @@ class UserProvider with ChangeNotifier {
     required UserSendModel userSend,
     required String title,
     required String content,
+    required bool isChoice,
+    required List<String> choices,
   }) async {
     String? error;
     if (title == '') return '件名は必須入力です';
     if (content == '') return '内容は必須入力です';
+    if (isChoice && choices.isEmpty) {
+      return '選択肢が設定されていません';
+    }
     try {
       _userSendService.update({
         'id': userSend.id,
         'userId': userSend.userId,
         'title': title,
         'content': content,
-        'isChoice': false,
-        'choices': [],
+        'isChoice': isChoice,
+        'choices': choices,
       });
     } catch (e) {
       error = e.toString();
@@ -417,11 +426,16 @@ class UserProvider with ChangeNotifier {
     required UserSendModel? userSend,
     required String title,
     required String content,
+    required bool isChoice,
+    required List<String> choices,
     required List<MapUserModel> selectedSendMapUsers,
   }) async {
     String? error;
     if (title == '') return '件名は必須入力です';
     if (content == '') return '内容は必須入力です';
+    if (isChoice && choices.isEmpty) {
+      return '選択肢が設定されていません';
+    }
     if (selectedSendMapUsers.isEmpty) return '選択されていません';
     try {
       List<Map> sendMapUsers = [];
@@ -436,8 +450,8 @@ class UserProvider with ChangeNotifier {
           'userId': userSend.userId,
           'title': title,
           'content': content,
-          'isChoice': false,
-          'choices': [],
+          'isChoice': isChoice,
+          'choices': choices,
           'draft': false,
           'sendAt': DateTime.now(),
           'sendMapUsers': sendMapUsers,
@@ -449,8 +463,8 @@ class UserProvider with ChangeNotifier {
           'userId': _user?.id,
           'title': title,
           'content': content,
-          'isChoice': false,
-          'choices': [],
+          'isChoice': isChoice,
+          'choices': choices,
           'draft': false,
           'sendAt': DateTime.now(),
           'sendMapUsers': sendMapUsers,
@@ -470,8 +484,8 @@ class UserProvider with ChangeNotifier {
           'userId': noticeUser.id,
           'title': title,
           'content': content,
-          'isChoice': false,
-          'choices': [],
+          'isChoice': isChoice,
+          'choices': choices,
           'answer': '',
           'read': false,
           'token': noticeUser.token,
@@ -480,6 +494,24 @@ class UserProvider with ChangeNotifier {
           'createdAt': DateTime.now(),
         });
       }
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> answer({
+    required UserNoticeModel userNotice,
+    required String answer,
+  }) async {
+    String? error;
+    if (answer == '') return '回答が選択されていません';
+    try {
+      _userNoticeService.update({
+        'id': userNotice.id,
+        'userId': userNotice.userId,
+        'answer': answer,
+      });
     } catch (e) {
       error = e.toString();
     }

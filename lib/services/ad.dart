@@ -15,10 +15,10 @@ class AdService {
 
   static String get bannerAdUnitId {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/6300978111'; // テストID
+//      return 'ca-app-pub-3940256099942544/6300978111'; // テストID
       return 'ca-app-pub-9791675225952080/1935914100';
     } else if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/6300978111'; // テストID
+//      return 'ca-app-pub-3940256099942544/6300978111'; // テストID
       return 'ca-app-pub-9791675225952080/8033578271';
     } else {
       throw UnsupportedError('Unsupported platform');

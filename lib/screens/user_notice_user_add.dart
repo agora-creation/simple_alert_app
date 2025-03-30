@@ -4,6 +4,7 @@ import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/services/user.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/user_list.dart';
@@ -24,7 +25,7 @@ class UserNoticeUserAddScreen extends StatefulWidget {
 }
 
 class _UserNoticeUserAddScreenState extends State<UserNoticeUserAddScreen> {
-  TextEditingController emailController = TextEditingController();
+  TextEditingController telController = TextEditingController();
   UserModel? selectedUser;
 
   @override
@@ -52,12 +53,12 @@ class _UserNoticeUserAddScreenState extends State<UserNoticeUserAddScreen> {
               children: [
                 const SizedBox(height: 16),
                 CustomTextFormField(
-                  controller: emailController,
-                  textInputType: TextInputType.emailAddress,
+                  controller: telController,
+                  textInputType: TextInputType.phone,
                   maxLines: 1,
-                  label: 'メールアドレスで検索',
+                  label: '電話番号で検索',
                   color: kBlackColor,
-                  prefix: Icons.email,
+                  prefix: Icons.phone,
                 ),
                 const SizedBox(height: 16),
                 CustomButton(
@@ -66,19 +67,16 @@ class _UserNoticeUserAddScreenState extends State<UserNoticeUserAddScreen> {
                   labelColor: kWhiteColor,
                   backgroundColor: kBlueColor,
                   onPressed: () async {
-                    // UserModel? tmpUser = await UserService().selectData(
-                    //   email: emailController.text,
-                    // );
-                    // if (tmpUser == null) {
-                    //   if (!mounted) return;
-                    //   showMessage(context, '受信先が見つかりませんでした', false);
-                    //   return;
-                    // }
-                    // setState(() {
-                    //   selectedUser = tmpUser;
-                    // });
+                    UserModel? tmpUser = await UserService().selectData(
+                      tel: telController.text,
+                    );
+                    setState(() {
+                      selectedUser = tmpUser;
+                    });
                   },
                 ),
+                const SizedBox(height: 16),
+                Divider(color: kBlackColor.withOpacity(0.5)),
                 const SizedBox(height: 16),
                 selectedUser != null
                     ? Column(
@@ -92,7 +90,7 @@ class _UserNoticeUserAddScreenState extends State<UserNoticeUserAddScreen> {
                             ),
                             trailing: CustomButton(
                               type: ButtonSizeType.sm,
-                              label: '追加',
+                              label: '登録する',
                               labelColor: kWhiteColor,
                               backgroundColor: kBlueColor,
                               onPressed: () async {
@@ -114,7 +112,7 @@ class _UserNoticeUserAddScreenState extends State<UserNoticeUserAddScreen> {
                           ),
                         ],
                       )
-                    : Container(),
+                    : Text('受信先が見つかりませんでした'),
               ],
             ),
           ),

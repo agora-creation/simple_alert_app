@@ -13,12 +13,16 @@ class SendConfScreen extends StatefulWidget {
   final UserSendModel? userSend;
   final String title;
   final String content;
+  final bool isChoice;
+  final List<String> choices;
 
   const SendConfScreen({
     required this.userProvider,
     this.userSend,
     required this.title,
     required this.content,
+    required this.isChoice,
+    required this.choices,
     super.key,
   });
 
@@ -104,6 +108,8 @@ class _SendConfScreenState extends State<SendConfScreen> {
             userSend: widget.userSend,
             title: widget.title,
             content: widget.content,
+            isChoice: widget.isChoice,
+            choices: widget.choices,
             selectedSendMapUsers: selectedSendMapUsers,
           );
           if (error != null) {

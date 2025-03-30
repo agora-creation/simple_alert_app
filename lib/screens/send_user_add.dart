@@ -4,6 +4,7 @@ import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/services/user.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/user_list.dart';
@@ -23,7 +24,7 @@ class SendUserAddScreen extends StatefulWidget {
 }
 
 class _SendUserAddScreenState extends State<SendUserAddScreen> {
-  TextEditingController emailController = TextEditingController();
+  TextEditingController telController = TextEditingController();
   UserModel? selectedUser;
 
   @override
@@ -51,12 +52,12 @@ class _SendUserAddScreenState extends State<SendUserAddScreen> {
               children: [
                 const SizedBox(height: 16),
                 CustomTextFormField(
-                  controller: emailController,
-                  textInputType: TextInputType.emailAddress,
+                  controller: telController,
+                  textInputType: TextInputType.phone,
                   maxLines: 1,
-                  label: 'メールアドレスで検索',
+                  label: '電話番号で検索',
                   color: kBlackColor,
-                  prefix: Icons.email,
+                  prefix: Icons.phone,
                 ),
                 const SizedBox(height: 16),
                 CustomButton(
@@ -65,12 +66,12 @@ class _SendUserAddScreenState extends State<SendUserAddScreen> {
                   labelColor: kWhiteColor,
                   backgroundColor: kBlueColor,
                   onPressed: () async {
-                    // UserModel? tmpUser = await UserService().selectData(
-                    //   email: emailController.text,
-                    // );
-                    // setState(() {
-                    //   selectedUser = tmpUser;
-                    // });
+                    UserModel? tmpUser = await UserService().selectData(
+                      tel: telController.text,
+                    );
+                    setState(() {
+                      selectedUser = tmpUser;
+                    });
                   },
                 ),
                 const SizedBox(height: 16),

@@ -91,6 +91,7 @@ class UserNoticeScreen extends StatelessWidget {
                                     PageTransition(
                                       type: PageTransitionType.rightToLeft,
                                       child: UserNoticeDetailScreen(
+                                        userProvider: userProvider,
                                         userNotice: userNotice,
                                       ),
                                     ),

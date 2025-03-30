@@ -6,6 +6,7 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send_conf.dart';
+import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class SendCreateScreen extends StatefulWidget {
@@ -25,6 +26,28 @@ class SendCreateScreen extends StatefulWidget {
 class _SendCreateScreenState extends State<SendCreateScreen> {
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
+  bool isChoice = false;
+  List<String> choices = kChoices;
+  List<TextEditingController> choiceControllers = [];
+
+  void updateChoices() {
+    choices = choiceControllers.map((controller) => controller.text).toList();
+    setState(() {});
+  }
+
+  void addChoices() {
+    String newChoice = '新しい選択肢';
+    choices.add(newChoice);
+    choiceControllers.add(TextEditingController(text: newChoice));
+    setState(() {});
+  }
+
+  void removeChoices(int index) {
+    choices.removeAt(index);
+    choiceControllers[index].dispose();
+    choiceControllers.removeAt(index);
+    setState(() {});
+  }
 
   @override
   void initState() {
@@ -33,6 +56,16 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
       contentController.text = widget.userSend!.content;
     }
     super.initState();
+    choiceControllers =
+        choices.map((choice) => TextEditingController(text: choice)).toList();
+  }
+
+  @override
+  void dispose() {
+    for (final controller in choiceControllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -77,6 +110,8 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                       userSend: widget.userSend!,
                       title: titleController.text,
                       content: contentController.text,
+                      isChoice: isChoice,
+                      choices: choices,
                     );
                     if (error != null) {
                       if (!mounted) return;
@@ -98,6 +133,8 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                     String? error = await widget.userProvider.createSendDraft(
                       title: titleController.text,
                       content: contentController.text,
+                      isChoice: isChoice,
+                      choices: choices,
                     );
                     if (error != null) {
                       if (!mounted) return;
@@ -136,11 +173,73 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                   CustomTextFormField(
                     controller: contentController,
                     textInputType: TextInputType.multiline,
-                    maxLines: 20,
+                    maxLines: 15,
                     label: '内容',
                     color: kBlackColor,
                     prefix: Icons.wrap_text,
                   ),
+                  const SizedBox(height: 8),
+                  Divider(color: kBlackColor.withOpacity(0.3), height: 1),
+                  CheckboxListTile(
+                    title: Text('回答を求める'),
+                    value: isChoice,
+                    onChanged: (value) {
+                      if (value == null) return;
+                      setState(() {
+                        isChoice = value;
+                      });
+                    },
+                    activeColor: kBlueColor,
+                  ),
+                  Divider(color: kBlackColor.withOpacity(0.3), height: 1),
+                  isChoice
+                      ? ExpansionTile(
+                          title: Text('選択肢を確認'),
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: choices.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: choiceControllers[index],
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          onChanged: (value) {
+                                            updateChoices();
+                                          },
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: FaIcon(FontAwesomeIcons.xmark),
+                                        onPressed: () => removeChoices(index),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: CustomButton(
+                                type: ButtonSizeType.sm,
+                                label: '追加',
+                                labelColor: kWhiteColor,
+                                backgroundColor: kBlueColor,
+                                onPressed: addChoices,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                          ],
+                        )
+                      : Container(),
+                  Divider(color: kBlackColor.withOpacity(0.3), height: 1),
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -158,6 +257,8 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                 userSend: widget.userSend,
                 title: titleController.text,
                 content: contentController.text,
+                isChoice: isChoice,
+                choices: choices,
               ),
             ),
           );

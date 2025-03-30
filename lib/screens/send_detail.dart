@@ -6,7 +6,7 @@ import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/link_text.dart';
 
-class SendDetailScreen extends StatelessWidget {
+class SendDetailScreen extends StatefulWidget {
   final UserSendModel userSend;
 
   const SendDetailScreen({
@@ -14,6 +14,11 @@ class SendDetailScreen extends StatelessWidget {
     super.key,
   });
 
+  @override
+  State<SendDetailScreen> createState() => _SendDetailScreenState();
+}
+
+class _SendDetailScreenState extends State<SendDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +42,7 @@ class SendDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '送信日時: ${dateText('yyyy/MM/dd HH:mm', userSend.createdAt)}',
+                      '送信日時: ${dateText('yyyy/MM/dd HH:mm', widget.userSend.createdAt)}',
                       style: TextStyle(
                         color: kBlackColor.withOpacity(0.8),
                         fontSize: 14,
@@ -48,7 +53,7 @@ class SendDetailScreen extends StatelessWidget {
                       onTap: () => showDialog(
                         context: context,
                         builder: (context) => SendUsersDialog(
-                          userSend: userSend,
+                          userSend: widget.userSend,
                         ),
                       ),
                     ),
@@ -58,24 +63,60 @@ class SendDetailScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Expanded(
                 child: SingleChildScrollView(
-                  child: Container(
-                    color: kMsgBgColor,
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          userSend.title,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'SourceHanSansJP-Bold',
-                          ),
+                  child: Column(
+                    children: [
+                      Container(
+                        color: kMsgBgColor,
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              widget.userSend.title,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'SourceHanSansJP-Bold',
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(widget.userSend.content),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        Text(userSend.content),
-                      ],
-                    ),
+                      ),
+                      widget.userSend.isChoice
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 16),
+                                Text(
+                                  'この通知は選択肢が設定されています。',
+                                  style: TextStyle(color: kRedColor),
+                                ),
+                                SizedBox(height: 4),
+                                Column(
+                                  children:
+                                      widget.userSend.choices.map((choice) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 4),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: kBlackColor.withOpacity(0.5),
+                                          ),
+                                        ),
+                                        child: ListTile(
+                                          title: Text(choice),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            )
+                          : Container(),
+                      SizedBox(height: 100),
+                    ],
                   ),
                 ),
               ),

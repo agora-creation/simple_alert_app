@@ -49,3 +49,5 @@ ThemeData customTheme() {
     unselectedWidgetColor: kWhiteColor,
   );
 }
+
+const kChoices = ['はい', 'いいえ'];
