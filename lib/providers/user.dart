@@ -444,6 +444,7 @@ class UserProvider with ChangeNotifier {
           sendMapUsers.add(mapUser.toMap());
         }
       }
+      String userSendId = '';
       if (userSend != null) {
         _userSendService.update({
           'id': userSend.id,
@@ -456,6 +457,7 @@ class UserProvider with ChangeNotifier {
           'sendAt': DateTime.now(),
           'sendMapUsers': sendMapUsers,
         });
+        userSendId = userSend.id;
       } else {
         String id = _userSendService.id(userId: _user!.id);
         _userSendService.create({
@@ -472,6 +474,7 @@ class UserProvider with ChangeNotifier {
           'createdUserName': _user!.name,
           'createdAt': DateTime.now(),
         });
+        userSendId = id;
       }
       for (MapUserModel mapUser in selectedSendMapUsers) {
         UserModel? noticeUser = await _userService.selectData(
@@ -482,6 +485,7 @@ class UserProvider with ChangeNotifier {
         _userNoticeService.create({
           'id': id,
           'userId': noticeUser.id,
+          'userSendId': userSendId,
           'title': title,
           'content': content,
           'isChoice': isChoice,
@@ -512,6 +516,25 @@ class UserProvider with ChangeNotifier {
         'userId': userNotice.userId,
         'answer': answer,
       });
+      UserSendModel? userSend = await _userSendService.selectData(
+        id: userNotice.userSendId,
+      );
+      if (userSend != null) {
+        List<Map> sendMapUsers = [];
+        if (userSend.sendMapUsers.isNotEmpty) {
+          for (MapUserModel mapUser in userSend.sendMapUsers) {
+            if (mapUser.id == userNotice.userId) {
+              mapUser.answer = answer;
+            }
+            sendMapUsers.add(mapUser.toMap());
+          }
+        }
+        _userSendService.update({
+          'id': userSend.id,
+          'userId': userSend.userId,
+          'sendMapUsers': sendMapUsers,
+        });
+      }
     } catch (e) {
       error = e.toString();
     }

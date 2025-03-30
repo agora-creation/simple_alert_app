@@ -111,7 +111,7 @@ class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
                               children: [
                                 SizedBox(height: 16),
                                 Text(
-                                  'この通知は回答を求めています。',
+                                  '※この通知は回答を求めています。',
                                   style: TextStyle(color: kRedColor),
                                 ),
                                 SizedBox(height: 4),
@@ -127,15 +127,7 @@ class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
                                           ),
                                         ),
                                         child: RadioListTile(
-                                          title: Text(
-                                            choice,
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily:
-                                                  'SourceHanSansJP-Bold',
-                                            ),
-                                          ),
+                                          title: Text(choice),
                                           value: choice,
                                           groupValue: answer,
                                           onChanged: (value) {

@@ -90,7 +90,7 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
                               children: [
                                 SizedBox(height: 16),
                                 Text(
-                                  'この通知は選択肢が設定されています。',
+                                  '※この通知は選択肢が設定されています。',
                                   style: TextStyle(color: kRedColor),
                                 ),
                                 SizedBox(height: 4),
@@ -106,7 +106,10 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
                                           ),
                                         ),
                                         child: ListTile(
-                                          title: Text(choice),
+                                          title: Text(
+                                            choice,
+                                            style: TextStyle(fontSize: 14),
+                                          ),
                                         ),
                                       ),
                                     );
@@ -157,7 +160,18 @@ class SendUsersDialog extends StatelessWidget {
                     bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
                   ),
                 ),
-                child: ListTile(title: Text(mapUser.name)),
+                child: ListTile(
+                  title: Text(mapUser.name),
+                  trailing: Text(
+                    'Yes',
+                    style: TextStyle(
+                      color: kRedColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'SourceHanSansJP-Bold',
+                    ),
+                  ),
+                ),
               );
             }).toList(),
           ),

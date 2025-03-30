@@ -44,6 +44,24 @@ class UserSendService {
         .delete();
   }
 
+  Future<UserSendModel?> selectData({
+    String? id,
+  }) async {
+    UserSendModel? ret;
+    if (id != null) {
+      await firestore
+          .collection(collection)
+          .where('id', isEqualTo: id)
+          .get()
+          .then((value) {
+        if (value.docs.isNotEmpty) {
+          ret = UserSendModel.fromSnapshot(value.docs.first);
+        }
+      });
+    }
+    return ret;
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>>? streamList({
     required String userId,
   }) {

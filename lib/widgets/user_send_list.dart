@@ -54,10 +54,23 @@ class UserSendList extends StatelessWidget {
                   fontFamily: 'SourceHanSansJP-Bold',
                 ),
               )
-            : const FaIcon(
-                FontAwesomeIcons.chevronRight,
-                size: 16,
-              ),
+            : userSend.isChoice
+                ? Chip(
+                    label: Text(
+                      '回答求',
+                      style: TextStyle(
+                        color: kWhiteColor,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'SourceHanSansJP-Bold',
+                      ),
+                    ),
+                    backgroundColor: kRedColor,
+                    shape: StadiumBorder(),
+                  )
+                : const FaIcon(
+                    FontAwesomeIcons.chevronRight,
+                    size: 16,
+                  ),
         onTap: onTap,
       ),
     );

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UserNoticeModel {
   String _id = '';
   String _userId = '';
+  String _userSendId = '';
   String _title = '';
   String _content = '';
   bool _isChoice = false;
@@ -16,6 +17,7 @@ class UserNoticeModel {
 
   String get id => _id;
   String get userId => _userId;
+  String get userSendId => _userSendId;
   String get title => _title;
   String get content => _content;
   bool get isChoice => _isChoice;
@@ -33,6 +35,7 @@ class UserNoticeModel {
     if (data == null) return;
     _id = data['id'] ?? '';
     _userId = data['userId'] ?? '';
+    _userSendId = data['userSendId'] ?? '';
     _title = data['title'] ?? '';
     _content = data['content'] ?? '';
     _isChoice = data['isChoice'] ?? false;

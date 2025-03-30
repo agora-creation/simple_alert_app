@@ -44,10 +44,23 @@ class UserNoticeList extends StatelessWidget {
             fontSize: 14,
           ),
         ),
-        trailing: const FaIcon(
-          FontAwesomeIcons.chevronRight,
-          size: 16,
-        ),
+        trailing: userNotice.isChoice
+            ? Chip(
+                label: Text(
+                  '回答求',
+                  style: TextStyle(
+                    color: kWhiteColor,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'SourceHanSansJP-Bold',
+                  ),
+                ),
+                backgroundColor: kRedColor,
+                shape: StadiumBorder(),
+              )
+            : const FaIcon(
+                FontAwesomeIcons.chevronRight,
+                size: 16,
+              ),
         onTap: onTap,
       ),
     );
