@@ -118,7 +118,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
             return;
           }
           //レビューの促し
-          await requestReview();
+          //await requestReview();
           if (!mounted) return;
           Navigator.pop(context);
           Navigator.pop(context);

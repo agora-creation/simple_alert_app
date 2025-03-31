@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          inAppPurchaseProvider.planAdView
+          inAppPurchaseProvider.planAdView && bannerAd.responseInfo != null
               ? SizedBox(
                   width: bannerAd.size.width.toDouble(),
                   height: bannerAd.size.height.toDouble(),

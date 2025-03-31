@@ -18,6 +18,7 @@ import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/link_text.dart';
 import 'package:simple_alert_app/widgets/product_list.dart';
 import 'package:simple_alert_app/widgets/user_list.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -360,11 +361,22 @@ void showSubscriptionDialog(
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '有料プランに切り替えることで、利用可能な機能が増えます。',
+                    'プランを切り替えることで、いくつかの機能が解放されます。',
                     style: TextStyle(
                       color: kBlackColor.withOpacity(0.5),
                       fontSize: 14,
                     ),
+                  ),
+                  const SizedBox(height: 4),
+                  LinkText(
+                    label: '利用規約を確認',
+                    onTap: () async {
+                      if (!await launchUrl(Uri.parse(
+                        'https://docs.google.com/document/d/18yzTySjHTdCE_VHS6NjAeP8OfTpfqyh5VZjaqBgdP78/edit?usp=sharing',
+                      ))) {
+                        throw Exception('Could not launch');
+                      }
+                    },
                   ),
                   const SizedBox(height: 16),
                   Column(
@@ -408,17 +420,15 @@ void showSubscriptionDialog(
                       ],
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {
+                  const SizedBox(height: 8),
+                  LinkText(
+                    label: '購入の復元',
+                    onTap: () {
                       inAppPurchaseProvider.restorePurchases();
                       Navigator.of(context).pop();
                     },
-                    child: Text(
-                      '購入の復元',
-                      style: TextStyle(color: kBlueColor),
-                    ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),

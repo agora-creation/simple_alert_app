@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/widgets/alert_chip.dart';
 
 class UserSendList extends StatelessWidget {
   final UserSendModel userSend;
@@ -50,23 +51,10 @@ class UserSendList extends StatelessWidget {
                 style: TextStyle(
                   color: kRedColor,
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'SourceHanSansJP-Bold',
                 ),
               )
             : userSend.isChoice
-                ? Chip(
-                    label: Text(
-                      '回答求',
-                      style: TextStyle(
-                        color: kWhiteColor,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'SourceHanSansJP-Bold',
-                      ),
-                    ),
-                    backgroundColor: kRedColor,
-                    shape: StadiumBorder(),
-                  )
+                ? AlertChip('回答求')
                 : const FaIcon(
                     FontAwesomeIcons.chevronRight,
                     size: 16,

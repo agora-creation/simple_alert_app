@@ -33,7 +33,7 @@ class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
       });
     }
     //レビューの促し
-    await requestReview();
+    //await requestReview();
   }
 
   @override

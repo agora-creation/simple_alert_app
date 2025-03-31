@@ -9,6 +9,7 @@ import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send_user_add.dart';
+import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
@@ -80,20 +81,7 @@ class _SendUserScreenState extends State<SendUserScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              alignment: Alignment.center,
-              width: double.infinity,
-              color: kRedColor,
-              padding: EdgeInsets.all(8),
-              child: Text(
-                '送信先は${inAppPurchaseProvider.planLimit}個まで登録可能です',
-                style: TextStyle(
-                  color: kWhiteColor,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'SourceHanSansJP-Bold',
-                ),
-              ),
-            ),
+            AlertBar('送信先は${inAppPurchaseProvider.planLimit}個まで登録可能です'),
             Expanded(
               child: sendMapUsers.isNotEmpty
                   ? ListView.builder(

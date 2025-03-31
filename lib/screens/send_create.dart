@@ -6,6 +6,7 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send_conf.dart';
+import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
@@ -27,7 +28,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
   bool isChoice = false;
-  List<String> choices = kChoices;
+  List<String> choices = [];
   List<TextEditingController> choiceControllers = [];
 
   void updateChoices() {
@@ -36,9 +37,8 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
   }
 
   void addChoices() {
-    String newChoice = '新しい選択肢';
-    choices.add(newChoice);
-    choiceControllers.add(TextEditingController(text: newChoice));
+    choices.add('新しい選択肢');
+    choiceControllers.add(TextEditingController(text: '新しい選択肢'));
     setState(() {});
   }
 
@@ -55,9 +55,14 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
       titleController.text = widget.userSend!.title;
       contentController.text = widget.userSend!.content;
     }
-    super.initState();
+    if (kChoices.isNotEmpty) {
+      for (final choice in kChoices) {
+        choices.add(choice);
+      }
+    }
     choiceControllers =
         choices.map((choice) => TextEditingController(text: choice)).toList();
+    super.initState();
   }
 
   @override
@@ -85,18 +90,13 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
         actions: [
           widget.userSend != null
               ? TextButton(
-                  onPressed: () async {
-                    String? error = await widget.userProvider.deleteSendDraft(
+                  onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) => DelDialog(
+                      userProvider: widget.userProvider,
                       userSend: widget.userSend!,
-                    );
-                    if (error != null) {
-                      if (!mounted) return;
-                      showMessage(context, error, false);
-                      return;
-                    }
-                    if (!mounted) return;
-                    Navigator.pop(context);
-                  },
+                    ),
+                  ),
                   child: Text(
                     '削除',
                     style: TextStyle(color: kRedColor),
@@ -179,66 +179,80 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                     prefix: Icons.wrap_text,
                   ),
                   const SizedBox(height: 8),
-                  Divider(color: kBlackColor.withOpacity(0.3), height: 1),
-                  CheckboxListTile(
-                    title: Text('回答を求める'),
-                    value: isChoice,
-                    onChanged: (value) {
-                      if (value == null) return;
-                      setState(() {
-                        isChoice = value;
-                      });
-                    },
-                    activeColor: kBlueColor,
+                  Column(
+                    children: [
+                      Divider(color: kBlackColor.withOpacity(0.5), height: 1),
+                      CheckboxListTile(
+                        title: Text('回答を求める'),
+                        value: isChoice,
+                        onChanged: (value) {
+                          if (value == null) return;
+                          setState(() {
+                            isChoice = value;
+                          });
+                        },
+                        activeColor: kBlueColor,
+                      ),
+                      Divider(color: kBlackColor.withOpacity(0.5), height: 1),
+                    ],
                   ),
-                  Divider(color: kBlackColor.withOpacity(0.3), height: 1),
-                  isChoice
-                      ? ExpansionTile(
-                          title: Text('選択肢を確認'),
-                          children: [
-                            ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: choices.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          controller: choiceControllers[index],
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                          ),
-                                          onChanged: (value) {
-                                            updateChoices();
-                                          },
-                                        ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: kBlackColor.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                    child: ExpansionTile(
+                      enabled: isChoice,
+                      title: Text('選択肢を設定'),
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: choices.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: choiceControllers[index],
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
                                       ),
-                                      IconButton(
-                                        icon: FaIcon(FontAwesomeIcons.xmark),
-                                        onPressed: () => removeChoices(index),
-                                      ),
-                                    ],
+                                      onChanged: (value) {
+                                        updateChoices();
+                                      },
+                                    ),
                                   ),
-                                );
-                              },
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: CustomButton(
-                                type: ButtonSizeType.sm,
-                                label: '追加',
-                                labelColor: kWhiteColor,
-                                backgroundColor: kBlueColor,
-                                onPressed: addChoices,
+                                  IconButton(
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.xmark,
+                                      color: kRedColor,
+                                    ),
+                                    onPressed: () => removeChoices(index),
+                                  ),
+                                ],
                               ),
-                            ),
-                            SizedBox(height: 8),
-                          ],
-                        )
-                      : Container(),
-                  Divider(color: kBlackColor.withOpacity(0.3), height: 1),
+                            );
+                          },
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: CustomButton(
+                            type: ButtonSizeType.sm,
+                            label: '選択肢を追加',
+                            labelColor: kWhiteColor,
+                            backgroundColor: kBlueColor,
+                            onPressed: addChoices,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 100),
                 ],
               ),
@@ -272,6 +286,67 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
           style: TextStyle(color: kWhiteColor),
         ),
       ),
+    );
+  }
+}
+
+class DelDialog extends StatefulWidget {
+  final UserProvider userProvider;
+  final UserSendModel userSend;
+
+  const DelDialog({
+    required this.userProvider,
+    required this.userSend,
+    super.key,
+  });
+
+  @override
+  State<DelDialog> createState() => _DelDialogState();
+}
+
+class _DelDialogState extends State<DelDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return CustomAlertDialog(
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8),
+          Text(
+            '本当に削除しますか？',
+            style: TextStyle(color: kRedColor),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: '削除する',
+          labelColor: kWhiteColor,
+          backgroundColor: kRedColor,
+          onPressed: () async {
+            String? error = await widget.userProvider.deleteSendDraft(
+              userSend: widget.userSend,
+            );
+            if (error != null) {
+              if (!mounted) return;
+              showMessage(context, error, false);
+              return;
+            }
+            if (!mounted) return;
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 }
