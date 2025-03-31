@@ -446,6 +446,11 @@ void showSubscriptionDialog(
     result(
       context.read<InAppPurchaseProvider>().selectedProduct,
     );
+
+    Restart.restartApp(
+      notificationTitle: 'アプリの再起動',
+      notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
+    );
   });
 }
 

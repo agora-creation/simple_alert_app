@@ -6,6 +6,9 @@ import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/widgets/alert_bar.dart';
+import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
+import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
 
 class SendConfScreen extends StatefulWidget {
@@ -36,8 +39,6 @@ class _SendConfScreenState extends State<SendConfScreen> {
 
   @override
   void initState() {
-    //プランにより送信先を削除
-
     UserModel user = widget.userProvider.user!;
     sendMapUsers = user.sendMapUsers;
     super.initState();
@@ -75,63 +76,140 @@ class _SendConfScreenState extends State<SendConfScreen> {
         ],
       ),
       body: SafeArea(
-        child: sendMapUsers.isNotEmpty
-            ? ListView.builder(
-                itemCount: sendMapUsers.length,
-                itemBuilder: (context, index) {
-                  MapUserModel mapUser = sendMapUsers[index];
-                  bool value = selectedSendMapUsers.contains(mapUser);
-                  return CustomCheckList(
-                    label: mapUser.name,
-                    subtitle: Text(
-                      mapUser.tel,
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    value: value,
-                    onChanged: (value) {
-                      if (!selectedSendMapUsers.contains(mapUser)) {
-                        selectedSendMapUsers.add(mapUser);
-                      } else {
-                        selectedSendMapUsers.remove(mapUser);
-                      }
-                      setState(() {});
-                    },
-                    activeColor: kBlueColor,
-                  );
-                },
-              )
-            : Center(child: Text('送信先はありません')),
+        child: Column(
+          children: [
+            AlertBar('送信制限まであと0件'),
+            Expanded(
+              child: sendMapUsers.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: sendMapUsers.length,
+                      itemBuilder: (context, index) {
+                        MapUserModel mapUser = sendMapUsers[index];
+                        bool value = selectedSendMapUsers.contains(mapUser);
+                        return CustomCheckList(
+                          label: mapUser.name,
+                          subtitle: Text(
+                            mapUser.tel,
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          value: value,
+                          onChanged: (value) {
+                            if (!selectedSendMapUsers.contains(mapUser)) {
+                              selectedSendMapUsers.add(mapUser);
+                            } else {
+                              selectedSendMapUsers.remove(mapUser);
+                            }
+                            setState(() {});
+                          },
+                          activeColor: kBlueColor,
+                        );
+                      },
+                    )
+                  : Center(child: Text('送信先はありません')),
+            ),
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          String? error = await widget.userProvider.send(
-            userSend: widget.userSend,
-            title: widget.title,
-            content: widget.content,
-            isChoice: widget.isChoice,
-            choices: widget.choices,
-            selectedSendMapUsers: selectedSendMapUsers,
-          );
-          if (error != null) {
+      floatingActionButton: selectedSendMapUsers.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (context) => SendDialog(
+                  userProvider: widget.userProvider,
+                  userSend: widget.userSend,
+                  title: widget.title,
+                  content: widget.content,
+                  isChoice: widget.isChoice,
+                  choices: widget.choices,
+                  selectedSendMapUsers: selectedSendMapUsers,
+                ),
+              ),
+              icon: const FaIcon(
+                FontAwesomeIcons.paperPlane,
+                color: kWhiteColor,
+              ),
+              label: Text(
+                '送信する',
+                style: TextStyle(color: kWhiteColor),
+              ),
+            )
+          : null,
+    );
+  }
+}
+
+class SendDialog extends StatefulWidget {
+  final UserProvider userProvider;
+  final UserSendModel? userSend;
+  final String title;
+  final String content;
+  final bool isChoice;
+  final List<String> choices;
+  final List<MapUserModel> selectedSendMapUsers;
+
+  const SendDialog({
+    required this.userProvider,
+    required this.userSend,
+    required this.title,
+    required this.content,
+    required this.isChoice,
+    required this.choices,
+    required this.selectedSendMapUsers,
+    super.key,
+  });
+
+  @override
+  State<SendDialog> createState() => _SendDialogState();
+}
+
+class _SendDialogState extends State<SendDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return CustomAlertDialog(
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8),
+          Text('本当に送信しますか？'),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: '送信する',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () async {
+            String? error = await widget.userProvider.send(
+              userSend: widget.userSend,
+              title: widget.title,
+              content: widget.content,
+              isChoice: widget.isChoice,
+              choices: widget.choices,
+              selectedSendMapUsers: widget.selectedSendMapUsers,
+            );
+            if (error != null) {
+              if (!mounted) return;
+              showMessage(context, error, false);
+              return;
+            }
+            //レビューの促し
+            //await requestReview();
             if (!mounted) return;
-            showMessage(context, error, false);
-            return;
-          }
-          //レビューの促し
-          //await requestReview();
-          if (!mounted) return;
-          Navigator.pop(context);
-          Navigator.pop(context);
-        },
-        icon: const FaIcon(
-          FontAwesomeIcons.paperPlane,
-          color: kWhiteColor,
+            Navigator.pop(context);
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
         ),
-        label: Text(
-          '送信する',
-          style: TextStyle(color: kWhiteColor),
-        ),
-      ),
+      ],
     );
   }
 }

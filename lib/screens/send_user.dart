@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
-import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/send_user_add.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -37,8 +33,6 @@ class _SendUserScreenState extends State<SendUserScreen> {
 
   @override
   void initState() {
-    //プランにより送信先を削除
-
     UserModel user = widget.userProvider.user!;
     sendMapUsers = user.sendMapUsers;
     super.initState();
@@ -46,7 +40,6 @@ class _SendUserScreenState extends State<SendUserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -81,7 +74,9 @@ class _SendUserScreenState extends State<SendUserScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AlertBar('送信先は${inAppPurchaseProvider.planLimit}個まで登録可能です'),
+            AlertBar(
+              '送信先を増やすには、受信者宛に電話番号を伝えてください。受信者はその電話番号を「受信先一覧」で登録すると、こちらにも反映します。',
+            ),
             Expanded(
               child: sendMapUsers.isNotEmpty
                   ? ListView.builder(
@@ -113,31 +108,6 @@ class _SendUserScreenState extends State<SendUserScreen> {
           ],
         ),
       ),
-      floatingActionButton:
-          sendMapUsers.length < inAppPurchaseProvider.planLimit
-              ? FloatingActionButton.extended(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        child: SendUserAddScreen(
-                          userProvider: widget.userProvider,
-                          reload: _reload,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.plus,
-                    color: kWhiteColor,
-                  ),
-                  label: Text(
-                    '送信先を登録',
-                    style: TextStyle(color: kWhiteColor),
-                  ),
-                )
-              : null,
     );
   }
 }

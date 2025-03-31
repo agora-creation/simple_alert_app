@@ -7,6 +7,7 @@ import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/choice_list.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/link_text.dart';
+import 'package:simple_alert_app/widgets/map_user_list.dart';
 
 class SendDetailScreen extends StatefulWidget {
   final UserSendModel userSend;
@@ -105,14 +106,6 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
                                           return ChoiceList(choice);
                                         }).toList(),
                                       ),
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: LinkText(
-                                          label: '回答を確認',
-                                          color: kRedColor,
-                                          onTap: () {},
-                                        ),
-                                      ),
                                     ],
                                   )
                                 : Container(),
@@ -155,25 +148,7 @@ class SendUsersDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: userSend.sendMapUsers.map((mapUser) {
-              return Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
-                  ),
-                ),
-                child: ListTile(
-                  title: Text(mapUser.name),
-                  trailing: Text(
-                    mapUser.answer,
-                    style: TextStyle(
-                      color: kRedColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'SourceHanSansJP-Bold',
-                    ),
-                  ),
-                ),
-              );
+              return MapUserList(mapUser: mapUser);
             }).toList(),
           ),
         ),

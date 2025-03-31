@@ -7,6 +7,7 @@ import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/user_notice_user_add.dart';
+import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
@@ -73,32 +74,41 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
         ],
       ),
       body: SafeArea(
-        child: noticeMapUsers.isNotEmpty
-            ? ListView.builder(
-                itemCount: noticeMapUsers.length,
-                itemBuilder: (context, index) {
-                  MapUserModel mapUser = noticeMapUsers[index];
-                  bool value = selectedNoticeMapUsers.contains(mapUser);
-                  return CustomCheckList(
-                    label: mapUser.name,
-                    subtitle: Text(
-                      mapUser.tel,
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    value: value,
-                    onChanged: (value) {
-                      if (!selectedNoticeMapUsers.contains(mapUser)) {
-                        selectedNoticeMapUsers.add(mapUser);
-                      } else {
-                        selectedNoticeMapUsers.remove(mapUser);
-                      }
-                      setState(() {});
-                    },
-                    activeColor: kRedColor,
-                  );
-                },
-              )
-            : Center(child: Text('受信先はありません')),
+        child: Column(
+          children: [
+            AlertBar(
+              '受信先を増やすには、送信者に電話番号を聞いてください。受信者はその電話番号をこの画面で登録すると、反映します。',
+            ),
+            Expanded(
+              child: noticeMapUsers.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: noticeMapUsers.length,
+                      itemBuilder: (context, index) {
+                        MapUserModel mapUser = noticeMapUsers[index];
+                        bool value = selectedNoticeMapUsers.contains(mapUser);
+                        return CustomCheckList(
+                          label: mapUser.name,
+                          subtitle: Text(
+                            mapUser.tel,
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          value: value,
+                          onChanged: (value) {
+                            if (!selectedNoticeMapUsers.contains(mapUser)) {
+                              selectedNoticeMapUsers.add(mapUser);
+                            } else {
+                              selectedNoticeMapUsers.remove(mapUser);
+                            }
+                            setState(() {});
+                          },
+                          activeColor: kRedColor,
+                        );
+                      },
+                    )
+                  : Center(child: Text('受信先はありません')),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {

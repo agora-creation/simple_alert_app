@@ -257,50 +257,6 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
-  Future<String?> addSendMapUsers({
-    required UserModel? selectedUser,
-  }) async {
-    String? error;
-    if (selectedUser == null) return '送信先が見つかりませんでした';
-    try {
-      //送信側のデータ追加
-      List<Map> sendMapUsers = [];
-      if (_user!.sendMapUsers.isNotEmpty) {
-        for (MapUserModel mapUser in _user!.sendMapUsers) {
-          sendMapUsers.add(mapUser.toMap());
-        }
-      }
-      sendMapUsers.add({
-        'id': selectedUser.id,
-        'name': selectedUser.name,
-        'tel': selectedUser.tel,
-      });
-      _userService.update({
-        'id': _user?.id,
-        'sendMapUsers': sendMapUsers,
-      });
-      //受信者側のデータ追加
-      List<Map> noticeMapUsers = [];
-      if (selectedUser.noticeMapUsers.isNotEmpty) {
-        for (MapUserModel mapUser in selectedUser.noticeMapUsers) {
-          noticeMapUsers.add(mapUser.toMap());
-        }
-      }
-      noticeMapUsers.add({
-        'id': _user!.id,
-        'name': _user!.name,
-        'tel': _user!.tel,
-      });
-      _userService.update({
-        'id': selectedUser.id,
-        'noticeMapUsers': noticeMapUsers,
-      });
-    } catch (e) {
-      error = e.toString();
-    }
-    return error;
-  }
-
   Future<String?> removeSendMapUsers({
     required List<MapUserModel> selectedSendMapUsers,
   }) async {
@@ -436,7 +392,6 @@ class UserProvider with ChangeNotifier {
     if (isChoice && choices.isEmpty) {
       return '選択肢が設定されていません';
     }
-    if (selectedSendMapUsers.isEmpty) return '選択されていません';
     try {
       List<Map> sendMapUsers = [];
       if (selectedSendMapUsers.isNotEmpty) {
