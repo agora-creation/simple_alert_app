@@ -121,6 +121,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
                     await UserSendService().selectMonthSendCount(
                   userId: widget.userProvider.user!.id,
                 );
+                monthSendCount += selectedSendMapUsers.length;
                 if (inAppPurchaseProvider.planMonthLimit < monthSendCount) {
                   if (!mounted) return;
                   showMessage(context, '送信制限により送信できません', false);
