@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -46,6 +49,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -78,7 +82,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AlertBar('送信制限まであと0件'),
+            AlertBar('1ヶ月に${inAppPurchaseProvider.planMonthLimit}件まで送信可能'),
             Expanded(
               child: sendMapUsers.isNotEmpty
                   ? ListView.builder(
@@ -112,18 +116,29 @@ class _SendConfScreenState extends State<SendConfScreen> {
       ),
       floatingActionButton: selectedSendMapUsers.isNotEmpty
           ? FloatingActionButton.extended(
-              onPressed: () => showDialog(
-                context: context,
-                builder: (context) => SendDialog(
-                  userProvider: widget.userProvider,
-                  userSend: widget.userSend,
-                  title: widget.title,
-                  content: widget.content,
-                  isChoice: widget.isChoice,
-                  choices: widget.choices,
-                  selectedSendMapUsers: selectedSendMapUsers,
-                ),
-              ),
+              onPressed: () async {
+                int monthSendCount =
+                    await UserSendService().selectMonthSendCount(
+                  userId: widget.userProvider.user!.id,
+                );
+                if (inAppPurchaseProvider.planMonthLimit < monthSendCount) {
+                  if (!mounted) return;
+                  showMessage(context, '送信制限により送信できません', false);
+                  return;
+                }
+                showDialog(
+                  context: context,
+                  builder: (context) => SendDialog(
+                    userProvider: widget.userProvider,
+                    userSend: widget.userSend,
+                    title: widget.title,
+                    content: widget.content,
+                    isChoice: widget.isChoice,
+                    choices: widget.choices,
+                    selectedSendMapUsers: selectedSendMapUsers,
+                  ),
+                );
+              },
               icon: const FaIcon(
                 FontAwesomeIcons.paperPlane,
                 color: kWhiteColor,

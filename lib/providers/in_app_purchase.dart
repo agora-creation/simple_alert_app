@@ -29,14 +29,14 @@ class InAppPurchaseProvider extends ChangeNotifier {
     }
   }
 
-  int get planLimit {
+  int get planMonthLimit {
     switch (_plan) {
       case Plan.free:
-        return 5;
+        return 10;
       case Plan.standard:
         return 100;
       case Plan.pro:
-        return 500;
+        return 1000;
     }
   }
 

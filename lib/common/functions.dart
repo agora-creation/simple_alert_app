@@ -1,4 +1,5 @@
 import 'package:alert_banner/exports.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:intl/intl.dart';
@@ -95,4 +96,14 @@ Future requestReview() async {
   if (await inAppReview.isAvailable()) {
     inAppReview.requestReview();
   }
+}
+
+Timestamp convertTimestamp(DateTime date, bool end) {
+  String dateTime = '${dateText('yyyy-MM-dd', date)} 00:00:00.000';
+  if (end == true) {
+    dateTime = '${dateText('yyyy-MM-dd', date)} 23:59:59.999';
+  }
+  return Timestamp.fromMillisecondsSinceEpoch(
+    DateTime.parse(dateTime).millisecondsSinceEpoch,
+  );
 }

@@ -191,7 +191,9 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                             isChoice = value;
                           });
                         },
-                        activeColor: kBlueColor,
+                        tileColor:
+                            isChoice ? kRedColor.withOpacity(0.3) : kWhiteColor,
+                        activeColor: kRedColor,
                       ),
                       Divider(color: kBlackColor.withOpacity(0.5), height: 1),
                     ],

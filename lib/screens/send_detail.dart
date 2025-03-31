@@ -99,7 +99,7 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(height: 16),
-                                      Text('設定されている選択肢'),
+                                      Text('選択肢'),
                                       Column(
                                         children: widget.userSend.choices
                                             .map((choice) {

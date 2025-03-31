@@ -473,6 +473,7 @@ class UserProvider with ChangeNotifier {
       });
       UserSendModel? userSend = await _userSendService.selectData(
         id: userNotice.userSendId,
+        userId: userNotice.userId,
       );
       if (userSend != null) {
         List<Map> sendMapUsers = [];

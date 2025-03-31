@@ -47,7 +47,7 @@ class UserNoticeService {
   Stream<QuerySnapshot<Map<String, dynamic>>>? streamList({
     required String userId,
   }) {
-    return FirebaseFirestore.instance
+    return firestore
         .collection(collection)
         .doc(userId)
         .collection(subCollection)
