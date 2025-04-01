@@ -39,17 +39,30 @@ class SendConfScreen extends StatefulWidget {
 class _SendConfScreenState extends State<SendConfScreen> {
   List<MapUserModel> sendMapUsers = [];
   List<MapUserModel> selectedSendMapUsers = [];
+  int monthSendCount = 0;
+
+  void _init() async {
+    monthSendCount = await UserSendService().selectMonthSendCount(
+      userId: widget.userProvider.user!.id,
+    );
+    setState(() {});
+  }
 
   @override
   void initState() {
     UserModel user = widget.userProvider.user!;
     sendMapUsers = user.sendMapUsers;
     super.initState();
+    _init();
   }
 
   @override
   Widget build(BuildContext context) {
     final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
+    int selectedLimit = 0;
+    if (inAppPurchaseProvider.planMonthLimit > monthSendCount) {
+      selectedLimit = inAppPurchaseProvider.planMonthLimit - monthSendCount;
+    }
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -82,7 +95,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AlertBar('1ヶ月に${inAppPurchaseProvider.planMonthLimit}件まで送信可能'),
+            AlertBar('あと$selectedLimit件まで送信可能'),
             Expanded(
               child: sendMapUsers.isNotEmpty
                   ? ListView.builder(
@@ -117,12 +130,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
       floatingActionButton: selectedSendMapUsers.isNotEmpty
           ? FloatingActionButton.extended(
               onPressed: () async {
-                int monthSendCount =
-                    await UserSendService().selectMonthSendCount(
-                  userId: widget.userProvider.user!.id,
-                );
-                monthSendCount += selectedSendMapUsers.length;
-                if (inAppPurchaseProvider.planMonthLimit < monthSendCount) {
+                if (selectedSendMapUsers.length > selectedLimit) {
                   if (!mounted) return;
                   showMessage(context, '送信制限により送信できません', false);
                   return;

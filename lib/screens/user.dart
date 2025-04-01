@@ -12,6 +12,7 @@ import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
+import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
@@ -35,6 +36,20 @@ class UserScreen extends StatefulWidget {
 class _UserScreenState extends State<UserScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController telController = TextEditingController();
+  int monthSendCount = 0;
+
+  void _init() async {
+    monthSendCount = await UserSendService().selectMonthSendCount(
+      userId: widget.userProvider.user!.id,
+    );
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +134,22 @@ class _UserScreenState extends State<UserScreen> {
                           );
                         }
                       },
+                    ),
+                    UserList(
+                      label: '今月の送信件数',
+                      subtitle: Text(
+                        '$monthSendCount件 / ${inAppPurchaseProvider.planMonthLimit}件まで送信可能',
+                        style: TextStyle(
+                          color: kBlackColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'SourceHanSansJP-Bold',
+                        ),
+                      ),
+                      leading: const FaIcon(
+                        FontAwesomeIcons.chartSimple,
+                        size: 16,
+                      ),
                     ),
                     SizedBox(height: 24),
                     Center(
