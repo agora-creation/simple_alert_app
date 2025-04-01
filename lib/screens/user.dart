@@ -180,7 +180,7 @@ class _UserScreenState extends State<UserScreen> {
                                   context,
                                   PageTransition(
                                     type: PageTransitionType.bottomToTop,
-                                    child: const HomeScreen(),
+                                    child: HomeScreen(currentIndex: 2),
                                   ),
                                 );
                               } else {
@@ -273,7 +273,7 @@ class _SmsCodeDialogState extends State<SmsCodeDialog> {
               context,
               PageTransition(
                 type: PageTransitionType.bottomToTop,
-                child: const HomeScreen(),
+                child: HomeScreen(currentIndex: 2),
               ),
             );
           },
@@ -324,7 +324,7 @@ class LogoutDialog extends StatelessWidget {
               context,
               PageTransition(
                 type: PageTransitionType.bottomToTop,
-                child: const HomeScreen(),
+                child: HomeScreen(currentIndex: 2),
               ),
             );
           },
@@ -460,7 +460,7 @@ void showSubscriptionDialog(
       context,
       PageTransition(
         type: PageTransitionType.bottomToTop,
-        child: const HomeScreen(),
+        child: HomeScreen(currentIndex: 2),
       ),
     );
   });

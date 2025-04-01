@@ -15,7 +15,12 @@ import 'package:simple_alert_app/services/ad.dart';
 import 'package:simple_alert_app/widgets/custom_bottom_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int currentIndex;
+
+  const HomeScreen({
+    this.currentIndex = 0,
+    super.key,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -25,11 +30,17 @@ class _HomeScreenState extends State<HomeScreen> {
   BannerAd bannerAd = AdService.createBannerAd();
   int currentIndex = 0;
 
+  void _init() {
+    currentIndex = widget.currentIndex;
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     bannerAd.load();
     context.read<InAppPurchaseProvider>().initialize();
+    _init();
   }
 
   @override
