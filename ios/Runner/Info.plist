@@ -31,7 +31,6 @@
 			<string>com.agoracreation.simpleAlertApp</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>B-Alert</string>
 				<string>app-1-44926072077-ios-192240a267051377d62c44</string>
 			</array>
 		</dict>

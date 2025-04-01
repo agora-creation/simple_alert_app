@@ -5,12 +5,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-import 'package:restart_app/restart_app.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/screens/user_name.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -175,12 +175,14 @@ class _UserScreenState extends State<UserScreen> {
                               }
                               if (result.autoAuth) {
                                 await widget.userProvider.reload();
-                                Restart.restartApp(
-                                  notificationTitle: 'アプリの再起動',
-                                  notificationBody:
-                                      'ログイン情報を再読み込みするため、アプリを再起動します。',
+                                if (!mounted) return;
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.bottomToTop,
+                                    child: const HomeScreen(),
+                                  ),
                                 );
-                                return;
                               } else {
                                 if (!mounted) return;
                                 showDialog(
@@ -266,9 +268,13 @@ class _SmsCodeDialogState extends State<SmsCodeDialog> {
               return;
             }
             await widget.userProvider.reload();
-            Restart.restartApp(
-              notificationTitle: 'アプリの再起動',
-              notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
+            if (!mounted) return;
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                type: PageTransitionType.bottomToTop,
+                child: const HomeScreen(),
+              ),
             );
           },
         ),
@@ -314,9 +320,12 @@ class LogoutDialog extends StatelessWidget {
           backgroundColor: kRedColor,
           onPressed: () async {
             await userProvider.logout();
-            Restart.restartApp(
-              notificationTitle: 'アプリの再起動',
-              notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                type: PageTransitionType.bottomToTop,
+                child: const HomeScreen(),
+              ),
             );
           },
         ),
@@ -447,9 +456,12 @@ void showSubscriptionDialog(
       context.read<InAppPurchaseProvider>().selectedProduct,
     );
 
-    Restart.restartApp(
-      notificationTitle: 'アプリの再起動',
-      notificationBody: 'ログイン情報を再読み込みするため、アプリを再起動します。',
+    Navigator.pushReplacement(
+      context,
+      PageTransition(
+        type: PageTransitionType.bottomToTop,
+        child: const HomeScreen(),
+      ),
     );
   });
 }
