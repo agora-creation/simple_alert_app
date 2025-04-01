@@ -3,11 +3,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/screens/send_detail_send_user.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/choice_list.dart';
-import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
-import 'package:simple_alert_app/widgets/link_text.dart';
-import 'package:simple_alert_app/widgets/map_user_list.dart';
 
 class SendDetailScreen extends StatefulWidget {
   final UserSendModel userSend;
@@ -32,6 +30,20 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
           icon: const FaIcon(FontAwesomeIcons.chevronLeft),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => showBottomUpScreen(
+              context,
+              SendDetailSendUserScreen(
+                sendMapUsers: widget.userSend.sendMapUsers,
+              ),
+            ),
+            child: Text(
+              '送信先を確認',
+              style: TextStyle(color: kBlueColor),
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -55,15 +67,6 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
                             style: TextStyle(
                               color: kBlackColor.withOpacity(0.8),
                               fontSize: 14,
-                            ),
-                          ),
-                          LinkText(
-                            label: '送信先を確認',
-                            onTap: () => showDialog(
-                              context: context,
-                              builder: (context) => SendUsersDialog(
-                                userSend: widget.userSend,
-                              ),
                             ),
                           ),
                         ],
@@ -119,38 +122,6 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class SendUsersDialog extends StatelessWidget {
-  final UserSendModel userSend;
-
-  const SendUsersDialog({
-    required this.userSend,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomAlertDialog(
-      contentPadding: EdgeInsets.zero,
-      content: Container(
-        decoration: BoxDecoration(
-          border: Border.symmetric(
-            horizontal: BorderSide(color: kBlackColor.withOpacity(0.5)),
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: userSend.sendMapUsers.map((mapUser) {
-              return MapUserList(mapUser: mapUser);
-            }).toList(),
-          ),
         ),
       ),
     );
