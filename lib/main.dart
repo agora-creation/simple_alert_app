@@ -10,6 +10,7 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
+import 'package:simple_alert_app/screens/login.dart';
 import 'package:simple_alert_app/services/push.dart';
 
 Future main() async {
@@ -59,8 +60,25 @@ class MyApp extends StatelessWidget {
         locale: const Locale('ja'),
         title: kAppShortName,
         theme: customTheme(),
-        home: HomeScreen(),
+        home: const SplashController(),
       ),
     );
+  }
+}
+
+class SplashController extends StatelessWidget {
+  const SplashController({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    switch (userProvider.status) {
+      case AuthStatus.uninitialized:
+      case AuthStatus.unauthenticated:
+      case AuthStatus.authenticating:
+        return const LoginScreen();
+      case AuthStatus.authenticated:
+        return const HomeScreen();
+    }
   }
 }

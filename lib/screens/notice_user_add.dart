@@ -7,24 +7,23 @@ import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/services/user.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
-import 'package:simple_alert_app/widgets/user_list.dart';
+import 'package:simple_alert_app/widgets/setting_list.dart';
 
-class UserNoticeUserAddScreen extends StatefulWidget {
+class NoticeUserAddScreen extends StatefulWidget {
   final UserProvider userProvider;
   final Function(UserModel) reload;
 
-  const UserNoticeUserAddScreen({
+  const NoticeUserAddScreen({
     required this.userProvider,
     required this.reload,
     super.key,
   });
 
   @override
-  State<UserNoticeUserAddScreen> createState() =>
-      _UserNoticeUserAddScreenState();
+  State<NoticeUserAddScreen> createState() => _NoticeUserAddScreenState();
 }
 
-class _UserNoticeUserAddScreenState extends State<UserNoticeUserAddScreen> {
+class _NoticeUserAddScreenState extends State<NoticeUserAddScreen> {
   TextEditingController telController = TextEditingController();
   UserModel? selectedUser;
 
@@ -82,7 +81,7 @@ class _UserNoticeUserAddScreenState extends State<UserNoticeUserAddScreen> {
                     ? Column(
                         children: [
                           Text('受信先が見つかりました！'),
-                          UserList(
+                          SettingList(
                             label: selectedUser!.name,
                             subtitle: Text(
                               selectedUser!.tel,

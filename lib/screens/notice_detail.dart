@@ -10,21 +10,21 @@ import 'package:simple_alert_app/widgets/choice_radio_list.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 
-class UserNoticeDetailScreen extends StatefulWidget {
+class NoticeDetailScreen extends StatefulWidget {
   final UserProvider userProvider;
   final UserNoticeModel userNotice;
 
-  const UserNoticeDetailScreen({
+  const NoticeDetailScreen({
     required this.userProvider,
     required this.userNotice,
     super.key,
   });
 
   @override
-  State<UserNoticeDetailScreen> createState() => _UserNoticeDetailScreenState();
+  State<NoticeDetailScreen> createState() => _NoticeDetailScreenState();
 }
 
-class _UserNoticeDetailScreenState extends State<UserNoticeDetailScreen> {
+class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
   String answer = '';
 
   void _init() async {

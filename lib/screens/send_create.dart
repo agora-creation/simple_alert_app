@@ -79,14 +79,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
       backgroundColor: kWhiteColor,
       appBar: AppBar(
         backgroundColor: kWhiteColor,
-        leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.chevronLeft),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          '新規送信',
-          style: TextStyle(color: kBlackColor),
-        ),
+        automaticallyImplyLeading: false,
         actions: [
           widget.userSend != null
               ? TextButton(
@@ -150,6 +143,10 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                   ),
                 )
               : Container(),
+          IconButton(
+            icon: const FaIcon(FontAwesomeIcons.xmark),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          ),
         ],
       ),
       body: GestureDetector(

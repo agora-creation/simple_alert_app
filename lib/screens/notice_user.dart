@@ -6,25 +6,24 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/user_notice_user_add.dart';
-import 'package:simple_alert_app/widgets/alert_bar.dart';
+import 'package:simple_alert_app/screens/notice_user_add.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
 
-class UserNoticeUserScreen extends StatefulWidget {
+class NoticeUserScreen extends StatefulWidget {
   final UserProvider userProvider;
 
-  const UserNoticeUserScreen({
+  const NoticeUserScreen({
     required this.userProvider,
     super.key,
   });
 
   @override
-  State<UserNoticeUserScreen> createState() => _UserNoticeUserScreenState();
+  State<NoticeUserScreen> createState() => _NoticeUserScreenState();
 }
 
-class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
+class _NoticeUserScreenState extends State<NoticeUserScreen> {
   List<MapUserModel> noticeMapUsers = [];
   List<MapUserModel> selectedNoticeMapUsers = [];
 
@@ -46,10 +45,7 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
       backgroundColor: kWhiteColor,
       appBar: AppBar(
         backgroundColor: kWhiteColor,
-        leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.chevronLeft),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         title: const Text(
           '受信先一覧',
           style: TextStyle(color: kBlackColor),
@@ -71,44 +67,39 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
                   ),
                 )
               : Container(),
+          IconButton(
+            icon: const FaIcon(FontAwesomeIcons.xmark),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          ),
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            AlertBar(
-              '受信先を増やすには、送信者に電話番号を聞いてください。受信者はその電話番号をこの画面で登録すると、反映します。',
-            ),
-            Expanded(
-              child: noticeMapUsers.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: noticeMapUsers.length,
-                      itemBuilder: (context, index) {
-                        MapUserModel mapUser = noticeMapUsers[index];
-                        bool value = selectedNoticeMapUsers.contains(mapUser);
-                        return CustomCheckList(
-                          label: mapUser.name,
-                          subtitle: Text(
-                            mapUser.tel,
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          value: value,
-                          onChanged: (value) {
-                            if (!selectedNoticeMapUsers.contains(mapUser)) {
-                              selectedNoticeMapUsers.add(mapUser);
-                            } else {
-                              selectedNoticeMapUsers.remove(mapUser);
-                            }
-                            setState(() {});
-                          },
-                          activeColor: kRedColor,
-                        );
-                      },
-                    )
-                  : Center(child: Text('受信先はありません')),
-            ),
-          ],
-        ),
+        child: noticeMapUsers.isNotEmpty
+            ? ListView.builder(
+                itemCount: noticeMapUsers.length,
+                itemBuilder: (context, index) {
+                  MapUserModel mapUser = noticeMapUsers[index];
+                  bool value = selectedNoticeMapUsers.contains(mapUser);
+                  return CustomCheckList(
+                    label: mapUser.name,
+                    subtitle: Text(
+                      mapUser.tel,
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    value: value,
+                    onChanged: (value) {
+                      if (!selectedNoticeMapUsers.contains(mapUser)) {
+                        selectedNoticeMapUsers.add(mapUser);
+                      } else {
+                        selectedNoticeMapUsers.remove(mapUser);
+                      }
+                      setState(() {});
+                    },
+                    activeColor: kRedColor,
+                  );
+                },
+              )
+            : Center(child: Text('受信先はありません')),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -116,7 +107,7 @@ class _UserNoticeUserScreenState extends State<UserNoticeUserScreen> {
             context,
             PageTransition(
               type: PageTransitionType.rightToLeft,
-              child: UserNoticeUserAddScreen(
+              child: NoticeUserAddScreen(
                 userProvider: widget.userProvider,
                 reload: _reload,
               ),

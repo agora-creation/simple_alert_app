@@ -5,7 +5,6 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
@@ -44,10 +43,7 @@ class _SendUserScreenState extends State<SendUserScreen> {
       backgroundColor: kWhiteColor,
       appBar: AppBar(
         backgroundColor: kWhiteColor,
-        leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.chevronLeft),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         title: const Text(
           '送信先一覧',
           style: TextStyle(color: kBlackColor),
@@ -69,44 +65,39 @@ class _SendUserScreenState extends State<SendUserScreen> {
                   ),
                 )
               : Container(),
+          IconButton(
+            icon: const FaIcon(FontAwesomeIcons.xmark),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          ),
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            AlertBar(
-              '送信先を増やすには、受信者宛に電話番号を伝えてください。受信者はその電話番号を「受信先一覧」で登録すると、こちらにも反映します。',
-            ),
-            Expanded(
-              child: sendMapUsers.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: sendMapUsers.length,
-                      itemBuilder: (context, index) {
-                        MapUserModel mapUser = sendMapUsers[index];
-                        bool value = selectedSendMapUsers.contains(mapUser);
-                        return CustomCheckList(
-                          label: mapUser.name,
-                          subtitle: Text(
-                            mapUser.tel,
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          value: value,
-                          onChanged: (value) {
-                            if (!selectedSendMapUsers.contains(mapUser)) {
-                              selectedSendMapUsers.add(mapUser);
-                            } else {
-                              selectedSendMapUsers.remove(mapUser);
-                            }
-                            setState(() {});
-                          },
-                          activeColor: kRedColor,
-                        );
-                      },
-                    )
-                  : Center(child: Text('送信先はありません')),
-            ),
-          ],
-        ),
+        child: sendMapUsers.isNotEmpty
+            ? ListView.builder(
+                itemCount: sendMapUsers.length,
+                itemBuilder: (context, index) {
+                  MapUserModel mapUser = sendMapUsers[index];
+                  bool value = selectedSendMapUsers.contains(mapUser);
+                  return CustomCheckList(
+                    label: mapUser.name,
+                    subtitle: Text(
+                      mapUser.tel,
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    value: value,
+                    onChanged: (value) {
+                      if (!selectedSendMapUsers.contains(mapUser)) {
+                        selectedSendMapUsers.add(mapUser);
+                      } else {
+                        selectedSendMapUsers.remove(mapUser);
+                      }
+                      setState(() {});
+                    },
+                    activeColor: kRedColor,
+                  );
+                },
+              )
+            : Center(child: Text('送信先はありません')),
       ),
     );
   }
