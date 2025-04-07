@@ -4,10 +4,10 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/widgets/map_user_list.dart';
 
-class SendDetailSendUserScreen extends StatelessWidget {
+class SendDetailUsersScreen extends StatelessWidget {
   final List<MapUserModel> sendMapUsers;
 
-  const SendDetailSendUserScreen({
+  const SendDetailUsersScreen({
     required this.sendMapUsers,
     super.key,
   });
@@ -20,7 +20,7 @@ class SendDetailSendUserScreen extends StatelessWidget {
         backgroundColor: kWhiteColor,
         automaticallyImplyLeading: false,
         title: const Text(
-          '送信先を確認',
+          '送信結果を確認',
           style: TextStyle(color: kBlackColor),
         ),
         actions: [

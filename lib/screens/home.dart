@@ -10,7 +10,6 @@ import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/info.dart';
 import 'package:simple_alert_app/screens/notice.dart';
 import 'package:simple_alert_app/screens/send.dart';
-import 'package:simple_alert_app/screens/setting.dart';
 import 'package:simple_alert_app/services/ad.dart';
 import 'package:simple_alert_app/widgets/custom_bottom_sheet.dart';
 
@@ -39,9 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     // context.read<InAppPurchaseProvider>().dispose();
     // bannerAd.dispose();
+    super.dispose();
   }
 
   @override
@@ -59,17 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(titles[currentIndex]),
         actions: [
           IconButton(
-            icon: const FaIcon(FontAwesomeIcons.user),
-            onPressed: () => showBottomUpScreen(
-              context,
-              SettingScreen(userProvider: userProvider),
-            ),
-          ),
-          IconButton(
             icon: const FaIcon(FontAwesomeIcons.ellipsisVertical),
             onPressed: () => showBottomUpScreen(
               context,
-              InfoScreen(),
+              InfoScreen(userProvider: userProvider),
             ),
           ),
         ],

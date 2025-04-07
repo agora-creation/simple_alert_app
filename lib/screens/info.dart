@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/login.dart';
+import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
+import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/info_list.dart';
+import 'package:simple_alert_app/widgets/link_text.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class InfoScreen extends StatelessWidget {
-  const InfoScreen({super.key});
+  final UserProvider userProvider;
+
+  const InfoScreen({
+    required this.userProvider,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -83,9 +94,73 @@ class InfoScreen extends StatelessWidget {
                 },
               ),
             ),
+            SizedBox(height: 24),
+            Center(
+              child: LinkText(
+                label: 'ログアウト',
+                color: kRedColor,
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (context) => LogoutDialog(
+                    userProvider: userProvider,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class LogoutDialog extends StatelessWidget {
+  final UserProvider userProvider;
+
+  const LogoutDialog({
+    required this.userProvider,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomAlertDialog(
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8),
+          Text(
+            '本当にログアウトしますか？',
+            style: TextStyle(color: kRedColor),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'ログアウト',
+          labelColor: kWhiteColor,
+          backgroundColor: kRedColor,
+          onPressed: () async {
+            await userProvider.logout();
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                type: PageTransitionType.bottomToTop,
+                child: LoginScreen(),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

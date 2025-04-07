@@ -8,7 +8,7 @@ import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_notice.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/notice_detail.dart';
-import 'package:simple_alert_app/screens/notice_user.dart';
+import 'package:simple_alert_app/screens/notice_setting.dart';
 import 'package:simple_alert_app/services/user_notice.dart';
 import 'package:simple_alert_app/widgets/user_notice_list.dart';
 
@@ -34,15 +34,15 @@ class NoticeScreen extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                title: Text('受信先を確認 (${user?.noticeMapUsers.length})'),
-                tileColor: kBlueColor.withOpacity(0.3),
+                title: Text('受信設定'),
+                tileColor: kBlackColor.withOpacity(0.3),
                 trailing: FaIcon(
-                  FontAwesomeIcons.chevronUp,
+                  FontAwesomeIcons.userGear,
                   size: 16,
                 ),
                 onTap: () => showBottomUpScreen(
                   context,
-                  NoticeUserScreen(
+                  NoticeSettingScreen(
                     userProvider: userProvider,
                   ),
                 ),

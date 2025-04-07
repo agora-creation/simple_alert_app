@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
-import 'package:simple_alert_app/screens/send_detail_send_user.dart';
+import 'package:simple_alert_app/screens/send_detail_users.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/choice_list.dart';
 
@@ -34,12 +34,12 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
           TextButton(
             onPressed: () => showBottomUpScreen(
               context,
-              SendDetailSendUserScreen(
+              SendDetailUsersScreen(
                 sendMapUsers: widget.userSend.sendMapUsers,
               ),
             ),
             child: Text(
-              '送信先を確認',
+              '送信結果を確認',
               style: TextStyle(color: kBlueColor),
             ),
           ),

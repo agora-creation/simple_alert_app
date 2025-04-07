@@ -6,19 +6,20 @@ import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
-class SettingNameScreen extends StatefulWidget {
+class NoticeSettingNameScreen extends StatefulWidget {
   final UserProvider userProvider;
 
-  const SettingNameScreen({
+  const NoticeSettingNameScreen({
     required this.userProvider,
     super.key,
   });
 
   @override
-  State<SettingNameScreen> createState() => _SettingNameScreenState();
+  State<NoticeSettingNameScreen> createState() =>
+      _NoticeSettingNameScreenState();
 }
 
-class _SettingNameScreenState extends State<SettingNameScreen> {
+class _NoticeSettingNameScreenState extends State<NoticeSettingNameScreen> {
   TextEditingController nameController = TextEditingController();
 
   @override

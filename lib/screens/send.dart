@@ -7,9 +7,9 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/send_create.dart';
 import 'package:simple_alert_app/screens/send_detail.dart';
-import 'package:simple_alert_app/screens/send_user.dart';
+import 'package:simple_alert_app/screens/send_input.dart';
+import 'package:simple_alert_app/screens/send_setting.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
 
@@ -35,15 +35,15 @@ class SendScreen extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                title: Text('送信先を確認 (${user?.sendMapUsers.length})'),
-                tileColor: kBlueColor.withOpacity(0.3),
+                title: Text('送信設定'),
+                tileColor: kBlackColor.withOpacity(0.3),
                 trailing: FaIcon(
-                  FontAwesomeIcons.chevronUp,
+                  FontAwesomeIcons.userGear,
                   size: 16,
                 ),
                 onTap: () => showBottomUpScreen(
                   context,
-                  SendUserScreen(
+                  SendSettingScreen(
                     userProvider: userProvider,
                   ),
                 ),
@@ -77,14 +77,11 @@ class SendScreen extends StatelessWidget {
                           userSend: userSend,
                           onTap: () {
                             if (userSend.draft) {
-                              Navigator.push(
+                              showBottomUpScreen(
                                 context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: SendCreateScreen(
-                                    userProvider: userProvider,
-                                    userSend: userSend,
-                                  ),
+                                SendInputScreen(
+                                  userProvider: userProvider,
+                                  userSend: userSend,
                                 ),
                               );
                             } else {
@@ -118,7 +115,7 @@ class SendScreen extends StatelessWidget {
                 ),
                 onTap: () => showBottomUpScreen(
                   context,
-                  SendCreateScreen(
+                  SendInputScreen(
                     userProvider: userProvider,
                   ),
                 ),

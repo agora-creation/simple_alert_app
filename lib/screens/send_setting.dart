@@ -10,8 +10,7 @@ import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
-import 'package:simple_alert_app/screens/login.dart';
-import 'package:simple_alert_app/screens/setting_name.dart';
+import 'package:simple_alert_app/screens/send_setting_users.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -20,19 +19,19 @@ import 'package:simple_alert_app/widgets/product_list.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SettingScreen extends StatefulWidget {
+class SendSettingScreen extends StatefulWidget {
   final UserProvider userProvider;
 
-  const SettingScreen({
+  const SendSettingScreen({
     required this.userProvider,
     super.key,
   });
 
   @override
-  State<SettingScreen> createState() => _SettingScreenState();
+  State<SendSettingScreen> createState() => _SendSettingScreenState();
 }
 
-class _SettingScreenState extends State<SettingScreen> {
+class _SendSettingScreenState extends State<SendSettingScreen> {
   int monthSendCount = 0;
 
   void _init() async {
@@ -60,7 +59,7 @@ class _SettingScreenState extends State<SettingScreen> {
         backgroundColor: kWhiteColor,
         automaticallyImplyLeading: false,
         title: const Text(
-          'ユーザー設定',
+          '送信設定',
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
@@ -74,48 +73,15 @@ class _SettingScreenState extends State<SettingScreen> {
         child: Column(
           children: [
             SettingList(
-              label: '名前',
-              subtitle: Text(
-                user?.name ?? '',
-                style: TextStyle(fontSize: 14),
-              ),
-              trailing: const FaIcon(
-                FontAwesomeIcons.pen,
-                size: 16,
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: SettingNameScreen(
-                      userProvider: widget.userProvider,
-                    ),
-                  ),
-                );
-              },
-            ),
-            SettingList(
-              label: '電話番号',
-              subtitle: Text(
-                user?.tel ?? '',
-                style: TextStyle(fontSize: 14),
-              ),
-            ),
-            SettingList(
               label: 'ご利用中のプラン',
               subtitle: Text(
                 context.read<InAppPurchaseProvider>().planName,
                 style: TextStyle(
-                  color: kBlackColor,
+                  color: kRedColor,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'SourceHanSansJP-Bold',
                 ),
-              ),
-              leading: const FaIcon(
-                FontAwesomeIcons.userTag,
-                size: 16,
               ),
               trailing: const FaIcon(
                 FontAwesomeIcons.rotate,
@@ -148,84 +114,34 @@ class _SettingScreenState extends State<SettingScreen> {
               subtitle: Text(
                 '$monthSendCount件 / ${inAppPurchaseProvider.planMonthLimit}件まで送信可能',
                 style: TextStyle(
-                  color: kBlackColor,
+                  color: kRedColor,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'SourceHanSansJP-Bold',
                 ),
               ),
-              leading: const FaIcon(
-                FontAwesomeIcons.chartSimple,
+            ),
+            SettingList(
+              label: '送信先一覧 (${user?.sendMapUsers.length})',
+              trailing: const FaIcon(
+                FontAwesomeIcons.chevronRight,
                 size: 16,
               ),
-            ),
-            SizedBox(height: 24),
-            Center(
-              child: LinkText(
-                label: 'ログアウト',
-                color: kRedColor,
-                onTap: () => showDialog(
-                  context: context,
-                  builder: (context) => LogoutDialog(
-                    userProvider: widget.userProvider,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: SendSettingUsersScreen(
+                      userProvider: widget.userProvider,
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class LogoutDialog extends StatelessWidget {
-  final UserProvider userProvider;
-
-  const LogoutDialog({
-    required this.userProvider,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomAlertDialog(
-      content: const Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: 8),
-          Text(
-            '本当にログアウトしますか？',
-            style: TextStyle(color: kRedColor),
-          ),
-        ],
-      ),
-      actions: [
-        CustomButton(
-          type: ButtonSizeType.sm,
-          label: 'キャンセル',
-          labelColor: kWhiteColor,
-          backgroundColor: kBlackColor.withOpacity(0.5),
-          onPressed: () => Navigator.pop(context),
-        ),
-        CustomButton(
-          type: ButtonSizeType.sm,
-          label: 'ログアウト',
-          labelColor: kWhiteColor,
-          backgroundColor: kRedColor,
-          onPressed: () async {
-            await userProvider.logout();
-            Navigator.pushReplacement(
-              context,
-              PageTransition(
-                type: PageTransitionType.bottomToTop,
-                child: LoginScreen(),
-              ),
-            );
-          },
-        ),
-      ],
     );
   }
 }

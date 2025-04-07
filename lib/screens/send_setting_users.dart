@@ -1,41 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/notice_user_add.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
 
-class NoticeUserScreen extends StatefulWidget {
+class SendSettingUsersScreen extends StatefulWidget {
   final UserProvider userProvider;
 
-  const NoticeUserScreen({
+  const SendSettingUsersScreen({
     required this.userProvider,
     super.key,
   });
 
   @override
-  State<NoticeUserScreen> createState() => _NoticeUserScreenState();
+  State<SendSettingUsersScreen> createState() => _SendSettingUsersScreenState();
 }
 
-class _NoticeUserScreenState extends State<NoticeUserScreen> {
-  List<MapUserModel> noticeMapUsers = [];
-  List<MapUserModel> selectedNoticeMapUsers = [];
+class _SendSettingUsersScreenState extends State<SendSettingUsersScreen> {
+  List<MapUserModel> sendMapUsers = [];
+  List<MapUserModel> selectedSendMapUsers = [];
 
   void _reload(UserModel user) {
-    noticeMapUsers = user.noticeMapUsers;
+    sendMapUsers = user.sendMapUsers;
     setState(() {});
   }
 
   @override
   void initState() {
     UserModel user = widget.userProvider.user!;
-    noticeMapUsers = user.noticeMapUsers;
+    sendMapUsers = user.sendMapUsers;
     super.initState();
   }
 
@@ -45,19 +43,22 @@ class _NoticeUserScreenState extends State<NoticeUserScreen> {
       backgroundColor: kWhiteColor,
       appBar: AppBar(
         backgroundColor: kWhiteColor,
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const FaIcon(FontAwesomeIcons.chevronLeft),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: const Text(
-          '受信先一覧',
+          '送信先一覧',
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
-          selectedNoticeMapUsers.isNotEmpty
+          selectedSendMapUsers.isNotEmpty
               ? TextButton(
                   onPressed: () => showDialog(
                     context: context,
                     builder: (context) => DelDialog(
                       userProvider: widget.userProvider,
-                      selectedNoticeMapUsers: selectedNoticeMapUsers,
+                      selectedSendMapUsers: selectedSendMapUsers,
                       reload: _reload,
                     ),
                   ),
@@ -67,19 +68,15 @@ class _NoticeUserScreenState extends State<NoticeUserScreen> {
                   ),
                 )
               : Container(),
-          IconButton(
-            icon: const FaIcon(FontAwesomeIcons.xmark),
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-          ),
         ],
       ),
       body: SafeArea(
-        child: noticeMapUsers.isNotEmpty
+        child: sendMapUsers.isNotEmpty
             ? ListView.builder(
-                itemCount: noticeMapUsers.length,
+                itemCount: sendMapUsers.length,
                 itemBuilder: (context, index) {
-                  MapUserModel mapUser = noticeMapUsers[index];
-                  bool value = selectedNoticeMapUsers.contains(mapUser);
+                  MapUserModel mapUser = sendMapUsers[index];
+                  bool value = selectedSendMapUsers.contains(mapUser);
                   return CustomCheckList(
                     label: mapUser.name,
                     subtitle: Text(
@@ -88,10 +85,10 @@ class _NoticeUserScreenState extends State<NoticeUserScreen> {
                     ),
                     value: value,
                     onChanged: (value) {
-                      if (!selectedNoticeMapUsers.contains(mapUser)) {
-                        selectedNoticeMapUsers.add(mapUser);
+                      if (!selectedSendMapUsers.contains(mapUser)) {
+                        selectedSendMapUsers.add(mapUser);
                       } else {
-                        selectedNoticeMapUsers.remove(mapUser);
+                        selectedSendMapUsers.remove(mapUser);
                       }
                       setState(() {});
                     },
@@ -99,29 +96,7 @@ class _NoticeUserScreenState extends State<NoticeUserScreen> {
                   );
                 },
               )
-            : Center(child: Text('受信先はありません')),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            PageTransition(
-              type: PageTransitionType.rightToLeft,
-              child: NoticeUserAddScreen(
-                userProvider: widget.userProvider,
-                reload: _reload,
-              ),
-            ),
-          );
-        },
-        icon: const FaIcon(
-          FontAwesomeIcons.plus,
-          color: kWhiteColor,
-        ),
-        label: Text(
-          '受信先を登録',
-          style: TextStyle(color: kWhiteColor),
-        ),
+            : Center(child: Text('送信先はありません')),
       ),
     );
   }
@@ -129,12 +104,12 @@ class _NoticeUserScreenState extends State<NoticeUserScreen> {
 
 class DelDialog extends StatelessWidget {
   final UserProvider userProvider;
-  final List<MapUserModel> selectedNoticeMapUsers;
+  final List<MapUserModel> selectedSendMapUsers;
   final Function(UserModel) reload;
 
   const DelDialog({
     required this.userProvider,
-    required this.selectedNoticeMapUsers,
+    required this.selectedSendMapUsers,
     required this.reload,
     super.key,
   });
@@ -167,8 +142,8 @@ class DelDialog extends StatelessWidget {
           labelColor: kWhiteColor,
           backgroundColor: kRedColor,
           onPressed: () async {
-            String? error = await userProvider.removeNoticeMapUsers(
-              selectedNoticeMapUsers: selectedNoticeMapUsers,
+            String? error = await userProvider.removeSendMapUsers(
+              selectedSendMapUsers: selectedSendMapUsers,
             );
             if (error != null) {
               showMessage(context, error, false);

@@ -9,21 +9,23 @@ import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
 
-class NoticeUserAddScreen extends StatefulWidget {
+class NoticeSettingUsersAddScreen extends StatefulWidget {
   final UserProvider userProvider;
   final Function(UserModel) reload;
 
-  const NoticeUserAddScreen({
+  const NoticeSettingUsersAddScreen({
     required this.userProvider,
     required this.reload,
     super.key,
   });
 
   @override
-  State<NoticeUserAddScreen> createState() => _NoticeUserAddScreenState();
+  State<NoticeSettingUsersAddScreen> createState() =>
+      _NoticeSettingUsersAddScreenState();
 }
 
-class _NoticeUserAddScreenState extends State<NoticeUserAddScreen> {
+class _NoticeSettingUsersAddScreenState
+    extends State<NoticeSettingUsersAddScreen> {
   TextEditingController telController = TextEditingController();
   UserModel? selectedUser;
 
@@ -38,7 +40,7 @@ class _NoticeUserAddScreenState extends State<NoticeUserAddScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          '受信先を登録',
+          '受信先を追加',
           style: TextStyle(color: kBlackColor),
         ),
       ),
@@ -55,7 +57,7 @@ class _NoticeUserAddScreenState extends State<NoticeUserAddScreen> {
                   controller: telController,
                   textInputType: TextInputType.phone,
                   maxLines: 1,
-                  label: '電話番号で検索',
+                  label: '発信者IDで検索',
                   color: kBlackColor,
                   prefix: Icons.phone,
                 ),

@@ -14,7 +14,7 @@ import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
 
-class SendConfScreen extends StatefulWidget {
+class SendSelectScreen extends StatefulWidget {
   final UserProvider userProvider;
   final UserSendModel? userSend;
   final String title;
@@ -22,7 +22,7 @@ class SendConfScreen extends StatefulWidget {
   final bool isChoice;
   final List<String> choices;
 
-  const SendConfScreen({
+  const SendSelectScreen({
     required this.userProvider,
     this.userSend,
     required this.title,
@@ -33,10 +33,10 @@ class SendConfScreen extends StatefulWidget {
   });
 
   @override
-  State<SendConfScreen> createState() => _SendConfScreenState();
+  State<SendSelectScreen> createState() => _SendSelectScreenState();
 }
 
-class _SendConfScreenState extends State<SendConfScreen> {
+class _SendSelectScreenState extends State<SendSelectScreen> {
   List<MapUserModel> sendMapUsers = [];
   List<MapUserModel> selectedSendMapUsers = [];
   int monthSendCount = 0;
@@ -150,6 +150,7 @@ class _SendConfScreenState extends State<SendConfScreen> {
               },
               icon: const FaIcon(
                 FontAwesomeIcons.paperPlane,
+                size: 18,
                 color: kWhiteColor,
               ),
               label: Text(
