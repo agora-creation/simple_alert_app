@@ -31,7 +31,13 @@ class SettingList extends StatelessWidget {
       ),
       child: ListTile(
         leading: leading,
-        title: Text(label),
+        title: Text(
+          label,
+          style: TextStyle(
+            color: kBlackColor,
+            fontSize: 18,
+          ),
+        ),
         subtitle: subtitle,
         trailing: trailing,
         tileColor: tileColor,

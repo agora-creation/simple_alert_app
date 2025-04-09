@@ -11,6 +11,7 @@ import 'package:simple_alert_app/screens/send_detail.dart';
 import 'package:simple_alert_app/screens/send_input.dart';
 import 'package:simple_alert_app/screens/send_setting.dart';
 import 'package:simple_alert_app/services/user_send.dart';
+import 'package:simple_alert_app/widgets/custom_list_button.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
 
 class SendScreen extends StatelessWidget {
@@ -34,11 +35,15 @@ class SendScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(),
           child: Column(
             children: [
-              ListTile(
-                title: Text('送信設定'),
+              CustomListButton(
+                leading: FaIcon(
+                  FontAwesomeIcons.gear,
+                  size: 16,
+                ),
+                label: '送信設定',
                 tileColor: kBlackColor.withOpacity(0.3),
                 trailing: FaIcon(
-                  FontAwesomeIcons.userGear,
+                  FontAwesomeIcons.chevronUp,
                   size: 16,
                 ),
                 onTap: () => showBottomUpScreen(
@@ -102,16 +107,16 @@ class SendScreen extends StatelessWidget {
                   },
                 ),
               ),
-              ListTile(
-                title: Text(
-                  'メッセージを作成',
-                  style: TextStyle(color: kWhiteColor),
-                ),
-                tileColor: kBlueColor,
-                trailing: FaIcon(
-                  FontAwesomeIcons.plus,
+              CustomListButton(
+                leading: FaIcon(
+                  FontAwesomeIcons.pen,
                   size: 16,
-                  color: kWhiteColor,
+                ),
+                label: 'メッセージを作成',
+                tileColor: kBlueColor.withOpacity(0.3),
+                trailing: FaIcon(
+                  FontAwesomeIcons.chevronUp,
+                  size: 16,
                 ),
                 onTap: () => showBottomUpScreen(
                   context,

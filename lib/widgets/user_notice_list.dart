@@ -17,41 +17,63 @@ class UserNoticeList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: kBlackColor.withOpacity(0.5),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: kBlackColor.withOpacity(0.5),
+            ),
           ),
+          color: userNotice.read ? kWhiteColor : kRedColor.withOpacity(0.3),
         ),
-        color: userNotice.read ? kWhiteColor : kRedColor.withOpacity(0.3),
-      ),
-      child: ListTile(
-        title: Text(
-          userNotice.title,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'SourceHanSansJP-Bold',
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 10,
+            horizontal: 20,
           ),
-          softWrap: false,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
-        subtitle: Text(
-          '受信日時: ${dateText('yyyy/MM/dd HH:mm', userNotice.createdAt)}',
-          style: TextStyle(
-            color: kBlackColor.withOpacity(0.8),
-            fontSize: 14,
-          ),
-        ),
-        trailing: userNotice.isChoice
-            ? AlertChip('回答求')
-            : const FaIcon(
-                FontAwesomeIcons.chevronRight,
-                size: 16,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    userNotice.title,
+                    style: TextStyle(
+                      color: kBlackColor,
+                      fontSize: 18,
+                    ),
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  Text(
+                    '受信日時: ${dateText('yyyy/MM/dd HH:mm', userNotice.createdAt)}',
+                    style: TextStyle(
+                      color: kBlackColor.withOpacity(0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                  Text(
+                    '送信者名: ${userNotice.createdUserName}',
+                    style: TextStyle(
+                      color: kBlackColor.withOpacity(0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
-        onTap: onTap,
+              userNotice.isChoice
+                  ? AlertChip('回答求')
+                  : const FaIcon(
+                      FontAwesomeIcons.chevronRight,
+                      size: 16,
+                    ),
+            ],
+          ),
+        ),
       ),
     );
   }

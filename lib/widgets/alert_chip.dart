@@ -21,7 +21,10 @@ class AlertChip extends StatelessWidget {
         ),
       ),
       backgroundColor: kRedColor,
-      shape: StadiumBorder(side: BorderSide.none),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: kRedColor),
+      ),
     );
   }
 }

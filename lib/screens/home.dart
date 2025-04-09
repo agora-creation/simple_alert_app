@@ -47,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
-    List<String> titles = ['受信機能', '送信機能'];
     List<Widget> bodies = [
       NoticeScreen(userProvider: userProvider),
       SendScreen(userProvider: userProvider),
@@ -55,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(titles[currentIndex]),
+        title: Text(kAppShortName),
         actions: [
           IconButton(
             icon: const FaIcon(FontAwesomeIcons.ellipsisVertical),
@@ -68,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          inAppPurchaseProvider.planAdView
+          inAppPurchaseProvider.planAdView && bannerAd.responseInfo != null
               ? SizedBox(
                   width: bannerAd.size.width.toDouble(),
                   height: bannerAd.size.height.toDouble(),
@@ -97,11 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
           items: [
             NavBarItems(
               icon: FontAwesomeIcons.earListen,
-              title: '受信機能',
+              title: '受信',
             ),
             NavBarItems(
               icon: FontAwesomeIcons.paperPlane,
-              title: '送信機能',
+              title: '送信',
             ),
           ],
           onChanged: (value) {

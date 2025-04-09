@@ -42,6 +42,7 @@ class _NoticeSettingUsersScreenState extends State<NoticeSettingUsersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    UserModel? user = widget.userProvider.user;
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -50,8 +51,8 @@ class _NoticeSettingUsersScreenState extends State<NoticeSettingUsersScreen> {
           icon: const FaIcon(FontAwesomeIcons.chevronLeft),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          '受信先一覧',
+        title: Text(
+          '受信先一覧 (${user?.noticeMapUsers.length})',
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
@@ -82,10 +83,6 @@ class _NoticeSettingUsersScreenState extends State<NoticeSettingUsersScreen> {
                   bool value = selectedNoticeMapUsers.contains(mapUser);
                   return CustomCheckList(
                     label: mapUser.name,
-                    subtitle: Text(
-                      mapUser.tel,
-                      style: TextStyle(fontSize: 14),
-                    ),
                     value: value,
                     onChanged: (value) {
                       if (!selectedNoticeMapUsers.contains(mapUser)) {
@@ -115,7 +112,7 @@ class _NoticeSettingUsersScreenState extends State<NoticeSettingUsersScreen> {
           );
         },
         icon: const FaIcon(
-          FontAwesomeIcons.plus,
+          FontAwesomeIcons.qrcode,
           size: 18,
           color: kWhiteColor,
         ),

@@ -39,10 +39,15 @@ class NoticeSettingScreen extends StatelessWidget {
         child: Column(
           children: [
             SettingList(
-              label: '名前',
+              label: 'あなたの名前',
               subtitle: Text(
                 user?.name ?? '',
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(
+                  color: kBlackColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'SourceHanSansJP-Bold',
+                ),
               ),
               trailing: const FaIcon(
                 FontAwesomeIcons.pen,
@@ -62,6 +67,13 @@ class NoticeSettingScreen extends StatelessWidget {
             ),
             SettingList(
               label: '受信先一覧 (${user?.noticeMapUsers.length})',
+              subtitle: Text(
+                '※登録した受信先から、通知を受信します',
+                style: TextStyle(
+                  color: kRedColor,
+                  fontSize: 14,
+                ),
+              ),
               trailing: const FaIcon(
                 FontAwesomeIcons.chevronRight,
                 size: 16,

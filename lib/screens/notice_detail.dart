@@ -111,7 +111,10 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(widget.userNotice.content),
+                                  Text(
+                                    widget.userNotice.content,
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ],
                               ),
                             ),

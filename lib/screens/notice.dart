@@ -10,6 +10,7 @@ import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/notice_detail.dart';
 import 'package:simple_alert_app/screens/notice_setting.dart';
 import 'package:simple_alert_app/services/user_notice.dart';
+import 'package:simple_alert_app/widgets/custom_list_button.dart';
 import 'package:simple_alert_app/widgets/user_notice_list.dart';
 
 class NoticeScreen extends StatelessWidget {
@@ -33,11 +34,15 @@ class NoticeScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(),
           child: Column(
             children: [
-              ListTile(
-                title: Text('受信設定'),
+              CustomListButton(
+                leading: FaIcon(
+                  FontAwesomeIcons.gear,
+                  size: 16,
+                ),
+                label: '受信設定',
                 tileColor: kBlackColor.withOpacity(0.3),
                 trailing: FaIcon(
-                  FontAwesomeIcons.userGear,
+                  FontAwesomeIcons.chevronUp,
                   size: 16,
                 ),
                 onTap: () => showBottomUpScreen(

@@ -89,7 +89,12 @@ class InfoScreen extends StatelessWidget {
                 builder: (context, snapshot) {
                   return Text(
                     snapshot.data ?? '',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(
+                      color: kBlackColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'SourceHanSansJP-Bold',
+                    ),
                   );
                 },
               ),

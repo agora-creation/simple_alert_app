@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('$kAppShortName: ログイン'),
+          title: Text(kAppShortName),
         ),
         body: SafeArea(
           child: Padding(
@@ -44,8 +44,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    Text('$kAppShortNameを利用するには、このスマホのSMS認証が必要です。'),
-                    Text('認証コードがお送りするため、電話番号をご入力ください。'),
+                    Text(
+                      '$kAppShortNameのアプリを利用するには、電話番号によるSMS認証が必要です。',
+                      style: TextStyle(fontSize: 14),
+                    ),
                     const SizedBox(height: 16),
                     CustomTextFormField(
                       controller: telController,
@@ -58,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 16),
                     CustomButton(
                       type: ButtonSizeType.lg,
-                      label: '認証する',
+                      label: '認証コードを送信',
                       labelColor: kWhiteColor,
                       backgroundColor: kBlueColor,
                       onPressed: () async {
