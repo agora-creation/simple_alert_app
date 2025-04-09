@@ -277,7 +277,7 @@ class _SendInputScreenState extends State<SendInputScreen> {
           );
         },
         icon: const FaIcon(
-          FontAwesomeIcons.paperPlane,
+          FontAwesomeIcons.listCheck,
           size: 18,
           color: kWhiteColor,
         ),

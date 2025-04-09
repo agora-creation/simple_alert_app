@@ -124,19 +124,23 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(height: 16),
-                                      Text('選択肢'),
+                                      Text('選択してください'),
                                       Column(
                                         children: widget.userNotice.choices
                                             .map((choice) {
                                           return ChoiceRadioList(
                                             value: choice,
                                             groupValue: answer,
-                                            onChanged: (value) {
-                                              if (value == null) return;
-                                              setState(() {
-                                                answer = value;
-                                              });
-                                            },
+                                            onChanged:
+                                                widget.userNotice.answer == ''
+                                                    ? (value) {
+                                                        if (value == null)
+                                                          return;
+                                                        setState(() {
+                                                          answer = value;
+                                                        });
+                                                      }
+                                                    : null,
                                           );
                                         }).toList(),
                                       ),
@@ -157,6 +161,9 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                                                   answer: answer,
                                                 ),
                                               ),
+                                              disabled:
+                                                  widget.userNotice.answer !=
+                                                      '',
                                             )
                                           : Container(),
                                     ],

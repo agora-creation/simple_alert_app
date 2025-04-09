@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
           iconSize: 18,
           indicatorColor: kRedColor,
           indicatorHeight: 4,
-          indicatorWidth: 20,
+          indicatorWidth: 24,
           items: [
             NavBarItems(
               icon: FontAwesomeIcons.earListen,

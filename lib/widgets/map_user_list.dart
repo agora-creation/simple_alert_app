@@ -20,10 +20,6 @@ class MapUserList extends StatelessWidget {
       ),
       child: ListTile(
         title: Text(mapUser.name),
-        subtitle: Text(
-          mapUser.tel,
-          style: TextStyle(fontSize: 14),
-        ),
         trailing: Text(
           mapUser.answer,
           style: TextStyle(

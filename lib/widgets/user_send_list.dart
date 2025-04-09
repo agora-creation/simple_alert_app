@@ -17,49 +17,64 @@ class UserSendList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
-        ),
-        color: userSend.draft ? kRedColor.withOpacity(0.3) : kWhiteColor,
-      ),
-      child: ListTile(
-        title: Text(
-          userSend.title,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'SourceHanSansJP-Bold',
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
           ),
-          softWrap: false,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
+          color: userSend.draft ? kRedColor.withOpacity(0.3) : kWhiteColor,
         ),
-        subtitle: userSend.draft
-            ? null
-            : Text(
-                '送信日時: ${dateText('yyyy/MM/dd HH:mm', userSend.sendAt)}',
-                style: TextStyle(
-                  color: kBlackColor.withOpacity(0.8),
-                  fontSize: 14,
-                ),
-              ),
-        trailing: userSend.draft
-            ? Text(
-                '下書き中',
-                style: TextStyle(
-                  color: kRedColor,
-                  fontSize: 14,
-                ),
-              )
-            : userSend.isChoice
-                ? AlertChip('回答求')
-                : const FaIcon(
-                    FontAwesomeIcons.chevronRight,
-                    size: 16,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 24,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    userSend.title,
+                    style: TextStyle(
+                      color: kBlackColor,
+                      fontSize: 18,
+                    ),
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-        onTap: onTap,
+                  userSend.draft
+                      ? Container()
+                      : Text(
+                          '送信日時: ${dateText('yyyy/MM/dd HH:mm', userSend.createdAt)}',
+                          style: TextStyle(
+                            color: kBlackColor.withOpacity(0.8),
+                            fontSize: 12,
+                          ),
+                        ),
+                ],
+              ),
+              userSend.draft
+                  ? Text(
+                      '下書き中',
+                      style: TextStyle(
+                        color: kRedColor,
+                        fontSize: 16,
+                      ),
+                    )
+                  : userSend.isChoice
+                      ? AlertChip('回答求')
+                      : const FaIcon(
+                          FontAwesomeIcons.chevronRight,
+                          size: 16,
+                        ),
+            ],
+          ),
+        ),
       ),
     );
   }

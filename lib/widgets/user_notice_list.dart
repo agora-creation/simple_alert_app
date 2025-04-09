@@ -30,8 +30,8 @@ class UserNoticeList extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            vertical: 10,
-            horizontal: 20,
+            vertical: 16,
+            horizontal: 24,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,14 +53,14 @@ class UserNoticeList extends StatelessWidget {
                     '受信日時: ${dateText('yyyy/MM/dd HH:mm', userNotice.createdAt)}',
                     style: TextStyle(
                       color: kBlackColor.withOpacity(0.8),
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                   Text(
                     '送信者名: ${userNotice.createdUserName}',
                     style: TextStyle(
                       color: kBlackColor.withOpacity(0.8),
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ],

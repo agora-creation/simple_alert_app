@@ -35,16 +35,10 @@ class NoticeScreen extends StatelessWidget {
           child: Column(
             children: [
               CustomListButton(
-                leading: FaIcon(
-                  FontAwesomeIcons.gear,
-                  size: 16,
-                ),
+                leadingIcon: FontAwesomeIcons.gear,
                 label: '受信設定',
+                labelColor: kBlackColor,
                 tileColor: kBlackColor.withOpacity(0.3),
-                trailing: FaIcon(
-                  FontAwesomeIcons.chevronUp,
-                  size: 16,
-                ),
                 onTap: () => showBottomUpScreen(
                   context,
                   NoticeSettingScreen(

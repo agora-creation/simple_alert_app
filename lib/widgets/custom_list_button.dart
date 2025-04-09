@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:simple_alert_app/common/style.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CustomListButton extends StatelessWidget {
-  final Widget? leading;
+  final IconData leadingIcon;
   final String label;
+  final Color labelColor;
   final Color? tileColor;
-  final Widget? trailing;
   final Function()? onTap;
 
   const CustomListButton({
-    this.leading,
+    required this.leadingIcon,
     required this.label,
-    this.tileColor,
-    this.trailing,
+    required this.labelColor,
+    required this.tileColor,
     this.onTap,
     super.key,
   });
@@ -20,16 +20,24 @@ class CustomListButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: leading,
+      leading: FaIcon(
+        leadingIcon,
+        size: 16,
+        color: labelColor,
+      ),
       title: Text(
         label,
         style: TextStyle(
-          color: kBlackColor,
+          color: labelColor,
           fontSize: 16,
         ),
       ),
       tileColor: tileColor,
-      trailing: trailing,
+      trailing: FaIcon(
+        FontAwesomeIcons.chevronUp,
+        size: 16,
+        color: labelColor,
+      ),
       onTap: onTap,
     );
   }

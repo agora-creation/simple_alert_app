@@ -79,10 +79,6 @@ class _SendSettingUsersScreenState extends State<SendSettingUsersScreen> {
                   bool value = selectedSendMapUsers.contains(mapUser);
                   return CustomCheckList(
                     label: mapUser.name,
-                    subtitle: Text(
-                      mapUser.tel,
-                      style: TextStyle(fontSize: 14),
-                    ),
                     value: value,
                     onChanged: (value) {
                       if (!selectedSendMapUsers.contains(mapUser)) {

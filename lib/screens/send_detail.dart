@@ -92,7 +92,10 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(widget.userSend.content),
+                                  Text(
+                                    widget.userSend.content,
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ],
                               ),
                             ),
