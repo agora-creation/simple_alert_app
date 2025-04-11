@@ -27,22 +27,33 @@ class _LoginScreenState extends State<LoginScreen> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(kAppShortName),
-        ),
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.only(
-              left: 16,
-              right: 16,
-              bottom: 24,
-            ),
-            child: Card(
-              color: kWhiteColor,
-              elevation: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      kAppShortName,
+                      style: TextStyle(
+                        color: kBlackColor,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'SourceHanSansJP-Bold',
+                      ),
+                    ),
+                    Text(
+                      '- 通知に特化したアプリ -',
+                      style: TextStyle(
+                        color: kBlackColor,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
                   children: [
                     Text(
                       '$kAppShortNameのアプリを利用するには、電話番号によるSMS認証が必要です。',
@@ -97,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
           ),
         ),

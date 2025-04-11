@@ -30,8 +30,8 @@ class UserNoticeList extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            vertical: 16,
-            horizontal: 24,
+            vertical: 8,
+            horizontal: 16,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

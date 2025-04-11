@@ -11,6 +11,7 @@ import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/screens/login.dart';
+import 'package:simple_alert_app/screens/splash.dart';
 import 'package:simple_alert_app/services/push.dart';
 
 Future main() async {
@@ -74,6 +75,7 @@ class SplashController extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context);
     switch (userProvider.status) {
       case AuthStatus.uninitialized:
+        return const SplashScreen();
       case AuthStatus.unauthenticated:
       case AuthStatus.authenticating:
         return const LoginScreen();

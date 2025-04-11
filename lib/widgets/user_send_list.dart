@@ -53,7 +53,7 @@ class UserSendList extends StatelessWidget {
                           '送信日時: ${dateText('yyyy/MM/dd HH:mm', userSend.createdAt)}',
                           style: TextStyle(
                             color: kBlackColor.withOpacity(0.8),
-                            fontSize: 12,
+                            fontSize: 14,
                           ),
                         ),
                 ],
@@ -63,7 +63,7 @@ class UserSendList extends StatelessWidget {
                       '下書き中',
                       style: TextStyle(
                         color: kRedColor,
-                        fontSize: 16,
+                        fontSize: 14,
                       ),
                     )
                   : userSend.isChoice
