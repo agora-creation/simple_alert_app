@@ -19,6 +19,7 @@ import 'package:simple_alert_app/screens/send_setting.dart';
 import 'package:simple_alert_app/services/ad.dart';
 import 'package:simple_alert_app/services/user_notice.dart';
 import 'package:simple_alert_app/services/user_send.dart';
+import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_bottom_sheet.dart';
 import 'package:simple_alert_app/widgets/custom_card.dart';
 import 'package:simple_alert_app/widgets/custom_list_button.dart';
@@ -26,12 +27,7 @@ import 'package:simple_alert_app/widgets/user_notice_list.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
 
 class HomeScreen extends StatefulWidget {
-  final int mode;
-
-  const HomeScreen({
-    this.mode = 0,
-    super.key,
-  });
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -63,8 +59,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
-    String modeText = '受信モード';
-    if (widget.mode == 1) {
+    String modeText = '';
+    if (userProvider.mode == HomeMode.notice) {
+      modeText = '受信モード';
+    } else if (userProvider.mode == HomeMode.send) {
       modeText = '送信モード';
     }
     return Scaffold(
@@ -72,31 +70,18 @@ class _HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
         title: Text('$kAppShortName: $modeText'),
         actions: [
-          widget.mode == 1
-              ? IconButton(
-                  icon: const FaIcon(FontAwesomeIcons.earListen),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.leftToRight,
-                        child: HomeScreen(),
-                      ),
-                    );
-                  },
-                )
-              : IconButton(
-                  icon: const FaIcon(FontAwesomeIcons.paperPlane),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        child: HomeScreen(mode: 1),
-                      ),
-                    );
-                  },
-                ),
+          IconButton(
+            icon: const FaIcon(FontAwesomeIcons.rotate),
+            onPressed: () async {
+              if (userProvider.mode == HomeMode.notice) {
+                await userProvider.modeChange(HomeMode.send);
+                showMessage(context, '送信モードに切り替えました', true);
+              } else if (userProvider.mode == HomeMode.send) {
+                await userProvider.modeChange(HomeMode.notice);
+                showMessage(context, '受信モードに切り替えました', true);
+              }
+            },
+          ),
           IconButton(
             icon: const FaIcon(FontAwesomeIcons.ellipsisVertical),
             onPressed: () => showBottomUpScreen(
@@ -123,9 +108,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   right: 16,
                   bottom: 8,
                 ),
-                child: widget.mode == 1
-                    ? SendCard(userProvider: userProvider)
-                    : NoticeCard(userProvider: userProvider),
+                child: userProvider.mode == HomeMode.notice
+                    ? NoticeCard(userProvider: userProvider)
+                    : userProvider.mode == HomeMode.send
+                        ? SendCard(userProvider: userProvider)
+                        : Container(),
               ),
             ),
           ],
@@ -212,7 +199,7 @@ class NoticeCard extends StatelessWidget {
   }
 }
 
-class SendCard extends StatelessWidget {
+class SendCard extends StatefulWidget {
   final UserProvider userProvider;
 
   const SendCard({
@@ -221,7 +208,30 @@ class SendCard extends StatelessWidget {
   });
 
   @override
+  State<SendCard> createState() => _SendCardState();
+}
+
+class _SendCardState extends State<SendCard> {
+  int monthSendCount = 0;
+
+  void _init() async {
+    if (widget.userProvider.user != null) {
+      monthSendCount = await UserSendService().selectMonthSendCount(
+        userId: widget.userProvider.user!.id,
+      );
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
     return CustomCard(
       child: Column(
         children: [
@@ -233,14 +243,17 @@ class SendCard extends StatelessWidget {
             onTap: () => showBottomUpScreen(
               context,
               SendSettingScreen(
-                userProvider: userProvider,
+                userProvider: widget.userProvider,
               ),
             ),
+          ),
+          AlertBar(
+            '現在$monthSendCount件 / 月${inAppPurchaseProvider.planMonthLimit}件まで送信可',
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: UserSendService().streamList(
-                userId: userProvider.user?.id ?? 'error',
+                userId: widget.userProvider.user?.id ?? 'error',
               ),
               builder: (context, snapshot) {
                 List<UserSendModel> userSends = [];
@@ -269,7 +282,7 @@ class SendCard extends StatelessWidget {
                           showBottomUpScreen(
                             context,
                             SendInputScreen(
-                              userProvider: userProvider,
+                              userProvider: widget.userProvider,
                               userSend: userSend,
                             ),
                           );
@@ -299,7 +312,7 @@ class SendCard extends StatelessWidget {
             onTap: () => showBottomUpScreen(
               context,
               SendInputScreen(
-                userProvider: userProvider,
+                userProvider: widget.userProvider,
               ),
             ),
             verticalAlign: ButtonVerticalAlign.bottom,

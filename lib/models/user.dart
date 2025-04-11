@@ -6,6 +6,8 @@ class UserModel {
   String _name = '';
   String _tel = '';
   String _token = '';
+  bool _sender = false;
+  String _senderName = '';
   List<MapUserModel> noticeMapUsers = [];
   List<MapUserModel> sendMapUsers = [];
 
@@ -13,6 +15,8 @@ class UserModel {
   String get name => _name;
   String get tel => _tel;
   String get token => _token;
+  bool get sender => _sender;
+  String get senderName => _senderName;
 
   UserModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot) {
     Map<String, dynamic>? data = snapshot.data();
@@ -21,6 +25,8 @@ class UserModel {
     _name = data['name'] ?? '';
     _tel = data['tel'] ?? '';
     _token = data['token'] ?? '';
+    _sender = data['sender'] ?? false;
+    _senderName = data['senderName'] ?? '';
     noticeMapUsers = _convertMapUsers(data['noticeMapUsers'] ?? []);
     sendMapUsers = _convertMapUsers(data['sendMapUsers'] ?? []);
   }

@@ -17,6 +17,8 @@ enum AuthStatus {
   unauthenticated,
 }
 
+enum HomeMode { notice, send }
+
 class UserProvider with ChangeNotifier {
   AuthStatus _status = AuthStatus.uninitialized;
   AuthStatus get status => _status;
@@ -24,6 +26,7 @@ class UserProvider with ChangeNotifier {
   User? _authUser;
   User? get authUser => _authUser;
   String _verificationId = '';
+  HomeMode mode = HomeMode.values.first;
 
   final PushService _pushService = PushService();
   final UserService _userService = UserService();
@@ -37,16 +40,10 @@ class UserProvider with ChangeNotifier {
     _auth?.authStateChanges().listen(_onStateChanged);
   }
 
-  bool loginCheck() {
-    switch (_status) {
-      case AuthStatus.uninitialized:
-        return false;
-      case AuthStatus.unauthenticated:
-      case AuthStatus.authenticating:
-        return false;
-      case AuthStatus.authenticated:
-        return true;
-    }
+  Future modeChange(HomeMode newMode) async {
+    mode = newMode;
+    await setPrefsInt('modeIndex', mode.index);
+    notifyListeners();
   }
 
   Future<({bool autoAuth, String? error})> signIn({
@@ -72,9 +69,11 @@ class UserProvider with ChangeNotifier {
             if (tmpUser == null) {
               _userService.create({
                 'id': result.user!.uid,
-                'name': '名無し',
+                'name': 'B太郎',
                 'tel': tel,
                 'token': token,
+                'sender': false,
+                'senderName': '',
                 'noticeMapUsers': [],
                 'sendMapUsers': [],
               });
@@ -128,9 +127,11 @@ class UserProvider with ChangeNotifier {
           if (tmpUser == null) {
             _userService.create({
               'id': result.user!.uid,
-              'name': '名無し',
+              'name': 'B太郎',
               'tel': tel,
               'token': token,
+              'sender': false,
+              'senderName': '',
               'noticeMapUsers': [],
               'sendMapUsers': [],
             });
@@ -162,6 +163,22 @@ class UserProvider with ChangeNotifier {
       _userService.update({
         'id': _user?.id,
         'name': name,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateSenderName({
+    required String senderName,
+  }) async {
+    String? error;
+    if (senderName == '') return '送信者名は必須入力です';
+    try {
+      _userService.update({
+        'id': _user?.id,
+        'senderName': senderName,
       });
     } catch (e) {
       error = e.toString();
@@ -532,6 +549,9 @@ class UserProvider with ChangeNotifier {
         _status = AuthStatus.unauthenticated;
       }
     }
+    int modeIndex =
+        await getPrefsInt('modeIndex') ?? HomeMode.values.first.index;
+    mode = HomeMode.values[modeIndex];
     notifyListeners();
   }
 }

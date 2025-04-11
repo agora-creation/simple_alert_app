@@ -10,6 +10,8 @@ import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
+import 'package:simple_alert_app/screens/send_setting_name.dart';
+import 'package:simple_alert_app/screens/send_setting_qr.dart';
 import 'package:simple_alert_app/screens/send_setting_users.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
@@ -73,6 +75,33 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
         child: Column(
           children: [
             SettingList(
+              label: '送信者名',
+              subtitle: Text(
+                user?.senderName ?? '',
+                style: TextStyle(
+                  color: kBlackColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'SourceHanSansJP-Bold',
+                ),
+              ),
+              trailing: const FaIcon(
+                FontAwesomeIcons.pen,
+                size: 16,
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: SendSettingNameScreen(
+                      userProvider: widget.userProvider,
+                    ),
+                  ),
+                );
+              },
+            ),
+            SettingList(
               label: 'ご利用中のプラン',
               subtitle: Text(
                 context.read<InAppPurchaseProvider>().planName,
@@ -110,18 +139,6 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
               },
             ),
             SettingList(
-              label: '今月の送信件数',
-              subtitle: Text(
-                '$monthSendCount件 / ${inAppPurchaseProvider.planMonthLimit}件まで送信可能',
-                style: TextStyle(
-                  color: kRedColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'SourceHanSansJP-Bold',
-                ),
-              ),
-            ),
-            SettingList(
               label: '送信先一覧 (${user?.sendMapUsers.length})',
               trailing: const FaIcon(
                 FontAwesomeIcons.chevronRight,
@@ -133,6 +150,31 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                   PageTransition(
                     type: PageTransitionType.rightToLeft,
                     child: SendSettingUsersScreen(
+                      userProvider: widget.userProvider,
+                    ),
+                  ),
+                );
+              },
+            ),
+            SettingList(
+              label: 'QRコード生成',
+              subtitle: Text(
+                '※受信者に見せてください',
+                style: TextStyle(
+                  color: kRedColor,
+                  fontSize: 14,
+                ),
+              ),
+              trailing: const FaIcon(
+                FontAwesomeIcons.chevronRight,
+                size: 16,
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: SendSettingQrScreen(
                       userProvider: widget.userProvider,
                     ),
                   ),
