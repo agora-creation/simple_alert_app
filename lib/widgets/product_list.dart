@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 
 class ProductList extends StatelessWidget {
-  final ProductDetails product;
-  final ProductDetails? selectedProduct;
+  final String id;
+  final String selectedId;
+  final String title;
+  final String description;
+  final String price;
   final Function()? onTap;
 
   const ProductList({
-    required this.product,
-    this.selectedProduct,
+    required this.id,
+    required this.selectedId,
+    required this.title,
+    required this.description,
+    required this.price,
     this.onTap,
     super.key,
   });
@@ -26,20 +30,20 @@ class ProductList extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-            color: kWhiteColor,
+            color: kBlackColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border: selectedProduct?.id == product.id
+              border: id == selectedId
                   ? Border.all(color: kBlueColor, width: 2)
                   : null,
             ),
             child: ListTile(
               dense: true,
               title: Text(
-                product.title,
+                title,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -47,14 +51,14 @@ class ProductList extends StatelessWidget {
                 ),
               ),
               subtitle: Text(
-                product.description,
+                description,
                 style: const TextStyle(fontSize: 12),
               ),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    formatPrice(product),
+                    price,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

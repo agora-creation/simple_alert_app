@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
@@ -246,8 +247,12 @@ void showSubscriptionDialog(
                     children: inAppPurchaseProvider.viewProducts.map((product) {
                       print(product.id);
                       return ProductList(
-                        product: product,
-                        selectedProduct: inAppPurchaseProvider.selectedProduct,
+                        id: product.id,
+                        selectedId:
+                            inAppPurchaseProvider.selectedProduct?.id ?? '',
+                        title: product.title,
+                        description: product.description,
+                        price: formatPrice(product),
                         onTap: () {
                           inAppPurchaseProvider.selectedProduct = product;
                         },

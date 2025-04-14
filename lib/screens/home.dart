@@ -25,8 +25,11 @@ import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_card.dart';
 import 'package:simple_alert_app/widgets/custom_list_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
+import 'package:simple_alert_app/widgets/link_text.dart';
+import 'package:simple_alert_app/widgets/product_list.dart';
 import 'package:simple_alert_app/widgets/user_notice_list.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -360,8 +363,9 @@ class _SendCardState extends State<SendCard> {
                       fontFamily: 'SourceHanSansJP-Bold',
                     ),
                   ),
+                  const SizedBox(height: 4),
                   Text(
-                    '送信モードを利用するには、送信者名を登録してください。',
+                    '送信モードを利用するには、送信者名を入力してください。',
                     style: TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 16),
@@ -374,30 +378,65 @@ class _SendCardState extends State<SendCard> {
                     prefix: Icons.account_box,
                     fillColor: kBlackColor.withOpacity(0.1),
                   ),
+                  const SizedBox(height: 24),
+                  Text('プランを選んでください'),
+                  const SizedBox(height: 8),
+                  Consumer<InAppPurchaseProvider>(
+                    builder: (context, inAppPurchaseProvider, _) {
+                      return Column(
+                        children: [
+                          ProductList(
+                            id: '',
+                            selectedId:
+                                inAppPurchaseProvider.selectedProduct?.id ?? '',
+                            title: 'フリープラン',
+                            description: '1ヶ月に10件まで送信可能になります。',
+                            price: '￥0',
+                            onTap: () {
+                              inAppPurchaseProvider.selectedProduct = null;
+                            },
+                          ),
+                          ...inAppPurchaseProvider.viewProducts.map((product) {
+                            return ProductList(
+                              id: product.id,
+                              selectedId:
+                                  inAppPurchaseProvider.selectedProduct?.id ??
+                                      '',
+                              title: product.title,
+                              description: product.description,
+                              price: formatPrice(product),
+                              onTap: () {
+                                inAppPurchaseProvider.selectedProduct = product;
+                              },
+                            );
+                          }).toList(),
+                        ],
+                      );
+                    },
+                  ),
                   const SizedBox(height: 16),
-                  // Consumer<InAppPurchaseProvider>(
-                  //   builder: (context, inAppPurchaseProvider, _) {
-                  //     return Column();
-                  //   },
-                  // ),
-                  // const SizedBox(height: 16),
-                  // LinkText(
-                  //   label: '利用規約を確認',
-                  //   onTap: () async {
-                  //     if (!await launchUrl(Uri.parse(
-                  //       'https://docs.google.com/document/d/18yzTySjHTdCE_VHS6NjAeP8OfTpfqyh5VZjaqBgdP78/edit?usp=sharing',
-                  //     ))) {
-                  //       throw Exception('Could not launch');
-                  //     }
-                  //   },
-                  // ),
-                  // const SizedBox(height: 4),
+                  LinkText(
+                    label: '利用規約を確認',
+                    onTap: () async {
+                      if (!await launchUrl(Uri.parse(
+                        'https://docs.google.com/document/d/18yzTySjHTdCE_VHS6NjAeP8OfTpfqyh5VZjaqBgdP78/edit?usp=sharing',
+                      ))) {
+                        throw Exception('Could not launch');
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 8),
                   CustomButton(
                     type: ButtonSizeType.lg,
                     label: '登録する',
                     labelColor: kWhiteColor,
                     backgroundColor: kBlueColor,
                     onPressed: () async {
+                      if (inAppPurchaseProvider.selectedProduct != null) {
+                        await inAppPurchaseProvider.purchaseProduct(
+                          inAppPurchaseProvider.selectedProduct!,
+                        );
+                      }
                       String? error = await widget.userProvider.updateSender(
                         senderName: senderNameController.text,
                       );
