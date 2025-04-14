@@ -92,7 +92,21 @@ class _SendSettingUsersScreenState extends State<SendSettingUsersScreen> {
                   );
                 },
               )
-            : Center(child: Text('受信者はいません')),
+            : Center(
+                child: Container(
+                  color: kRedColor,
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    '受信者はいません',
+                    style: TextStyle(
+                      color: kWhiteColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'SourceHanSansJP-Bold',
+                    ),
+                  ),
+                ),
+              ),
       ),
     );
   }

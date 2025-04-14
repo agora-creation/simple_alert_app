@@ -21,8 +21,10 @@ import 'package:simple_alert_app/services/user_notice.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_bottom_sheet.dart';
+import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_card.dart';
 import 'package:simple_alert_app/widgets/custom_list_button.dart';
+import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/user_notice_list.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
 
@@ -162,9 +164,18 @@ class NoticeCard extends StatelessWidget {
                 }
                 if (userNotices.isEmpty) {
                   return Center(
-                    child: Text(
-                      '受信履歴はありません',
-                      style: TextStyle(fontSize: 14),
+                    child: Container(
+                      color: kRedColor,
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '受信履歴はありません',
+                        style: TextStyle(
+                          color: kWhiteColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'SourceHanSansJP-Bold',
+                        ),
+                      ),
                     ),
                   );
                 }
@@ -212,6 +223,7 @@ class SendCard extends StatefulWidget {
 }
 
 class _SendCardState extends State<SendCard> {
+  TextEditingController senderNameController = TextEditingController();
   int monthSendCount = 0;
 
   void _init() async {
@@ -232,93 +244,166 @@ class _SendCardState extends State<SendCard> {
   @override
   Widget build(BuildContext context) {
     final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
-    return CustomCard(
-      child: Column(
-        children: [
-          CustomListButton(
-            leadingIcon: FontAwesomeIcons.gear,
-            label: '送信設定',
-            labelColor: kBlackColor,
-            tileColor: kBlackColor.withOpacity(0.3),
-            onTap: () => showBottomUpScreen(
-              context,
-              SendSettingScreen(
-                userProvider: widget.userProvider,
+    if (widget.userProvider.user?.sender == true) {
+      return CustomCard(
+        child: Column(
+          children: [
+            CustomListButton(
+              leadingIcon: FontAwesomeIcons.gear,
+              label: '送信設定',
+              labelColor: kBlackColor,
+              tileColor: kBlackColor.withOpacity(0.3),
+              onTap: () => showBottomUpScreen(
+                context,
+                SendSettingScreen(
+                  userProvider: widget.userProvider,
+                ),
               ),
             ),
-          ),
-          AlertBar(
-            '現在$monthSendCount件 / 月${inAppPurchaseProvider.planMonthLimit}件まで送信可',
-          ),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: UserSendService().streamList(
-                userId: widget.userProvider.user?.id ?? 'error',
-              ),
-              builder: (context, snapshot) {
-                List<UserSendModel> userSends = [];
-                if (snapshot.hasData) {
-                  userSends = UserSendService().generateList(
-                    data: snapshot.data,
-                  );
-                }
-                if (userSends.isEmpty) {
-                  return Center(
-                    child: Text(
-                      '送信履歴はありません',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  );
-                }
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: userSends.length,
-                  itemBuilder: (context, index) {
-                    UserSendModel userSend = userSends[index];
-                    return UserSendList(
-                      userSend: userSend,
-                      onTap: () {
-                        if (userSend.draft) {
-                          showBottomUpScreen(
-                            context,
-                            SendInputScreen(
-                              userProvider: widget.userProvider,
-                              userSend: userSend,
-                            ),
-                          );
-                        } else {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: SendDetailScreen(
+            AlertBar(
+              '現在$monthSendCount件 / 月${inAppPurchaseProvider.planMonthLimit}件まで送信可',
+            ),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: UserSendService().streamList(
+                  userId: widget.userProvider.user?.id ?? 'error',
+                ),
+                builder: (context, snapshot) {
+                  List<UserSendModel> userSends = [];
+                  if (snapshot.hasData) {
+                    userSends = UserSendService().generateList(
+                      data: snapshot.data,
+                    );
+                  }
+                  if (userSends.isEmpty) {
+                    return Center(
+                      child: Container(
+                        color: kRedColor,
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          '送信履歴はありません',
+                          style: TextStyle(
+                            color: kWhiteColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'SourceHanSansJP-Bold',
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: userSends.length,
+                    itemBuilder: (context, index) {
+                      UserSendModel userSend = userSends[index];
+                      return UserSendList(
+                        userSend: userSend,
+                        onTap: () {
+                          if (userSend.draft) {
+                            showBottomUpScreen(
+                              context,
+                              SendInputScreen(
+                                userProvider: widget.userProvider,
                                 userSend: userSend,
                               ),
-                            ),
-                          );
-                        }
-                      },
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          CustomListButton(
-            leadingIcon: FontAwesomeIcons.pen,
-            label: 'メッセージを作成',
-            labelColor: kWhiteColor,
-            tileColor: kBlueColor,
-            onTap: () => showBottomUpScreen(
-              context,
-              SendInputScreen(
-                userProvider: widget.userProvider,
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: SendDetailScreen(
+                                  userSend: userSend,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
               ),
             ),
-            verticalAlign: ButtonVerticalAlign.bottom,
+            CustomListButton(
+              leadingIcon: FontAwesomeIcons.pen,
+              label: 'メッセージを作成',
+              labelColor: kWhiteColor,
+              tileColor: kBlueColor,
+              onTap: () => showBottomUpScreen(
+                context,
+                SendInputScreen(
+                  userProvider: widget.userProvider,
+                ),
+              ),
+              verticalAlign: ButtonVerticalAlign.bottom,
+            ),
+          ],
+        ),
+      );
+    } else {
+      return GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: CustomCard(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                Text(
+                  '- はじめに -',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'SourceHanSansJP-Bold',
+                  ),
+                ),
+                Text(
+                  '送信モードを利用するには、送信者名を登録してください。',
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 16),
+                CustomTextFormField(
+                  controller: senderNameController,
+                  textInputType: TextInputType.name,
+                  maxLines: 1,
+                  label: '送信者名',
+                  color: kBlackColor,
+                  prefix: Icons.account_box,
+                  fillColor: kBlackColor.withOpacity(0.1),
+                ),
+                const SizedBox(height: 16),
+                CustomButton(
+                  type: ButtonSizeType.lg,
+                  label: '登録する',
+                  labelColor: kWhiteColor,
+                  backgroundColor: kBlueColor,
+                  onPressed: () async {
+                    String? error = await widget.userProvider.updateSender(
+                      senderName: senderNameController.text,
+                    );
+                    if (error != null) {
+                      if (!mounted) return;
+                      showMessage(context, error, false);
+                      return;
+                    }
+                    await widget.userProvider.reload();
+                    if (!mounted) return;
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.bottomToTop,
+                        child: HomeScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-    );
+        ),
+      );
+    }
   }
 }

@@ -96,7 +96,21 @@ class _NoticeSettingUsersScreenState extends State<NoticeSettingUsersScreen> {
                   );
                 },
               )
-            : Center(child: Text('受信先はいません')),
+            : Center(
+                child: Container(
+                  color: kRedColor,
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    '受信先はいません',
+                    style: TextStyle(
+                      color: kWhiteColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'SourceHanSansJP-Bold',
+                    ),
+                  ),
+                ),
+              ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {

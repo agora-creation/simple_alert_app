@@ -25,12 +25,6 @@ class SendSettingQrScreen extends StatelessWidget {
           icon: const FaIcon(FontAwesomeIcons.chevronLeft),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          IconButton(
-            icon: const FaIcon(FontAwesomeIcons.download),
-            onPressed: () async {},
-          ),
-        ],
       ),
       body: SafeArea(
         child: Column(
