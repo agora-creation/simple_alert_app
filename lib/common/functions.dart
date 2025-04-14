@@ -1,6 +1,7 @@
 import 'package:alert_banner/exports.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -106,4 +107,9 @@ Timestamp convertTimestamp(DateTime date, bool end) {
   return Timestamp.fromMillisecondsSinceEpoch(
     DateTime.parse(dateTime).millisecondsSinceEpoch,
   );
+}
+
+String formatPrice(ProductDetails product) {
+  final formatter = NumberFormat.simpleCurrency(locale: 'ja_JP');
+  return formatter.format(product.rawPrice);
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 
 class ProductList extends StatelessWidget {
@@ -53,7 +54,7 @@ class ProductList extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    product.price,
+                    formatPrice(product),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
