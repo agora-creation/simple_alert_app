@@ -349,57 +349,76 @@ class _SendCardState extends State<SendCard> {
         child: CustomCard(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                Text(
-                  '- はじめに -',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'SourceHanSansJP-Bold',
+            child: GestureDetector(
+              child: Column(
+                children: [
+                  Text(
+                    '- はじめに -',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'SourceHanSansJP-Bold',
+                    ),
                   ),
-                ),
-                Text(
-                  '送信モードを利用するには、送信者名を登録してください。',
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 16),
-                CustomTextFormField(
-                  controller: senderNameController,
-                  textInputType: TextInputType.name,
-                  maxLines: 1,
-                  label: '送信者名',
-                  color: kBlackColor,
-                  prefix: Icons.account_box,
-                  fillColor: kBlackColor.withOpacity(0.1),
-                ),
-                const SizedBox(height: 16),
-                CustomButton(
-                  type: ButtonSizeType.lg,
-                  label: '登録する',
-                  labelColor: kWhiteColor,
-                  backgroundColor: kBlueColor,
-                  onPressed: () async {
-                    String? error = await widget.userProvider.updateSender(
-                      senderName: senderNameController.text,
-                    );
-                    if (error != null) {
+                  Text(
+                    '送信モードを利用するには、送信者名を登録してください。',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 16),
+                  CustomTextFormField(
+                    controller: senderNameController,
+                    textInputType: TextInputType.name,
+                    maxLines: 1,
+                    label: '送信者名',
+                    color: kBlackColor,
+                    prefix: Icons.account_box,
+                    fillColor: kBlackColor.withOpacity(0.1),
+                  ),
+                  const SizedBox(height: 16),
+                  // Consumer<InAppPurchaseProvider>(
+                  //   builder: (context, inAppPurchaseProvider, _) {
+                  //     return Column();
+                  //   },
+                  // ),
+                  // const SizedBox(height: 16),
+                  // LinkText(
+                  //   label: '利用規約を確認',
+                  //   onTap: () async {
+                  //     if (!await launchUrl(Uri.parse(
+                  //       'https://docs.google.com/document/d/18yzTySjHTdCE_VHS6NjAeP8OfTpfqyh5VZjaqBgdP78/edit?usp=sharing',
+                  //     ))) {
+                  //       throw Exception('Could not launch');
+                  //     }
+                  //   },
+                  // ),
+                  // const SizedBox(height: 4),
+                  CustomButton(
+                    type: ButtonSizeType.lg,
+                    label: '登録する',
+                    labelColor: kWhiteColor,
+                    backgroundColor: kBlueColor,
+                    onPressed: () async {
+                      String? error = await widget.userProvider.updateSender(
+                        senderName: senderNameController.text,
+                      );
+                      if (error != null) {
+                        if (!mounted) return;
+                        showMessage(context, error, false);
+                        return;
+                      }
+                      await widget.userProvider.reload();
                       if (!mounted) return;
-                      showMessage(context, error, false);
-                      return;
-                    }
-                    await widget.userProvider.reload();
-                    if (!mounted) return;
-                    Navigator.pushReplacement(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.bottomToTop,
-                        child: HomeScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                      Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.bottomToTop,
+                          child: HomeScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
