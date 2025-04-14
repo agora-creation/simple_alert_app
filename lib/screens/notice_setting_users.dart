@@ -101,7 +101,7 @@ class _NoticeSettingUsersScreenState extends State<NoticeSettingUsersScreen> {
                   color: kRedColor,
                   padding: EdgeInsets.all(8),
                   child: Text(
-                    '受信先はいません',
+                    '受信先を追加してください',
                     style: TextStyle(
                       color: kWhiteColor,
                       fontSize: 16,
