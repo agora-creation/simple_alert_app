@@ -18,7 +18,7 @@ ThemeData customTheme() {
       backgroundColor: kBackgroundColor,
       elevation: 0,
       centerTitle: false,
-      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      systemOverlayStyle: SystemUiOverlayStyle.light,
       titleTextStyle: TextStyle(
         color: kBlackColor,
         fontSize: 20,

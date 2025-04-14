@@ -61,6 +61,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     CustomTextFormField(
+                      controller: nameController,
+                      textInputType: TextInputType.name,
+                      maxLines: 1,
+                      label: '名前',
+                      color: kBlackColor,
+                      prefix: Icons.account_box,
+                    ),
+                    const SizedBox(height: 8),
+                    CustomTextFormField(
                       controller: telController,
                       textInputType: TextInputType.phone,
                       maxLines: 1,
@@ -76,6 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       backgroundColor: kBlueColor,
                       onPressed: () async {
                         final result = await userProvider.signIn(
+                          name: nameController.text,
                           tel: telController.text,
                         );
                         if (result.error != null) {
@@ -100,6 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             barrierDismissible: false,
                             builder: (context) => SmsCodeDialog(
                               userProvider: userProvider,
+                              name: nameController.text,
                               tel: telController.text,
                             ),
                           );
@@ -119,10 +130,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
 class SmsCodeDialog extends StatefulWidget {
   final UserProvider userProvider;
+  final String name;
   final String tel;
 
   const SmsCodeDialog({
     required this.userProvider,
+    required this.name,
     required this.tel,
     super.key,
   });
@@ -151,6 +164,7 @@ class _SmsCodeDialogState extends State<SmsCodeDialog> {
             label: '認証コード',
             color: kBlackColor,
             prefix: Icons.phone_callback,
+            fillColor: kBlackColor.withOpacity(0.1),
           ),
         ],
       ),
@@ -169,6 +183,7 @@ class _SmsCodeDialogState extends State<SmsCodeDialog> {
           backgroundColor: kBlueColor,
           onPressed: () async {
             String? error = await widget.userProvider.signInConf(
+              name: widget.name,
               tel: widget.tel,
               smsCode: smsCodeController.text,
             );

@@ -48,7 +48,7 @@ class _SendSettingUsersScreenState extends State<SendSettingUsersScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          '送信先一覧',
+          '受信者一覧',
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
@@ -92,7 +92,7 @@ class _SendSettingUsersScreenState extends State<SendSettingUsersScreen> {
                   );
                 },
               )
-            : Center(child: Text('送信先はありません')),
+            : Center(child: Text('受信者はいません')),
       ),
     );
   }

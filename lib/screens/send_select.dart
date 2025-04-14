@@ -95,7 +95,7 @@ class _SendSelectScreenState extends State<SendSelectScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AlertBar('あと$selectedLimit件まで送信可能'),
+            AlertBar('あと$selectedLimit件まで送信可'),
             Expanded(
               child: sendMapUsers.isNotEmpty
                   ? ListView.builder(

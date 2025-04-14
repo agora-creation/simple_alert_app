@@ -47,10 +47,12 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<({bool autoAuth, String? error})> signIn({
+    required String name,
     required String tel,
   }) async {
     bool autoAuth = false;
     String? error;
+    if (name == '') return (autoAuth: false, error: '名前は必須入力です');
     if (tel == '') return (autoAuth: false, error: '電話番号は必須入力です');
     try {
       String remove0Tel = tel.substring(1);
@@ -69,7 +71,7 @@ class UserProvider with ChangeNotifier {
             if (tmpUser == null) {
               _userService.create({
                 'id': result.user!.uid,
-                'name': 'B太郎',
+                'name': name,
                 'tel': tel,
                 'token': token,
                 'sender': false,
@@ -80,6 +82,7 @@ class UserProvider with ChangeNotifier {
             } else {
               _userService.update({
                 'id': tmpUser.id,
+                'name': name,
                 'token': token,
               });
             }
@@ -105,6 +108,7 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<String?> signInConf({
+    required String name,
     required String tel,
     required String smsCode,
   }) async {
@@ -127,7 +131,7 @@ class UserProvider with ChangeNotifier {
           if (tmpUser == null) {
             _userService.create({
               'id': result.user!.uid,
-              'name': 'B太郎',
+              'name': name,
               'tel': tel,
               'token': token,
               'sender': false,
@@ -138,6 +142,7 @@ class UserProvider with ChangeNotifier {
           } else {
             _userService.update({
               'id': tmpUser.id,
+              'name': name,
               'token': token,
             });
           }
@@ -187,10 +192,9 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<String?> addNoticeMapUsers({
-    required UserModel? selectedUser,
+    required UserModel senderUser,
   }) async {
     String? error;
-    if (selectedUser == null) return '受信先が見つかりませんでした';
     try {
       //受信者側のデータ追加
       List<Map> noticeMapUsers = [];
@@ -200,9 +204,8 @@ class UserProvider with ChangeNotifier {
         }
       }
       noticeMapUsers.add({
-        'id': selectedUser.id,
-        'name': selectedUser.name,
-        'tel': selectedUser.tel,
+        'id': senderUser.id,
+        'name': senderUser.senderName,
       });
       _userService.update({
         'id': _user?.id,
@@ -210,8 +213,8 @@ class UserProvider with ChangeNotifier {
       });
       //送信者側のデータ追加
       List<Map> sendMapUsers = [];
-      if (selectedUser.sendMapUsers.isNotEmpty) {
-        for (MapUserModel mapUser in selectedUser.sendMapUsers) {
+      if (senderUser.sendMapUsers.isNotEmpty) {
+        for (MapUserModel mapUser in senderUser.sendMapUsers) {
           sendMapUsers.add(mapUser.toMap());
         }
       }
@@ -221,7 +224,7 @@ class UserProvider with ChangeNotifier {
         'tel': _user!.tel,
       });
       _userService.update({
-        'id': selectedUser.id,
+        'id': senderUser.id,
         'sendMapUsers': sendMapUsers,
       });
     } catch (e) {

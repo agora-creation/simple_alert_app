@@ -165,6 +165,7 @@ class _SendInputScreenState extends State<SendInputScreen> {
                     label: '件名',
                     color: kBlackColor,
                     prefix: Icons.short_text,
+                    fillColor: kBlackColor.withOpacity(0.1),
                   ),
                   const SizedBox(height: 8),
                   CustomTextFormField(
@@ -174,6 +175,7 @@ class _SendInputScreenState extends State<SendInputScreen> {
                     label: '内容',
                     color: kBlackColor,
                     prefix: Icons.wrap_text,
+                    fillColor: kBlackColor.withOpacity(0.1),
                   ),
                   const SizedBox(height: 8),
                   Column(

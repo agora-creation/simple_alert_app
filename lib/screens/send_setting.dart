@@ -75,38 +75,11 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
         child: Column(
           children: [
             SettingList(
-              label: '送信者名',
-              subtitle: Text(
-                user?.senderName ?? '',
-                style: TextStyle(
-                  color: kBlackColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'SourceHanSansJP-Bold',
-                ),
-              ),
-              trailing: const FaIcon(
-                FontAwesomeIcons.pen,
-                size: 16,
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: SendSettingNameScreen(
-                      userProvider: widget.userProvider,
-                    ),
-                  ),
-                );
-              },
-            ),
-            SettingList(
               label: 'ご利用中のプラン',
               subtitle: Text(
                 context.read<InAppPurchaseProvider>().planName,
                 style: TextStyle(
-                  color: kRedColor,
+                  color: kBlackColor,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'SourceHanSansJP-Bold',
@@ -139,9 +112,18 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
               },
             ),
             SettingList(
-              label: '送信先一覧 (${user?.sendMapUsers.length})',
+              label: '送信者名',
+              subtitle: Text(
+                user?.senderName ?? '',
+                style: TextStyle(
+                  color: kBlackColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'SourceHanSansJP-Bold',
+                ),
+              ),
               trailing: const FaIcon(
-                FontAwesomeIcons.chevronRight,
+                FontAwesomeIcons.pen,
                 size: 16,
               ),
               onTap: () {
@@ -149,7 +131,7 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                   context,
                   PageTransition(
                     type: PageTransitionType.rightToLeft,
-                    child: SendSettingUsersScreen(
+                    child: SendSettingNameScreen(
                       userProvider: widget.userProvider,
                     ),
                   ),
@@ -157,7 +139,7 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
               },
             ),
             SettingList(
-              label: 'QRコード生成',
+              label: '送信者QRコード',
               subtitle: Text(
                 '※受信者に見せてください',
                 style: TextStyle(
@@ -175,6 +157,24 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                   PageTransition(
                     type: PageTransitionType.rightToLeft,
                     child: SendSettingQrScreen(
+                      userProvider: widget.userProvider,
+                    ),
+                  ),
+                );
+              },
+            ),
+            SettingList(
+              label: '受信者一覧 (${user?.sendMapUsers.length})',
+              trailing: const FaIcon(
+                FontAwesomeIcons.chevronRight,
+                size: 16,
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: SendSettingUsersScreen(
                       userProvider: widget.userProvider,
                     ),
                   ),

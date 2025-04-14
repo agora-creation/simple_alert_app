@@ -77,6 +77,7 @@ class _SendSettingNameScreenState extends State<SendSettingNameScreen> {
                   label: '送信者名',
                   color: kBlackColor,
                   prefix: Icons.account_box,
+                  fillColor: kBlackColor.withOpacity(0.1),
                 ),
               ],
             ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/notice_setting_users_add.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_check_list.dart';
@@ -94,10 +96,21 @@ class _NoticeSettingUsersScreenState extends State<NoticeSettingUsersScreen> {
                   );
                 },
               )
-            : Center(child: Text('受信先はありません')),
+            : Center(child: Text('受信先はいません')),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            PageTransition(
+              type: PageTransitionType.rightToLeft,
+              child: NoticeSettingUsersAddScreen(
+                userProvider: widget.userProvider,
+                reload: _reload,
+              ),
+            ),
+          );
+        },
         icon: const FaIcon(
           FontAwesomeIcons.qrcode,
           size: 18,

@@ -78,6 +78,7 @@ class _NoticeSettingNameScreenState extends State<NoticeSettingNameScreen> {
                   label: '名前',
                   color: kBlackColor,
                   prefix: Icons.account_box,
+                  fillColor: kBlackColor.withOpacity(0.1),
                 ),
               ],
             ),

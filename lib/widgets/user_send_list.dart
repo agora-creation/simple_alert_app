@@ -28,8 +28,8 @@ class UserSendList extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            vertical: 16,
-            horizontal: 24,
+            vertical: 8,
+            horizontal: 16,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,6 +51,15 @@ class UserSendList extends StatelessWidget {
                       ? Container()
                       : Text(
                           '送信日時: ${dateText('yyyy/MM/dd HH:mm', userSend.createdAt)}',
+                          style: TextStyle(
+                            color: kBlackColor.withOpacity(0.8),
+                            fontSize: 14,
+                          ),
+                        ),
+                  userSend.draft
+                      ? Container()
+                      : Text(
+                          '送信件数: ${userSend.sendMapUsers.length}件',
                           style: TextStyle(
                             color: kBlackColor.withOpacity(0.8),
                             fontSize: 14,
