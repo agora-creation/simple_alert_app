@@ -244,6 +244,7 @@ void showSubscriptionDialog(
                   const SizedBox(height: 16),
                   Column(
                     children: inAppPurchaseProvider.viewProducts.map((product) {
+                      print(product.id);
                       return ProductList(
                         product: product,
                         selectedProduct: inAppPurchaseProvider.selectedProduct,
