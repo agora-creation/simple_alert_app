@@ -5,9 +5,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:simple_alert_app/common/in_app_purchase_utils.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/screens/login.dart';
@@ -35,17 +36,24 @@ Future main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final InAppPurchaseUtils inAppPurchaseUtils =
+      InAppPurchaseUtils.inAppPurchaseUtilsInstance;
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: UserProvider.initialize()),
-        ChangeNotifierProvider(create: (context) => InAppPurchaseProvider()),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         builder: (context, child) {
           return MediaQuery.withNoTextScaling(
             child: child!,
@@ -62,6 +70,9 @@ class MyApp extends StatelessWidget {
         title: kAppShortName,
         theme: customTheme(),
         home: const SplashController(),
+        initialBinding: BindingsBuilder(() {
+          Get.put<InAppPurchaseUtils>(inAppPurchaseUtils);
+        }),
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/style.dart';
 
-class ProductList extends StatelessWidget {
+class SubscriptionList extends StatelessWidget {
   final String id;
   final String selectedId;
   final String title;
@@ -9,7 +9,7 @@ class ProductList extends StatelessWidget {
   final String price;
   final Function()? onTap;
 
-  const ProductList({
+  const SubscriptionList({
     required this.id,
     required this.selectedId,
     required this.title,
@@ -65,10 +65,6 @@ class ProductList extends StatelessWidget {
                       fontFamily: 'SourceHanSansJP-Bold',
                     ),
                   ),
-                  Text(
-                    '月額',
-                    style: const TextStyle(fontSize: 12),
-                  )
                 ],
               ),
             ),

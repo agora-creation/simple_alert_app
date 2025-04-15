@@ -2,13 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
+import 'package:simple_alert_app/common/in_app_purchase_utils.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_notice.dart';
 import 'package:simple_alert_app/models/user_send.dart';
-import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/info.dart';
 import 'package:simple_alert_app/screens/notice_detail.dart';
@@ -26,7 +27,7 @@ import 'package:simple_alert_app/widgets/custom_card.dart';
 import 'package:simple_alert_app/widgets/custom_list_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/link_text.dart';
-import 'package:simple_alert_app/widgets/product_list.dart';
+import 'package:simple_alert_app/widgets/subscription_list.dart';
 import 'package:simple_alert_app/widgets/user_notice_list.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -42,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
   BannerAd bannerAd = AdService.createBannerAd();
 
   void _init() {
-    context.read<InAppPurchaseProvider>().initialize();
     bannerAd.load();
     setState(() {});
   }
@@ -55,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // context.read<InAppPurchaseProvider>().dispose();
     // bannerAd.dispose();
     super.dispose();
   }
@@ -63,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
     String modeText = '';
     if (userProvider.mode == HomeMode.notice) {
       modeText = '受信モード';
@@ -99,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            inAppPurchaseProvider.planAdView && bannerAd.responseInfo != null
+            bannerAd.responseInfo != null
                 ? SizedBox(
                     width: bannerAd.size.width.toDouble(),
                     height: bannerAd.size.height.toDouble(),
@@ -227,7 +225,26 @@ class SendCard extends StatefulWidget {
 
 class _SendCardState extends State<SendCard> {
   TextEditingController senderNameController = TextEditingController();
+  String selectedId = kSubscriptions[0]['id'].toString();
   int monthSendCount = 0;
+
+  Future<bool> _buyConsumableById() async {
+    if (selectedId == kSubscriptions[0]['id'].toString()) {
+      return true;
+    }
+    final ProductDetailsResponse response =
+        await InAppPurchase.instance.queryProductDetails({selectedId});
+    if (response.notFoundIDs.isNotEmpty || response.productDetails.isEmpty) {
+      return false;
+    }
+    List<ProductDetails> productDetails = response.productDetails;
+    final PurchaseParam purchaseParam = PurchaseParam(
+      productDetails: productDetails[0],
+    );
+    return await InAppPurchase.instance.buyConsumable(
+      purchaseParam: purchaseParam,
+    );
+  }
 
   void _init() async {
     if (widget.userProvider.user != null) {
@@ -246,7 +263,6 @@ class _SendCardState extends State<SendCard> {
 
   @override
   Widget build(BuildContext context) {
-    final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
     if (widget.userProvider.user?.sender == true) {
       return CustomCard(
         child: Column(
@@ -264,7 +280,7 @@ class _SendCardState extends State<SendCard> {
               ),
             ),
             AlertBar(
-              '現在$monthSendCount件 / 月${inAppPurchaseProvider.planMonthLimit}件まで送信可',
+              '現在$monthSendCount件 / 月10件まで送信可',
             ),
             Expanded(
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -381,40 +397,23 @@ class _SendCardState extends State<SendCard> {
                   const SizedBox(height: 24),
                   Text('ご利用プランを選んでください'),
                   const SizedBox(height: 8),
-                  Consumer<InAppPurchaseProvider>(
-                    builder: (context, inAppPurchaseProvider, _) {
-                      return Column(
-                        children: [
-                          ...inAppPurchaseProvider.viewProducts.map((product) {
-                            return ProductList(
-                              id: product.id,
-                              selectedId:
-                                  inAppPurchaseProvider.selectedProduct?.id ??
-                                      '',
-                              title: product.title,
-                              description: product.description,
-                              price: formatPrice(product),
-                              onTap: () {
-                                inAppPurchaseProvider.selectedProduct = product;
-                              },
-                            );
-                          }).toList(),
-                          ProductList(
-                            id: '',
-                            selectedId:
-                                inAppPurchaseProvider.selectedProduct?.id ?? '',
-                            title: 'フリープラン',
-                            description: '1ヶ月に10件まで送信可能になります。',
-                            price: '￥0',
-                            onTap: () {
-                              inAppPurchaseProvider.selectedProduct = null;
-                            },
-                          ),
-                        ],
+                  Column(
+                    children: kSubscriptions.map((subscription) {
+                      return SubscriptionList(
+                        id: subscription['id'].toString(),
+                        selectedId: selectedId,
+                        title: subscription['title'].toString(),
+                        description: subscription['description'].toString(),
+                        price: subscription['price'].toString(),
+                        onTap: () {
+                          setState(() {
+                            selectedId = subscription['id'].toString();
+                          });
+                        },
                       );
-                    },
+                    }).toList(),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   LinkText(
                     label: '利用規約を確認',
                     onTap: () async {
@@ -432,26 +431,12 @@ class _SendCardState extends State<SendCard> {
                     labelColor: kWhiteColor,
                     backgroundColor: kBlueColor,
                     onPressed: () async {
-                      if (senderNameController.text == '') {
+                      print(selectedId);
+                      final buyError = await _buyConsumableById();
+                      if (!buyError) {
                         if (!mounted) return;
-                        showMessage(context, '送信者名を入力してください', false);
+                        showMessage(context, '購入に失敗しました', false);
                         return;
-                      }
-                      if (context
-                              .read<InAppPurchaseProvider>()
-                              .selectedProduct !=
-                          null) {
-                        final result =
-                            await inAppPurchaseProvider.purchaseProduct(
-                          context
-                              .read<InAppPurchaseProvider>()
-                              .selectedProduct!,
-                        );
-                        if (result.$1 == false) {
-                          if (!mounted) return;
-                          showMessage(context, result.$2, false);
-                          return;
-                        }
                       }
                       String? error = await widget.userProvider.updateSender(
                         senderName: senderNameController.text,

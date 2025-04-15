@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
-import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
@@ -58,11 +56,10 @@ class _SendSelectScreenState extends State<SendSelectScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final inAppPurchaseProvider = context.read<InAppPurchaseProvider>();
     int selectedLimit = 0;
-    if (inAppPurchaseProvider.planMonthLimit > monthSendCount) {
-      selectedLimit = inAppPurchaseProvider.planMonthLimit - monthSendCount;
-    }
+    // if (inAppPurchaseProvider.planMonthLimit > monthSendCount) {
+    //   selectedLimit = inAppPurchaseProvider.planMonthLimit - monthSendCount;
+    // }
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
