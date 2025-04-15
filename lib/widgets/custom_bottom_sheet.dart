@@ -75,6 +75,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
     WidgetsBinding.instance.addPostFrameCallback((_) {});
     FlutterAppBadger.removeBadge();
     super.initState();
+    _initRemoteConfig();
   }
 
   @override

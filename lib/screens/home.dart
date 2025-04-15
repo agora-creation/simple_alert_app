@@ -6,7 +6,6 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
-import 'package:simple_alert_app/common/in_app_purchase_utils.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_notice.dart';
 import 'package:simple_alert_app/models/user_send.dart';
@@ -18,6 +17,7 @@ import 'package:simple_alert_app/screens/send_detail.dart';
 import 'package:simple_alert_app/screens/send_input.dart';
 import 'package:simple_alert_app/screens/send_setting.dart';
 import 'package:simple_alert_app/services/ad.dart';
+import 'package:simple_alert_app/services/in_app_purchase.dart';
 import 'package:simple_alert_app/services/user_notice.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
@@ -27,7 +27,7 @@ import 'package:simple_alert_app/widgets/custom_card.dart';
 import 'package:simple_alert_app/widgets/custom_list_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/link_text.dart';
-import 'package:simple_alert_app/widgets/subscription_list.dart';
+import 'package:simple_alert_app/widgets/product_map_list.dart';
 import 'package:simple_alert_app/widgets/user_notice_list.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -94,32 +94,49 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            bannerAd.responseInfo != null
-                ? SizedBox(
-                    width: bannerAd.size.width.toDouble(),
-                    height: bannerAd.size.height.toDouble(),
-                    child: AdWidget(ad: bannerAd),
-                  )
-                : Container(),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                  bottom: 8,
-                ),
-                child: userProvider.mode == HomeMode.notice
-                    ? NoticeCard(userProvider: userProvider)
-                    : userProvider.mode == HomeMode.send
-                        ? SendCard(userProvider: userProvider)
+      body: ValueListenableBuilder<List<ProductDetails>>(
+        valueListenable: InAppPurchaseService.instance.productsNotifier,
+        builder: (context, products, child) {
+          return ValueListenableBuilder<Set<String>>(
+            valueListenable: InAppPurchaseService.instance.purchasedProductIds,
+            builder: (context, purchasedProductIds, child) {
+              bool adView = true;
+              if (purchasedProductIds.isNotEmpty) {
+                adView = false;
+              }
+              return SafeArea(
+                child: Column(
+                  children: [
+                    adView && bannerAd.responseInfo != null
+                        ? SizedBox(
+                            width: bannerAd.size.width.toDouble(),
+                            height: bannerAd.size.height.toDouble(),
+                            child: AdWidget(ad: bannerAd),
+                          )
                         : Container(),
-              ),
-            ),
-          ],
-        ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          bottom: 8,
+                        ),
+                        child: userProvider.mode == HomeMode.notice
+                            ? NoticeCard(userProvider: userProvider)
+                            : userProvider.mode == HomeMode.send
+                                ? SendCard(
+                                    userProvider: userProvider,
+                                    products: products,
+                                  )
+                                : Container(),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
       bottomSheet: CustomBottomSheet(),
     );
@@ -213,9 +230,11 @@ class NoticeCard extends StatelessWidget {
 
 class SendCard extends StatefulWidget {
   final UserProvider userProvider;
+  final List<ProductDetails> products;
 
   const SendCard({
     required this.userProvider,
+    required this.products,
     super.key,
   });
 
@@ -225,26 +244,8 @@ class SendCard extends StatefulWidget {
 
 class _SendCardState extends State<SendCard> {
   TextEditingController senderNameController = TextEditingController();
-  String selectedId = kSubscriptions[0]['id'].toString();
+  String selectedId = kProductMaps[0]['id'].toString();
   int monthSendCount = 0;
-
-  Future<bool> _buyConsumableById() async {
-    if (selectedId == kSubscriptions[0]['id'].toString()) {
-      return true;
-    }
-    final ProductDetailsResponse response =
-        await InAppPurchase.instance.queryProductDetails({selectedId});
-    if (response.notFoundIDs.isNotEmpty || response.productDetails.isEmpty) {
-      return false;
-    }
-    List<ProductDetails> productDetails = response.productDetails;
-    final PurchaseParam purchaseParam = PurchaseParam(
-      productDetails: productDetails[0],
-    );
-    return await InAppPurchase.instance.buyConsumable(
-      purchaseParam: purchaseParam,
-    );
-  }
 
   void _init() async {
     if (widget.userProvider.user != null) {
@@ -398,16 +399,16 @@ class _SendCardState extends State<SendCard> {
                   Text('ご利用プランを選んでください'),
                   const SizedBox(height: 8),
                   Column(
-                    children: kSubscriptions.map((subscription) {
-                      return SubscriptionList(
-                        id: subscription['id'].toString(),
+                    children: kProductMaps.map((productMap) {
+                      return ProductMapList(
+                        id: productMap['id'].toString(),
                         selectedId: selectedId,
-                        title: subscription['title'].toString(),
-                        description: subscription['description'].toString(),
-                        price: subscription['price'].toString(),
+                        title: productMap['title'].toString(),
+                        description: productMap['description'].toString(),
+                        price: productMap['price'].toString(),
                         onTap: () {
                           setState(() {
-                            selectedId = subscription['id'].toString();
+                            selectedId = productMap['id'].toString();
                           });
                         },
                       );
@@ -431,12 +432,20 @@ class _SendCardState extends State<SendCard> {
                     labelColor: kWhiteColor,
                     backgroundColor: kBlueColor,
                     onPressed: () async {
-                      print(selectedId);
-                      final buyError = await _buyConsumableById();
-                      if (!buyError) {
-                        if (!mounted) return;
-                        showMessage(context, '購入に失敗しました', false);
-                        return;
+                      if (selectedId != kProductMaps[0]['id'].toString()) {
+                        ProductDetails? productDetails;
+                        if (widget.products.isNotEmpty) {
+                          for (final product in widget.products) {
+                            if (product.id == selectedId) {
+                              productDetails = product;
+                              break;
+                            }
+                          }
+                        }
+                        if (productDetails != null) {
+                          InAppPurchaseService.instance
+                              .buySubscription(productDetails);
+                        }
                       }
                       String? error = await widget.userProvider.updateSender(
                         senderName: senderNameController.text,

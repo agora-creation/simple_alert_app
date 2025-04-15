@@ -6,7 +6,6 @@ class UserModel {
   String _name = '';
   String _tel = '';
   String _token = '';
-  int _subscription = 0;
   bool _sender = false;
   String _senderName = '';
   List<MapUserModel> noticeMapUsers = [];
@@ -16,7 +15,6 @@ class UserModel {
   String get name => _name;
   String get tel => _tel;
   String get token => _token;
-  int get subscription => _subscription;
   bool get sender => _sender;
   String get senderName => _senderName;
 
@@ -27,7 +25,6 @@ class UserModel {
     _name = data['name'] ?? '';
     _tel = data['tel'] ?? '';
     _token = data['token'] ?? '';
-    _subscription = data['subscription'] ?? 0;
     _sender = data['sender'] ?? false;
     _senderName = data['senderName'] ?? '';
     noticeMapUsers = _convertMapUsers(data['noticeMapUsers'] ?? []);

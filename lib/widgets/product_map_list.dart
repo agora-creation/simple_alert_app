@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/style.dart';
 
-class SubscriptionList extends StatelessWidget {
+class ProductMapList extends StatelessWidget {
   final String id;
   final String selectedId;
   final String title;
@@ -9,7 +9,7 @@ class SubscriptionList extends StatelessWidget {
   final String price;
   final Function()? onTap;
 
-  const SubscriptionList({
+  const ProductMapList({
     required this.id,
     required this.selectedId,
     required this.title,

@@ -5,14 +5,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:simple_alert_app/common/in_app_purchase_utils.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/screens/login.dart';
 import 'package:simple_alert_app/screens/splash.dart';
+import 'package:simple_alert_app/services/in_app_purchase.dart';
 import 'package:simple_alert_app/services/push.dart';
 
 Future main() async {
@@ -30,22 +29,16 @@ Future main() async {
       : await Firebase.initializeApp();
   //通知サービスの初期化
   PushService().init();
+  //課金サービスの初期化
+  InAppPurchaseService.instance.initialize();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  final InAppPurchaseUtils inAppPurchaseUtils =
-      InAppPurchaseUtils.inAppPurchaseUtilsInstance;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +46,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider.value(value: UserProvider.initialize()),
       ],
-      child: GetMaterialApp(
+      child: MaterialApp(
         builder: (context, child) {
           return MediaQuery.withNoTextScaling(
             child: child!,
@@ -70,9 +63,6 @@ class _MyAppState extends State<MyApp> {
         title: kAppShortName,
         theme: customTheme(),
         home: const SplashController(),
-        initialBinding: BindingsBuilder(() {
-          Get.put<InAppPurchaseUtils>(inAppPurchaseUtils);
-        }),
       ),
     );
   }
