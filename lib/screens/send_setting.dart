@@ -87,7 +87,7 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                 ),
               ),
               trailing: const FaIcon(
-                FontAwesomeIcons.rotate,
+                FontAwesomeIcons.pen,
                 size: 16,
               ),
               onTap: () {

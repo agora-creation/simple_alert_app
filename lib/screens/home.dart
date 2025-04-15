@@ -365,7 +365,7 @@ class _SendCardState extends State<SendCard> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '送信モードを利用するには、送信者名を入力してください。',
+                    '送信モードを利用するには、送信者名を入力して、ご利用プランを選んでください。',
                     style: TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 16),
@@ -379,23 +379,12 @@ class _SendCardState extends State<SendCard> {
                     fillColor: kBlackColor.withOpacity(0.1),
                   ),
                   const SizedBox(height: 24),
-                  Text('プランを選んでください'),
+                  Text('ご利用プランを選んでください'),
                   const SizedBox(height: 8),
                   Consumer<InAppPurchaseProvider>(
                     builder: (context, inAppPurchaseProvider, _) {
                       return Column(
                         children: [
-                          ProductList(
-                            id: '',
-                            selectedId:
-                                inAppPurchaseProvider.selectedProduct?.id ?? '',
-                            title: 'フリープラン',
-                            description: '1ヶ月に10件まで送信可能になります。',
-                            price: '￥0',
-                            onTap: () {
-                              inAppPurchaseProvider.selectedProduct = null;
-                            },
-                          ),
                           ...inAppPurchaseProvider.viewProducts.map((product) {
                             return ProductList(
                               id: product.id,
@@ -410,6 +399,17 @@ class _SendCardState extends State<SendCard> {
                               },
                             );
                           }).toList(),
+                          ProductList(
+                            id: '',
+                            selectedId:
+                                inAppPurchaseProvider.selectedProduct?.id ?? '',
+                            title: 'フリープラン',
+                            description: '1ヶ月に10件まで送信可能になります。',
+                            price: '￥0',
+                            onTap: () {
+                              inAppPurchaseProvider.selectedProduct = null;
+                            },
+                          ),
                         ],
                       );
                     },
@@ -432,10 +432,26 @@ class _SendCardState extends State<SendCard> {
                     labelColor: kWhiteColor,
                     backgroundColor: kBlueColor,
                     onPressed: () async {
-                      if (inAppPurchaseProvider.selectedProduct != null) {
-                        await inAppPurchaseProvider.purchaseProduct(
-                          inAppPurchaseProvider.selectedProduct!,
+                      if (senderNameController.text == '') {
+                        if (!mounted) return;
+                        showMessage(context, '送信者名を入力してください', false);
+                        return;
+                      }
+                      if (context
+                              .read<InAppPurchaseProvider>()
+                              .selectedProduct !=
+                          null) {
+                        final result =
+                            await inAppPurchaseProvider.purchaseProduct(
+                          context
+                              .read<InAppPurchaseProvider>()
+                              .selectedProduct!,
                         );
+                        if (result.$1 == false) {
+                          if (!mounted) return;
+                          showMessage(context, result.$2, false);
+                          return;
+                        }
                       }
                       String? error = await widget.userProvider.updateSender(
                         senderName: senderNameController.text,
