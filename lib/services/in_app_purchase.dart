@@ -51,13 +51,14 @@ class InAppPurchaseService {
     productsNotifier.value = response.productDetails;
   }
 
-  Future buySubscription(ProductDetails productDetails) async {
+  Future<bool> buySubscription(ProductDetails productDetails) async {
     final PurchaseParam purchaseParam =
         PurchaseParam(productDetails: productDetails);
     try {
-      await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+      return await _iap.buyNonConsumable(purchaseParam: purchaseParam);
     } on PlatformException catch (e) {
       print(e.toString());
+      return false;
     }
   }
 

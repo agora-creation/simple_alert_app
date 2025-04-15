@@ -102,7 +102,6 @@ class UserProvider with ChangeNotifier {
     } catch (e) {
       error = '認証に失敗しました';
     }
-
     notifyListeners();
     return (autoAuth: autoAuth, error: error);
   }
@@ -152,7 +151,6 @@ class UserProvider with ChangeNotifier {
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
-      print(e.toString());
       error = e.toString();
     }
     notifyListeners();

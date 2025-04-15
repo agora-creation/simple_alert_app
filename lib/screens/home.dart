@@ -432,6 +432,11 @@ class _SendCardState extends State<SendCard> {
                     labelColor: kWhiteColor,
                     backgroundColor: kBlueColor,
                     onPressed: () async {
+                      if (senderNameController.text == '') {
+                        if (!mounted) return;
+                        showMessage(context, '送信者名を入力してください', false);
+                        return;
+                      }
                       if (selectedId != kProductMaps[0]['id'].toString()) {
                         ProductDetails? productDetails;
                         if (widget.products.isNotEmpty) {
@@ -443,7 +448,7 @@ class _SendCardState extends State<SendCard> {
                           }
                         }
                         if (productDetails != null) {
-                          InAppPurchaseService.instance
+                          final result = await InAppPurchaseService.instance
                               .buySubscription(productDetails);
                         }
                       }
