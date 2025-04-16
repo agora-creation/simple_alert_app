@@ -6,7 +6,6 @@ import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send_setting_name.dart';
 import 'package:simple_alert_app/screens/send_setting_qr.dart';
-import 'package:simple_alert_app/screens/send_setting_subscription.dart';
 import 'package:simple_alert_app/screens/send_setting_users.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
@@ -63,33 +62,6 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            SettingList(
-              label: 'ご利用中のプラン',
-              subtitle: Text(
-                'フリープラン',
-                style: TextStyle(
-                  color: kBlackColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'SourceHanSansJP-Bold',
-                ),
-              ),
-              trailing: const FaIcon(
-                FontAwesomeIcons.pen,
-                size: 16,
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: SendSettingSubscriptionScreen(
-                      userProvider: widget.userProvider,
-                    ),
-                  ),
-                );
-              },
-            ),
             SettingList(
               label: '送信者名',
               subtitle: Text(
@@ -159,6 +131,23 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                   ),
                 );
               },
+            ),
+            SettingList(
+              label: 'ご利用中のプラン',
+              subtitle: Text(
+                'フリープラン',
+                style: TextStyle(
+                  color: kRedColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'SourceHanSansJP-Bold',
+                ),
+              ),
+              trailing: const FaIcon(
+                FontAwesomeIcons.rotate,
+                size: 16,
+              ),
+              onTap: () {},
             ),
           ],
         ),

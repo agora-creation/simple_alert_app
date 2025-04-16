@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,7 +19,6 @@ import 'package:simple_alert_app/screens/send_detail.dart';
 import 'package:simple_alert_app/screens/send_input.dart';
 import 'package:simple_alert_app/screens/send_setting.dart';
 import 'package:simple_alert_app/services/ad.dart';
-import 'package:simple_alert_app/services/in_app_purchase.dart';
 import 'package:simple_alert_app/services/user_notice.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
@@ -41,21 +42,144 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   BannerAd bannerAd = AdService.createBannerAd();
+  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
+  late StreamSubscription<List<PurchaseDetails>> _subscription;
+  List<String> _notFoundIds = [];
+  List<ProductDetails> _products = [];
+  List<PurchaseDetails> _purchases = [];
+  bool _isAvailable = false;
+  bool _purchasePending = false;
+  bool _loading = true;
+  String? _queryProductError;
 
-  void _init() {
-    bannerAd.load();
-    setState(() {});
+  void _initBannerAd() async {
+    await bannerAd.load();
+  }
+
+  Future _initInAppPurchase() async {
+    final Stream<List<PurchaseDetails>> purchaseUpdated =
+        _inAppPurchase.purchaseStream;
+    _subscription =
+        purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
+      _listenToPurchaseUpdated(purchaseDetailsList);
+    }, onDone: () {
+      _subscription.cancel();
+    }, onError: (Object error) {});
+
+    bool isAvailable = await _inAppPurchase.isAvailable();
+    if (!isAvailable) {
+      setState(() {
+        _isAvailable = isAvailable;
+        _products = [];
+        _purchases = [];
+        _notFoundIds = [];
+        _purchasePending = false;
+        _loading = false;
+      });
+      return;
+    }
+    final ProductDetailsResponse productDetailResponse =
+        await _inAppPurchase.queryProductDetails(kProductIds.toSet());
+    if (productDetailResponse.error != null) {
+      setState(() {
+        _queryProductError = productDetailResponse.error!.message;
+        _isAvailable = isAvailable;
+        _products = productDetailResponse.productDetails;
+        _purchases = [];
+        _notFoundIds = productDetailResponse.notFoundIDs;
+        _purchasePending = false;
+        _loading = false;
+      });
+      return;
+    }
+    if (productDetailResponse.productDetails.isEmpty) {
+      setState(() {
+        _queryProductError = null;
+        _isAvailable = isAvailable;
+        _products = productDetailResponse.productDetails;
+        _purchases = <PurchaseDetails>[];
+        _notFoundIds = productDetailResponse.notFoundIDs;
+        _purchasePending = false;
+        _loading = false;
+      });
+      return;
+    }
+    setState(() {
+      _isAvailable = isAvailable;
+      _products = productDetailResponse.productDetails;
+      _notFoundIds = productDetailResponse.notFoundIDs;
+      _purchasePending = false;
+      _loading = false;
+    });
+  }
+
+  void showPendingUI() {
+    setState(() {
+      _purchasePending = true;
+    });
+  }
+
+  Future<void> deliverProduct(PurchaseDetails purchaseDetails) async {
+    setState(() {
+      _purchases.add(purchaseDetails);
+      _purchasePending = false;
+    });
+  }
+
+  void handleError(IAPError error) {
+    setState(() {
+      _purchasePending = false;
+    });
+  }
+
+  Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) {
+    // IMPORTANT!! Always verify a purchase before delivering the product.
+    // For the purpose of an example, we directly return true.
+    return Future<bool>.value(true);
+  }
+
+  void _handleInvalidPurchase(PurchaseDetails purchaseDetails) {
+    // handle invalid purchase here if  _verifyPurchase` failed.
+  }
+
+  Future _listenToPurchaseUpdated(
+    List<PurchaseDetails> purchaseDetailsList,
+  ) async {
+    for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
+      if (purchaseDetails.status == PurchaseStatus.pending) {
+        showPendingUI();
+      } else {
+        if (purchaseDetails.status == PurchaseStatus.error) {
+          handleError(purchaseDetails.error!);
+        } else if (purchaseDetails.status == PurchaseStatus.purchased ||
+            purchaseDetails.status == PurchaseStatus.restored) {
+          final bool valid = await _verifyPurchase(purchaseDetails);
+          if (valid) {
+            unawaited(deliverProduct(purchaseDetails));
+          } else {
+            _handleInvalidPurchase(purchaseDetails);
+            return;
+          }
+        }
+
+        if (purchaseDetails.pendingCompletePurchase) {
+          await _inAppPurchase.completePurchase(purchaseDetails);
+        }
+      }
+    }
   }
 
   @override
   void initState() {
+    _initBannerAd();
+    _initInAppPurchase();
     super.initState();
-    _init();
   }
 
   @override
   void dispose() {
     // bannerAd.dispose();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -94,49 +218,36 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: ValueListenableBuilder<List<ProductDetails>>(
-        valueListenable: InAppPurchaseService.instance.productsNotifier,
-        builder: (context, products, child) {
-          return ValueListenableBuilder<Set<String>>(
-            valueListenable: InAppPurchaseService.instance.purchasedProductIds,
-            builder: (context, purchasedProductIds, child) {
-              bool adView = true;
-              if (purchasedProductIds.isNotEmpty) {
-                adView = false;
-              }
-              return SafeArea(
-                child: Column(
-                  children: [
-                    adView && bannerAd.responseInfo != null
-                        ? SizedBox(
-                            width: bannerAd.size.width.toDouble(),
-                            height: bannerAd.size.height.toDouble(),
-                            child: AdWidget(ad: bannerAd),
+      body: SafeArea(
+        child: Column(
+          children: [
+            bannerAd.responseInfo != null
+                ? SizedBox(
+                    width: bannerAd.size.width.toDouble(),
+                    height: bannerAd.size.height.toDouble(),
+                    child: AdWidget(ad: bannerAd),
+                  )
+                : Container(),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  bottom: 8,
+                ),
+                child: userProvider.mode == HomeMode.notice
+                    ? NoticeCard(userProvider: userProvider)
+                    : userProvider.mode == HomeMode.send
+                        ? SendCard(
+                            userProvider: userProvider,
+                            inAppPurchase: _inAppPurchase,
+                            products: _products,
                           )
                         : Container(),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          bottom: 8,
-                        ),
-                        child: userProvider.mode == HomeMode.notice
-                            ? NoticeCard(userProvider: userProvider)
-                            : userProvider.mode == HomeMode.send
-                                ? SendCard(
-                                    userProvider: userProvider,
-                                    products: products,
-                                  )
-                                : Container(),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
+              ),
+            ),
+          ],
+        ),
       ),
       bottomSheet: CustomBottomSheet(),
     );
@@ -182,17 +293,11 @@ class NoticeCard extends StatelessWidget {
                 }
                 if (userNotices.isEmpty) {
                   return Center(
-                    child: Container(
-                      color: kRedColor,
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        '受信履歴はありません',
-                        style: TextStyle(
-                          color: kWhiteColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'SourceHanSansJP-Bold',
-                        ),
+                    child: Text(
+                      '受信履歴はありません',
+                      style: TextStyle(
+                        color: kBlackColor.withOpacity(0.5),
+                        fontSize: 20,
                       ),
                     ),
                   );
@@ -230,10 +335,12 @@ class NoticeCard extends StatelessWidget {
 
 class SendCard extends StatefulWidget {
   final UserProvider userProvider;
+  final InAppPurchase inAppPurchase;
   final List<ProductDetails> products;
 
   const SendCard({
     required this.userProvider,
+    required this.inAppPurchase,
     required this.products,
     super.key,
   });
@@ -297,17 +404,11 @@ class _SendCardState extends State<SendCard> {
                   }
                   if (userSends.isEmpty) {
                     return Center(
-                      child: Container(
-                        color: kRedColor,
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          '送信履歴はありません',
-                          style: TextStyle(
-                            color: kWhiteColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'SourceHanSansJP-Bold',
-                          ),
+                      child: Text(
+                        '送信履歴はありません',
+                        style: TextStyle(
+                          color: kBlackColor.withOpacity(0.5),
+                          fontSize: 20,
                         ),
                       ),
                     );
@@ -398,6 +499,17 @@ class _SendCardState extends State<SendCard> {
                   const SizedBox(height: 24),
                   Text('ご利用プランを選んでください'),
                   const SizedBox(height: 8),
+                  LinkText(
+                    label: '利用規約を確認',
+                    onTap: () async {
+                      if (!await launchUrl(Uri.parse(
+                        'https://docs.google.com/document/d/18yzTySjHTdCE_VHS6NjAeP8OfTpfqyh5VZjaqBgdP78/edit?usp=sharing',
+                      ))) {
+                        throw Exception('Could not launch');
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 8),
                   Column(
                     children: kProductMaps.map((productMap) {
                       return ProductMapList(
@@ -414,21 +526,10 @@ class _SendCardState extends State<SendCard> {
                       );
                     }).toList(),
                   ),
-                  const SizedBox(height: 8),
-                  LinkText(
-                    label: '利用規約を確認',
-                    onTap: () async {
-                      if (!await launchUrl(Uri.parse(
-                        'https://docs.google.com/document/d/18yzTySjHTdCE_VHS6NjAeP8OfTpfqyh5VZjaqBgdP78/edit?usp=sharing',
-                      ))) {
-                        throw Exception('Could not launch');
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   CustomButton(
                     type: ButtonSizeType.lg,
-                    label: '登録する',
+                    label: 'ご利用プランを選ぶ',
                     labelColor: kWhiteColor,
                     backgroundColor: kBlueColor,
                     onPressed: () async {
@@ -439,6 +540,7 @@ class _SendCardState extends State<SendCard> {
                       }
                       if (selectedId != kProductMaps[0]['id'].toString()) {
                         ProductDetails? productDetails;
+
                         if (widget.products.isNotEmpty) {
                           for (final product in widget.products) {
                             if (product.id == selectedId) {
@@ -448,28 +550,9 @@ class _SendCardState extends State<SendCard> {
                           }
                         }
                         if (productDetails != null) {
-                          await InAppPurchaseService.instance
-                              .buySubscription(productDetails)
-                              .whenComplete(() async {
-                            String? error =
-                                await widget.userProvider.updateSender(
-                              senderName: senderNameController.text,
-                            );
-                            if (error != null) {
-                              if (!mounted) return;
-                              showMessage(context, error, false);
-                              return;
-                            }
-                            await widget.userProvider.reload();
-                            if (!mounted) return;
-                            Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                type: PageTransitionType.bottomToTop,
-                                child: HomeScreen(),
-                              ),
-                            );
-                          });
+                          await widget.inAppPurchase.buyNonConsumable(
+                              purchaseParam: PurchaseParam(
+                                  productDetails: productDetails));
                         }
                       } else {
                         String? error = await widget.userProvider.updateSender(

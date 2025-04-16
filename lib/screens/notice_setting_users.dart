@@ -97,17 +97,11 @@ class _NoticeSettingUsersScreenState extends State<NoticeSettingUsersScreen> {
                 },
               )
             : Center(
-                child: Container(
-                  color: kRedColor,
-                  padding: EdgeInsets.all(8),
-                  child: Text(
-                    '受信先を追加してください',
-                    style: TextStyle(
-                      color: kWhiteColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'SourceHanSansJP-Bold',
-                    ),
+                child: Text(
+                  '受信先を追加してください',
+                  style: TextStyle(
+                    color: kBlackColor.withOpacity(0.5),
+                    fontSize: 20,
                   ),
                 ),
               ),

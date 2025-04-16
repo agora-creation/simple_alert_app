@@ -11,7 +11,6 @@ import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/screens/login.dart';
 import 'package:simple_alert_app/screens/splash.dart';
-import 'package:simple_alert_app/services/in_app_purchase.dart';
 import 'package:simple_alert_app/services/push.dart';
 
 Future main() async {
@@ -29,8 +28,6 @@ Future main() async {
       : await Firebase.initializeApp();
   //通知サービスの初期化
   PushService().init();
-  //課金サービスの初期化
-  InAppPurchaseService.instance.initialize();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);

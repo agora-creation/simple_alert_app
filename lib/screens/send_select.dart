@@ -116,17 +116,11 @@ class _SendSelectScreenState extends State<SendSelectScreen> {
                       },
                     )
                   : Center(
-                      child: Container(
-                        color: kRedColor,
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          '受信者はいません',
-                          style: TextStyle(
-                            color: kWhiteColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'SourceHanSansJP-Bold',
-                          ),
+                      child: Text(
+                        '受信者はいません',
+                        style: TextStyle(
+                          color: kBlackColor.withOpacity(0.5),
+                          fontSize: 20,
                         ),
                       ),
                     ),
