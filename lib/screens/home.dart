@@ -448,27 +448,48 @@ class _SendCardState extends State<SendCard> {
                           }
                         }
                         if (productDetails != null) {
-                          final result = await InAppPurchaseService.instance
-                              .buySubscription(productDetails);
+                          await InAppPurchaseService.instance
+                              .buySubscription(productDetails)
+                              .whenComplete(() async {
+                            String? error =
+                                await widget.userProvider.updateSender(
+                              senderName: senderNameController.text,
+                            );
+                            if (error != null) {
+                              if (!mounted) return;
+                              showMessage(context, error, false);
+                              return;
+                            }
+                            await widget.userProvider.reload();
+                            if (!mounted) return;
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.bottomToTop,
+                                child: HomeScreen(),
+                              ),
+                            );
+                          });
                         }
-                      }
-                      String? error = await widget.userProvider.updateSender(
-                        senderName: senderNameController.text,
-                      );
-                      if (error != null) {
+                      } else {
+                        String? error = await widget.userProvider.updateSender(
+                          senderName: senderNameController.text,
+                        );
+                        if (error != null) {
+                          if (!mounted) return;
+                          showMessage(context, error, false);
+                          return;
+                        }
+                        await widget.userProvider.reload();
                         if (!mounted) return;
-                        showMessage(context, error, false);
-                        return;
+                        Navigator.pushReplacement(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.bottomToTop,
+                            child: HomeScreen(),
+                          ),
+                        );
                       }
-                      await widget.userProvider.reload();
-                      if (!mounted) return;
-                      Navigator.pushReplacement(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.bottomToTop,
-                          child: HomeScreen(),
-                        ),
-                      );
                     },
                   ),
                 ],
