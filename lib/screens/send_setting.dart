@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
+import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/screens/send_setting_name.dart';
 import 'package:simple_alert_app/screens/send_setting_qr.dart';
 import 'package:simple_alert_app/screens/send_setting_users.dart';
@@ -147,7 +152,57 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                 FontAwesomeIcons.rotate,
                 size: 16,
               ),
-              onTap: () {},
+              onTap: () async {
+                final inAppPurchaseProvider =
+                    context.read<InAppPurchaseProvider>();
+                String? purchasePlan = await getPrefsString('purchasePlan');
+                if (purchasePlan != null) {
+                  inAppPurchaseProvider.selectedProductId = purchasePlan;
+                }
+                showInAppPurchaseDialog(
+                  context,
+                  result: (selectedProductId) async {
+                    if (selectedProductId != kProductMaps[0]['id'].toString()) {
+                      ProductDetails? selectedProduct;
+                      if (inAppPurchaseProvider.availableProducts.isNotEmpty) {
+                        for (final product
+                            in inAppPurchaseProvider.availableProducts) {
+                          if (product.id == selectedProductId) {
+                            selectedProduct = product;
+                            break;
+                          }
+                        }
+                      }
+                      final purchaseResult = await inAppPurchaseProvider
+                          .purchaseProduct(selectedProduct!);
+                      if (purchaseResult.$1 && context.mounted) {
+                        print('購入成功');
+                        if (!mounted) return;
+                        Navigator.pushReplacement(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.bottomToTop,
+                            child: HomeScreen(),
+                          ),
+                        );
+                      } else {
+                        if (context.mounted) {
+                          print(purchaseResult.$2);
+                        }
+                      }
+                    } else {
+                      if (!mounted) return;
+                      Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.bottomToTop,
+                          child: HomeScreen(),
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
             ),
           ],
         ),

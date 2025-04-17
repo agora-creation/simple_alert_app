@@ -49,27 +49,3 @@ ThemeData customTheme() {
     unselectedWidgetColor: kWhiteColor,
   );
 }
-
-const kChoices = ['はい', 'いいえ'];
-
-List<String> kProductIds = ['subscription_standard', 'subscription_pro'];
-const List<Map<String, String>> kProductMaps = [
-  {
-    'id': 'subscription_free',
-    'title': 'フリープラン',
-    'description': '1ヶ月に10件まで送信可能になります。',
-    'price': '¥0/月',
-  },
-  {
-    'id': 'subscription_standard',
-    'title': 'スタンダードプラン',
-    'description': '1ヶ月に100件まで送信可能になり、バナー広告が非表示になります。',
-    'price': '¥900/月',
-  },
-  {
-    'id': 'subscription_pro',
-    'title': 'プロプラン',
-    'description': '1ヶ月に1000件まで送信可能になり、バナー広告が非表示になります。',
-    'price': '¥1,800/月',
-  },
-];

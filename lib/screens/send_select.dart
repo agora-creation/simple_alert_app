@@ -5,6 +5,7 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
@@ -38,11 +39,13 @@ class _SendSelectScreenState extends State<SendSelectScreen> {
   List<MapUserModel> sendMapUsers = [];
   List<MapUserModel> selectedSendMapUsers = [];
   int monthSendCount = 0;
+  int monthSendLimit = 0;
 
   void _init() async {
     monthSendCount = await UserSendService().selectMonthSendCount(
       userId: widget.userProvider.user!.id,
     );
+    monthSendLimit = await getMonthSendLimit();
     setState(() {});
   }
 
@@ -57,9 +60,9 @@ class _SendSelectScreenState extends State<SendSelectScreen> {
   @override
   Widget build(BuildContext context) {
     int selectedLimit = 0;
-    // if (inAppPurchaseProvider.planMonthLimit > monthSendCount) {
-    //   selectedLimit = inAppPurchaseProvider.planMonthLimit - monthSendCount;
-    // }
+    if (monthSendLimit > monthSendCount) {
+      selectedLimit = monthSendLimit - monthSendCount;
+    }
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(

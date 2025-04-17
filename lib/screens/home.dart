@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,6 +9,7 @@ import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_notice.dart';
 import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/info.dart';
 import 'package:simple_alert_app/screens/notice_detail.dart';
@@ -27,11 +26,8 @@ import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_card.dart';
 import 'package:simple_alert_app/widgets/custom_list_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
-import 'package:simple_alert_app/widgets/link_text.dart';
-import 'package:simple_alert_app/widgets/product_map_list.dart';
 import 'package:simple_alert_app/widgets/user_notice_list.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -42,144 +38,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   BannerAd bannerAd = AdService.createBannerAd();
-  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
-  late StreamSubscription<List<PurchaseDetails>> _subscription;
-  List<String> _notFoundIds = [];
-  List<ProductDetails> _products = [];
-  List<PurchaseDetails> _purchases = [];
-  bool _isAvailable = false;
-  bool _purchasePending = false;
-  bool _loading = true;
-  String? _queryProductError;
 
   void _initBannerAd() async {
     await bannerAd.load();
   }
 
-  Future _initInAppPurchase() async {
-    final Stream<List<PurchaseDetails>> purchaseUpdated =
-        _inAppPurchase.purchaseStream;
-    _subscription =
-        purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
-      _listenToPurchaseUpdated(purchaseDetailsList);
-    }, onDone: () {
-      _subscription.cancel();
-    }, onError: (Object error) {});
-
-    bool isAvailable = await _inAppPurchase.isAvailable();
-    if (!isAvailable) {
-      setState(() {
-        _isAvailable = isAvailable;
-        _products = [];
-        _purchases = [];
-        _notFoundIds = [];
-        _purchasePending = false;
-        _loading = false;
-      });
-      return;
-    }
-    final ProductDetailsResponse productDetailResponse =
-        await _inAppPurchase.queryProductDetails(kProductIds.toSet());
-    if (productDetailResponse.error != null) {
-      setState(() {
-        _queryProductError = productDetailResponse.error!.message;
-        _isAvailable = isAvailable;
-        _products = productDetailResponse.productDetails;
-        _purchases = [];
-        _notFoundIds = productDetailResponse.notFoundIDs;
-        _purchasePending = false;
-        _loading = false;
-      });
-      return;
-    }
-    if (productDetailResponse.productDetails.isEmpty) {
-      setState(() {
-        _queryProductError = null;
-        _isAvailable = isAvailable;
-        _products = productDetailResponse.productDetails;
-        _purchases = <PurchaseDetails>[];
-        _notFoundIds = productDetailResponse.notFoundIDs;
-        _purchasePending = false;
-        _loading = false;
-      });
-      return;
-    }
-    setState(() {
-      _isAvailable = isAvailable;
-      _products = productDetailResponse.productDetails;
-      _notFoundIds = productDetailResponse.notFoundIDs;
-      _purchasePending = false;
-      _loading = false;
-    });
-  }
-
-  void showPendingUI() {
-    setState(() {
-      _purchasePending = true;
-    });
-  }
-
-  Future<void> deliverProduct(PurchaseDetails purchaseDetails) async {
-    setState(() {
-      _purchases.add(purchaseDetails);
-      _purchasePending = false;
-    });
-  }
-
-  void handleError(IAPError error) {
-    setState(() {
-      _purchasePending = false;
-    });
-  }
-
-  Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) {
-    // IMPORTANT!! Always verify a purchase before delivering the product.
-    // For the purpose of an example, we directly return true.
-    return Future<bool>.value(true);
-  }
-
-  void _handleInvalidPurchase(PurchaseDetails purchaseDetails) {
-    // handle invalid purchase here if  _verifyPurchase` failed.
-  }
-
-  Future _listenToPurchaseUpdated(
-    List<PurchaseDetails> purchaseDetailsList,
-  ) async {
-    for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
-      if (purchaseDetails.status == PurchaseStatus.pending) {
-        showPendingUI();
-      } else {
-        if (purchaseDetails.status == PurchaseStatus.error) {
-          handleError(purchaseDetails.error!);
-        } else if (purchaseDetails.status == PurchaseStatus.purchased ||
-            purchaseDetails.status == PurchaseStatus.restored) {
-          final bool valid = await _verifyPurchase(purchaseDetails);
-          if (valid) {
-            unawaited(deliverProduct(purchaseDetails));
-          } else {
-            _handleInvalidPurchase(purchaseDetails);
-            return;
-          }
-        }
-
-        if (purchaseDetails.pendingCompletePurchase) {
-          await _inAppPurchase.completePurchase(purchaseDetails);
-        }
-      }
-    }
-  }
-
   @override
   void initState() {
     _initBannerAd();
-    _initInAppPurchase();
+    context.read<InAppPurchaseProvider>().initialize();
     super.initState();
   }
 
   @override
   void dispose() {
     // bannerAd.dispose();
-    _subscription.cancel();
+    // context.read<InAppPurchaseProvider>().dispose();
     super.dispose();
   }
 
@@ -240,8 +114,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     : userProvider.mode == HomeMode.send
                         ? SendCard(
                             userProvider: userProvider,
-                            inAppPurchase: _inAppPurchase,
-                            products: _products,
                           )
                         : Container(),
               ),
@@ -335,13 +207,9 @@ class NoticeCard extends StatelessWidget {
 
 class SendCard extends StatefulWidget {
   final UserProvider userProvider;
-  final InAppPurchase inAppPurchase;
-  final List<ProductDetails> products;
 
   const SendCard({
     required this.userProvider,
-    required this.inAppPurchase,
-    required this.products,
     super.key,
   });
 
@@ -351,8 +219,8 @@ class SendCard extends StatefulWidget {
 
 class _SendCardState extends State<SendCard> {
   TextEditingController senderNameController = TextEditingController();
-  String selectedId = kProductMaps[0]['id'].toString();
   int monthSendCount = 0;
+  int monthSendLimit = 0;
 
   void _init() async {
     if (widget.userProvider.user != null) {
@@ -360,6 +228,7 @@ class _SendCardState extends State<SendCard> {
         userId: widget.userProvider.user!.id,
       );
     }
+    monthSendLimit = await getMonthSendLimit();
     setState(() {});
   }
 
@@ -388,7 +257,7 @@ class _SendCardState extends State<SendCard> {
               ),
             ),
             AlertBar(
-              '現在$monthSendCount件 / 月10件まで送信可',
+              '現在$monthSendCount件 / 月$monthSendLimit件まで送信可',
             ),
             Expanded(
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -470,113 +339,116 @@ class _SendCardState extends State<SendCard> {
         child: CustomCard(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: GestureDetector(
-              child: Column(
-                children: [
-                  Text(
-                    '- はじめに -',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'SourceHanSansJP-Bold',
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      '- はじめに -',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'SourceHanSansJP-Bold',
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '送信モードを利用するには、送信者名を入力して、ご利用プランを選んでください。',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextFormField(
-                    controller: senderNameController,
-                    textInputType: TextInputType.name,
-                    maxLines: 1,
-                    label: '送信者名',
-                    color: kBlackColor,
-                    prefix: Icons.account_box,
-                    fillColor: kBlackColor.withOpacity(0.1),
-                  ),
-                  const SizedBox(height: 24),
-                  Text('ご利用プランを選んでください'),
-                  const SizedBox(height: 8),
-                  LinkText(
-                    label: '利用規約を確認',
-                    onTap: () async {
-                      if (!await launchUrl(Uri.parse(
-                        'https://docs.google.com/document/d/18yzTySjHTdCE_VHS6NjAeP8OfTpfqyh5VZjaqBgdP78/edit?usp=sharing',
-                      ))) {
-                        throw Exception('Could not launch');
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Column(
-                    children: kProductMaps.map((productMap) {
-                      return ProductMapList(
-                        id: productMap['id'].toString(),
-                        selectedId: selectedId,
-                        title: productMap['title'].toString(),
-                        description: productMap['description'].toString(),
-                        price: productMap['price'].toString(),
-                        onTap: () {
-                          setState(() {
-                            selectedId = productMap['id'].toString();
-                          });
-                        },
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomButton(
-                    type: ButtonSizeType.lg,
-                    label: 'ご利用プランを選ぶ',
-                    labelColor: kWhiteColor,
-                    backgroundColor: kBlueColor,
-                    onPressed: () async {
-                      if (senderNameController.text == '') {
-                        if (!mounted) return;
-                        showMessage(context, '送信者名を入力してください', false);
-                        return;
-                      }
-                      if (selectedId != kProductMaps[0]['id'].toString()) {
-                        ProductDetails? productDetails;
-
-                        if (widget.products.isNotEmpty) {
-                          for (final product in widget.products) {
-                            if (product.id == selectedId) {
-                              productDetails = product;
-                              break;
+                    const SizedBox(height: 4),
+                    Text(
+                      '送信モードを利用するには、送信者名を入力して、ご利用プランを選んでください。',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                CustomTextFormField(
+                  controller: senderNameController,
+                  textInputType: TextInputType.name,
+                  maxLines: 1,
+                  label: '送信者名',
+                  color: kBlackColor,
+                  prefix: Icons.account_box,
+                  fillColor: kBlackColor.withOpacity(0.1),
+                ),
+                CustomButton(
+                  type: ButtonSizeType.lg,
+                  label: 'ご利用プランを選ぶ',
+                  labelColor: kWhiteColor,
+                  backgroundColor: kBlueColor,
+                  onPressed: () {
+                    if (senderNameController.text == '') {
+                      if (!mounted) return;
+                      showMessage(context, '送信者名を入力してください', false);
+                      return;
+                    }
+                    final inAppPurchaseProvider =
+                        context.read<InAppPurchaseProvider>();
+                    showInAppPurchaseDialog(
+                      context,
+                      result: (selectedProductId) async {
+                        if (selectedProductId !=
+                            kProductMaps[0]['id'].toString()) {
+                          ProductDetails? selectedProduct;
+                          if (inAppPurchaseProvider
+                              .availableProducts.isNotEmpty) {
+                            for (final product
+                                in inAppPurchaseProvider.availableProducts) {
+                              if (product.id == selectedProductId) {
+                                selectedProduct = product;
+                                break;
+                              }
                             }
                           }
-                        }
-                        if (productDetails != null) {
-                          await widget.inAppPurchase.buyNonConsumable(
-                              purchaseParam: PurchaseParam(
-                                  productDetails: productDetails));
-                        }
-                      } else {
-                        String? error = await widget.userProvider.updateSender(
-                          senderName: senderNameController.text,
-                        );
-                        if (error != null) {
+                          final purchaseResult = await inAppPurchaseProvider
+                              .purchaseProduct(selectedProduct!);
+                          if (purchaseResult.$1 && context.mounted) {
+                            print('購入成功');
+                            String? error =
+                                await widget.userProvider.updateSender(
+                              senderName: senderNameController.text,
+                            );
+                            if (error != null) {
+                              if (!mounted) return;
+                              showMessage(context, error, false);
+                              return;
+                            }
+                            await widget.userProvider.reload();
+                            if (!mounted) return;
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.bottomToTop,
+                                child: HomeScreen(),
+                              ),
+                            );
+                          } else {
+                            if (context.mounted) {
+                              print(purchaseResult.$2);
+                            }
+                          }
+                        } else {
+                          String? error =
+                              await widget.userProvider.updateSender(
+                            senderName: senderNameController.text,
+                          );
+                          if (error != null) {
+                            if (!mounted) return;
+                            showMessage(context, error, false);
+                            return;
+                          }
+                          await widget.userProvider.reload();
                           if (!mounted) return;
-                          showMessage(context, error, false);
-                          return;
+                          Navigator.pushReplacement(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.bottomToTop,
+                              child: HomeScreen(),
+                            ),
+                          );
                         }
-                        await widget.userProvider.reload();
-                        if (!mounted) return;
-                        Navigator.pushReplacement(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.bottomToTop,
-                            child: HomeScreen(),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
+                      },
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),

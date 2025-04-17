@@ -2,19 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/style.dart';
 
 class ProductMapList extends StatelessWidget {
-  final String id;
+  final Map<String, String> productMap;
   final String selectedId;
-  final String title;
-  final String description;
-  final String price;
   final Function()? onTap;
 
   const ProductMapList({
-    required this.id,
+    required this.productMap,
     required this.selectedId,
-    required this.title,
-    required this.description,
-    required this.price,
     this.onTap,
     super.key,
   });
@@ -36,14 +30,14 @@ class ProductMapList extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border: id == selectedId
+              border: productMap['id'].toString() == selectedId
                   ? Border.all(color: kBlueColor, width: 2)
                   : null,
             ),
             child: ListTile(
               dense: true,
               title: Text(
-                title,
+                productMap['title'].toString(),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -51,14 +45,14 @@ class ProductMapList extends StatelessWidget {
                 ),
               ),
               subtitle: Text(
-                description,
+                productMap['description'].toString(),
                 style: const TextStyle(fontSize: 12),
               ),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    price,
+                    productMap['price'].toString(),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

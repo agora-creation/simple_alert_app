@@ -55,8 +55,8 @@ class _SendInputScreenState extends State<SendInputScreen> {
       titleController.text = widget.userSend!.title;
       contentController.text = widget.userSend!.content;
     }
-    if (kChoices.isNotEmpty) {
-      for (final choice in kChoices) {
+    if (kDefaultChoices.isNotEmpty) {
+      for (final choice in kDefaultChoices) {
         choices.add(choice);
       }
     }

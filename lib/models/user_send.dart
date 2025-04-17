@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:simple_alert_app/models/map_user.dart';
 
+const kDefaultChoices = ['はい', 'いいえ'];
+
 class UserSendModel {
   String _id = '';
   String _userId = '';
