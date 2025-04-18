@@ -26,6 +26,8 @@ class NoticeSettingUsersAddScreen extends StatefulWidget {
 
 class _NoticeSettingUsersAddScreenState
     extends State<NoticeSettingUsersAddScreen> {
+  MobileScannerController controller = MobileScannerController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

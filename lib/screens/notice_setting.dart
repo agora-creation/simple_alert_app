@@ -68,10 +68,12 @@ class NoticeSettingScreen extends StatelessWidget {
             SettingList(
               label: '受信先一覧 (${user?.noticeMapUsers.length})',
               subtitle: Text(
-                '※登録した受信先から、通知を受信します',
+                '※通知をどこから受け取るか設定できます',
                 style: TextStyle(
                   color: kRedColor,
                   fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'SourceHanSansJP-Bold',
                 ),
               ),
               trailing: const FaIcon(

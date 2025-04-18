@@ -52,8 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    bannerAd.dispose();
-    context.read<InAppPurchaseProvider>().dispose();
+    // bannerAd.dispose();
+    // context.read<InAppPurchaseProvider>().dispose();
     super.dispose();
   }
 
