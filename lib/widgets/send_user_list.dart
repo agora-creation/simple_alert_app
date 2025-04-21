@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/models/map_user.dart';
+import 'package:simple_alert_app/models/send_user.dart';
 
-class MapUserList extends StatelessWidget {
-  final MapUserModel mapUser;
+class SendUserList extends StatelessWidget {
+  final SendUserModel sendUser;
 
-  const MapUserList({
-    required this.mapUser,
+  const SendUserList({
+    required this.sendUser,
     super.key,
   });
 
@@ -19,9 +19,9 @@ class MapUserList extends StatelessWidget {
         ),
       ),
       child: ListTile(
-        title: Text(mapUser.name),
+        title: Text(sendUser.name),
         trailing: Text(
-          mapUser.answer,
+          sendUser.answer,
           style: TextStyle(
             color: kRedColor,
             fontSize: 16,

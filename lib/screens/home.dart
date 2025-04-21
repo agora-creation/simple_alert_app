@@ -7,19 +7,22 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_notice.dart';
 import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/models/user_sender.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/info.dart';
 import 'package:simple_alert_app/screens/notice_detail.dart';
-import 'package:simple_alert_app/screens/notice_setting.dart';
+import 'package:simple_alert_app/screens/notice_users.dart';
+import 'package:simple_alert_app/screens/send_create.dart';
 import 'package:simple_alert_app/screens/send_detail.dart';
-import 'package:simple_alert_app/screens/send_input.dart';
 import 'package:simple_alert_app/screens/send_setting.dart';
 import 'package:simple_alert_app/services/ad.dart';
 import 'package:simple_alert_app/services/user_notice.dart';
 import 'package:simple_alert_app/services/user_send.dart';
+import 'package:simple_alert_app/services/user_sender.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_bottom_sheet.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -28,6 +31,7 @@ import 'package:simple_alert_app/widgets/custom_list_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/user_notice_list.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,9 +42,62 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   BannerAd bannerAd = AdService.createBannerAd();
+  late TutorialCoachMark tutorialCoachMark;
+  GlobalKey modeChangeKey = GlobalKey();
 
   void _initBannerAd() async {
     await bannerAd.load();
+  }
+
+  void _createTutorial() {
+    tutorialCoachMark = TutorialCoachMark(
+      targets: [
+        TargetFocus(
+          identify: 'mode_change',
+          keyTarget: modeChangeKey,
+          contents: [
+            TargetContent(
+              align: ContentAlign.bottom,
+              builder: (context, controller) {
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  child: const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '送受信モード切り替え',
+                        style: TextStyle(
+                          color: kWhiteColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'SourceHanSansJP-Bold',
+                        ),
+                      ),
+                      Text(
+                        'ここをタップすると、送信モードに切り替えることができます。',
+                        style: TextStyle(color: kWhiteColor),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+      textSkip: 'スキップ',
+      onFinish: () async {
+        await setPrefsBool('tutorialFinished', true);
+      },
+    );
+  }
+
+  void _showTutorial() async {
+    bool tutorialFinished = await getPrefsBool('tutorialFinished') ?? false;
+    if (!tutorialFinished) {
+      if (!mounted) return;
+      tutorialCoachMark.show(context: context);
+    }
   }
 
   @override
@@ -48,6 +105,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _initBannerAd();
     context.read<InAppPurchaseProvider>().initialize();
     super.initState();
+    _createTutorial();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showTutorial();
+    });
   }
 
   @override
@@ -72,6 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('$kAppShortName: $modeText'),
         actions: [
           IconButton(
+            key: modeChangeKey,
             icon: const FaIcon(FontAwesomeIcons.rotate),
             onPressed: () async {
               if (userProvider.mode == HomeMode.notice) {
@@ -136,20 +198,32 @@ class NoticeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    UserModel? user = userProvider.user;
     return CustomCard(
       child: Column(
         children: [
-          CustomListButton(
-            leadingIcon: FontAwesomeIcons.gear,
-            label: '受信設定',
-            labelColor: kBlackColor,
-            tileColor: kBlackColor.withOpacity(0.3),
-            onTap: () => showBottomUpScreen(
-              context,
-              NoticeSettingScreen(
-                userProvider: userProvider,
-              ),
-            ),
+          StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: UserSenderService().streamList(userId: user!.id),
+            builder: (context, snapshot) {
+              List<UserSenderModel> userSenders = [];
+              if (snapshot.hasData) {
+                userSenders = UserSenderService().generateList(
+                  data: snapshot.data,
+                );
+              }
+              return CustomListButton(
+                leadingIcon: FontAwesomeIcons.list,
+                label: '受信先一覧 (${userSenders.length})',
+                labelColor: kBlackColor,
+                tileColor: kBlackColor.withOpacity(0.3),
+                onTap: () => showBottomUpScreen(
+                  context,
+                  NoticeUsersScreen(
+                    userProvider: userProvider,
+                  ),
+                ),
+              );
+            },
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -246,7 +320,7 @@ class _SendCardState extends State<SendCard> {
           children: [
             CustomListButton(
               leadingIcon: FontAwesomeIcons.gear,
-              label: '送信設定',
+              label: '送信者設定',
               labelColor: kBlackColor,
               tileColor: kBlackColor.withOpacity(0.3),
               onTap: () => showBottomUpScreen(
@@ -293,7 +367,7 @@ class _SendCardState extends State<SendCard> {
                           if (userSend.draft) {
                             showBottomUpScreen(
                               context,
-                              SendInputScreen(
+                              SendCreateScreen(
                                 userProvider: widget.userProvider,
                                 userSend: userSend,
                               ),
@@ -323,7 +397,7 @@ class _SendCardState extends State<SendCard> {
               tileColor: kBlueColor,
               onTap: () => showBottomUpScreen(
                 context,
-                SendInputScreen(
+                SendCreateScreen(
                   userProvider: widget.userProvider,
                 ),
               ),
@@ -359,94 +433,99 @@ class _SendCardState extends State<SendCard> {
                     ),
                   ],
                 ),
-                CustomTextFormField(
-                  controller: senderNameController,
-                  textInputType: TextInputType.name,
-                  maxLines: 1,
-                  label: '送信者名',
-                  color: kBlackColor,
-                  prefix: Icons.account_box,
-                  fillColor: kBlackColor.withOpacity(0.1),
-                ),
-                CustomButton(
-                  type: ButtonSizeType.lg,
-                  label: 'ご利用プランを選ぶ',
-                  labelColor: kWhiteColor,
-                  backgroundColor: kBlueColor,
-                  onPressed: () {
-                    if (senderNameController.text == '') {
-                      if (!mounted) return;
-                      showMessage(context, '送信者名を入力してください', false);
-                      return;
-                    }
-                    final inAppPurchaseProvider =
-                        context.read<InAppPurchaseProvider>();
-                    showInAppPurchaseDialog(
-                      context,
-                      result: (selectedProductId) async {
-                        if (selectedProductId !=
-                            kProductMaps[0]['id'].toString()) {
-                          ProductDetails? selectedProduct;
-                          if (inAppPurchaseProvider
-                              .availableProducts.isNotEmpty) {
-                            for (final product
-                                in inAppPurchaseProvider.availableProducts) {
-                              if (product.id == selectedProductId) {
-                                selectedProduct = product;
-                                break;
-                              }
-                            }
-                          }
-                          final purchaseResult = await inAppPurchaseProvider
-                              .purchaseProduct(selectedProduct!);
-                          if (purchaseResult.$1 && context.mounted) {
-                            print('購入成功');
-                            String? error =
-                                await widget.userProvider.updateSender(
-                              senderName: senderNameController.text,
-                            );
-                            if (error != null) {
-                              if (!mounted) return;
-                              showMessage(context, error, false);
-                              return;
-                            }
-                            await widget.userProvider.reload();
-                            if (!mounted) return;
-                            Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                type: PageTransitionType.bottomToTop,
-                                child: HomeScreen(),
-                              ),
-                            );
-                          } else {
-                            if (context.mounted) {
-                              print(purchaseResult.$2);
-                            }
-                          }
-                        } else {
-                          String? error =
-                              await widget.userProvider.updateSender(
-                            senderName: senderNameController.text,
-                          );
-                          if (error != null) {
-                            if (!mounted) return;
-                            showMessage(context, error, false);
-                            return;
-                          }
-                          await widget.userProvider.reload();
+                Column(
+                  children: [
+                    CustomTextFormField(
+                      controller: senderNameController,
+                      textInputType: TextInputType.name,
+                      maxLines: 1,
+                      label: '送信者名',
+                      color: kBlackColor,
+                      prefix: Icons.account_box,
+                      fillColor: kBlackColor.withOpacity(0.1),
+                    ),
+                    const SizedBox(height: 8),
+                    CustomButton(
+                      type: ButtonSizeType.lg,
+                      label: 'ご利用プランを選ぶ',
+                      labelColor: kWhiteColor,
+                      backgroundColor: kBlueColor,
+                      onPressed: () {
+                        if (senderNameController.text == '') {
                           if (!mounted) return;
-                          Navigator.pushReplacement(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.bottomToTop,
-                              child: HomeScreen(),
-                            ),
-                          );
+                          showMessage(context, '送信者名を入力してください', false);
+                          return;
                         }
+                        final inAppPurchaseProvider =
+                            context.read<InAppPurchaseProvider>();
+                        showInAppPurchaseDialog(
+                          context,
+                          result: (selectedProductId) async {
+                            if (selectedProductId !=
+                                kProductMaps[0]['id'].toString()) {
+                              ProductDetails? selectedProduct;
+                              if (inAppPurchaseProvider
+                                  .availableProducts.isNotEmpty) {
+                                for (final product in inAppPurchaseProvider
+                                    .availableProducts) {
+                                  if (product.id == selectedProductId) {
+                                    selectedProduct = product;
+                                    break;
+                                  }
+                                }
+                              }
+                              final purchaseResult = await inAppPurchaseProvider
+                                  .purchaseProduct(selectedProduct!);
+                              if (purchaseResult.$1 && context.mounted) {
+                                print('購入成功');
+                                String? error =
+                                    await widget.userProvider.updateSender(
+                                  senderName: senderNameController.text,
+                                );
+                                if (error != null) {
+                                  if (!mounted) return;
+                                  showMessage(context, error, false);
+                                  return;
+                                }
+                                await widget.userProvider.reload();
+                                if (!mounted) return;
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.bottomToTop,
+                                    child: HomeScreen(),
+                                  ),
+                                );
+                              } else {
+                                if (context.mounted) {
+                                  print(purchaseResult.$2);
+                                }
+                              }
+                            } else {
+                              String? error =
+                                  await widget.userProvider.updateSender(
+                                senderName: senderNameController.text,
+                              );
+                              if (error != null) {
+                                if (!mounted) return;
+                                showMessage(context, error, false);
+                                return;
+                              }
+                              await widget.userProvider.reload();
+                              if (!mounted) return;
+                              Navigator.pushReplacement(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.bottomToTop,
+                                  child: HomeScreen(),
+                                ),
+                              );
+                            }
+                          },
+                        );
                       },
-                    );
-                  },
+                    ),
+                  ],
                 ),
               ],
             ),

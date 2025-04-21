@@ -1,17 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
+import 'package:simple_alert_app/models/user_noticer.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/screens/send_setting_name.dart';
-import 'package:simple_alert_app/screens/send_setting_qr.dart';
 import 'package:simple_alert_app/screens/send_setting_users.dart';
+import 'package:simple_alert_app/services/user_noticer.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
 
@@ -48,13 +51,15 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
   @override
   Widget build(BuildContext context) {
     UserModel? user = widget.userProvider.user;
+    String userId = user?.id ?? '';
+    String qrData = 'AGORA-$userId';
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
         backgroundColor: kWhiteColor,
         automaticallyImplyLeading: false,
         title: const Text(
-          '送信設定',
+          '送信者設定',
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
@@ -65,11 +70,29 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
         ],
       ),
       body: SafeArea(
-        child: Column(
+        child: ListView(
           children: [
+            Align(
+              alignment: Alignment.center,
+              child: Text('受信者に、下記QRコードを見せてください。'),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8,
+                horizontal: 24,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: kBlackColor.withOpacity(0.5)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.all(24),
+                child: PrettyQrView.data(data: qrData),
+              ),
+            ),
             SettingList(
               label: '送信者名',
-              subtitle: Text(
+              trailing: Text(
                 user?.senderName ?? '',
                 style: TextStyle(
                   color: kBlackColor,
@@ -77,10 +100,6 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                   fontWeight: FontWeight.bold,
                   fontFamily: 'SourceHanSansJP-Bold',
                 ),
-              ),
-              trailing: const FaIcon(
-                FontAwesomeIcons.pen,
-                size: 16,
               ),
               onTap: () {
                 Navigator.push(
@@ -94,46 +113,32 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                 );
               },
             ),
-            SettingList(
-              label: '送信者QRコード',
-              subtitle: Text(
-                '※受信者に見せてください',
-                style: TextStyle(
-                  color: kRedColor,
-                  fontSize: 14,
-                ),
-              ),
-              trailing: const FaIcon(
-                FontAwesomeIcons.chevronRight,
-                size: 16,
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: SendSettingQrScreen(
-                      userProvider: widget.userProvider,
-                    ),
+            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: UserNoticerService().streamList(userId: userId),
+              builder: (context, snapshot) {
+                List<UserNoticerModel> userNoticers = [];
+                if (snapshot.hasData) {
+                  userNoticers = UserNoticerService().generateList(
+                    data: snapshot.data,
+                  );
+                }
+                return SettingList(
+                  label: '登録された受信者一覧 (${userNoticers.length})',
+                  trailing: const FaIcon(
+                    FontAwesomeIcons.chevronRight,
+                    size: 16,
                   ),
-                );
-              },
-            ),
-            SettingList(
-              label: '受信者一覧 (${user?.sendMapUsers.length})',
-              trailing: const FaIcon(
-                FontAwesomeIcons.chevronRight,
-                size: 16,
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: SendSettingUsersScreen(
-                      userProvider: widget.userProvider,
-                    ),
-                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: SendSettingUsersScreen(
+                          userProvider: widget.userProvider,
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -149,7 +154,7 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                 ),
               ),
               trailing: const FaIcon(
-                FontAwesomeIcons.rotate,
+                FontAwesomeIcons.pen,
                 size: 16,
               ),
               onTap: () async {

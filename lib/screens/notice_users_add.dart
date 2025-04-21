@@ -4,29 +4,34 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
+import 'package:simple_alert_app/models/user_sender.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/services/user.dart';
+import 'package:simple_alert_app/services/user_sender.dart';
+import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 
-class NoticeSettingUsersAddScreen extends StatefulWidget {
+class NoticeUsersAddScreen extends StatefulWidget {
   final UserProvider userProvider;
-  final Function(UserModel) reload;
 
-  const NoticeSettingUsersAddScreen({
+  const NoticeUsersAddScreen({
     required this.userProvider,
-    required this.reload,
     super.key,
   });
 
   @override
-  State<NoticeSettingUsersAddScreen> createState() =>
-      _NoticeSettingUsersAddScreenState();
+  State<NoticeUsersAddScreen> createState() => _NoticeUsersAddScreenState();
 }
 
-class _NoticeSettingUsersAddScreenState
-    extends State<NoticeSettingUsersAddScreen> {
+class _NoticeUsersAddScreenState extends State<NoticeUsersAddScreen> {
   MobileScannerController controller = MobileScannerController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,42 +48,71 @@ class _NoticeSettingUsersAddScreenState
           style: TextStyle(color: kBlackColor),
         ),
       ),
-      body: MobileScanner(
-        onDetect: (capture) async {
-          final barcode = capture.barcodes.first;
-          final code = barcode.rawValue;
-          if (code != null) {
-            String id = code.replaceAll('AGORA-', '');
-            UserModel? senderUser = await UserService().selectDataQR(id);
-            if (senderUser != null) {
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => SenderUserDialog(
-                  userProvider: widget.userProvider,
-                  reload: widget.reload,
-                  senderUser: senderUser,
-                ),
-              );
-            }
-          }
-        },
+      body: Column(
+        children: [
+          AlertBar('専用のQRコードをスキャンしてください'),
+          Expanded(
+            child: MobileScanner(
+              controller: controller,
+              onDetect: (capture) async {
+                final barcode = capture.barcodes.first;
+                final code = barcode.rawValue;
+                if (code != null) {
+                  String id = code.replaceAll('AGORA-', '');
+                  UserModel? senderUser = await UserService().selectDataQR(id);
+                  if (senderUser != null) {
+                    showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) => SenderUserDialog(
+                        userProvider: widget.userProvider,
+                        senderUser: senderUser,
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class SenderUserDialog extends StatelessWidget {
+class SenderUserDialog extends StatefulWidget {
   final UserProvider userProvider;
-  final Function(UserModel) reload;
   final UserModel senderUser;
 
   const SenderUserDialog({
     required this.userProvider,
-    required this.reload,
     required this.senderUser,
     super.key,
   });
+
+  @override
+  State<SenderUserDialog> createState() => _SenderUserDialogState();
+}
+
+class _SenderUserDialogState extends State<SenderUserDialog> {
+  bool disabled = false;
+
+  void _init() async {
+    UserSenderModel? userSender = await UserSenderService().selectData(
+      userId: widget.userProvider.user!.id,
+      senderUserId: widget.senderUser.id,
+    );
+    if (userSender != null) {
+      disabled = true;
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    _init();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +129,7 @@ class SenderUserDialog extends StatelessWidget {
                 bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
               ),
             ),
-            child: ListTile(title: Text(senderUser.senderName)),
+            child: ListTile(title: Text(widget.senderUser.senderName)),
           ),
         ],
       ),
@@ -113,18 +147,17 @@ class SenderUserDialog extends StatelessWidget {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
-            String? error = await userProvider.addNoticeMapUsers(
-              senderUser: senderUser,
+            String? error = await widget.userProvider.addSenderUser(
+              senderUser: widget.senderUser,
             );
             if (error != null) {
               showMessage(context, error, false);
               return;
             }
-            await userProvider.reload();
-            reload(userProvider.user!);
             Navigator.pop(context);
             Navigator.pop(context);
           },
+          disabled: disabled,
         ),
       ],
     );

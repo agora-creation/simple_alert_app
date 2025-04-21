@@ -3,7 +3,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
+import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/info_name.dart';
 import 'package:simple_alert_app/screens/login.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
@@ -21,15 +23,12 @@ class InfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    UserModel? user = userProvider.user;
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
         backgroundColor: kWhiteColor,
         automaticallyImplyLeading: false,
-        title: const Text(
-          'アプリ情報',
-          style: TextStyle(color: kBlackColor),
-        ),
         actions: [
           IconButton(
             icon: const FaIcon(FontAwesomeIcons.xmark),
@@ -40,6 +39,29 @@ class InfoScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
+            InfoList(
+              label: '名前',
+              trailing: Text(
+                user?.name ?? '',
+                style: TextStyle(
+                  color: kBlackColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'SourceHanSansJP-Bold',
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: InfoNameScreen(
+                      userProvider: userProvider,
+                    ),
+                  ),
+                );
+              },
+            ),
             InfoList(
               label: '利用規約',
               trailing: const FaIcon(

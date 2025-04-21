@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simple_alert_app/models/map_user.dart';
+import 'package:simple_alert_app/models/send_user.dart';
 
 const kDefaultChoices = ['はい', 'いいえ'];
 
@@ -12,7 +12,7 @@ class UserSendModel {
   List<String> choices = [];
   bool _draft = false;
   DateTime _sendAt = DateTime.now();
-  List<MapUserModel> sendMapUsers = [];
+  List<SendUserModel> sendUsers = [];
   String _createdUserId = '';
   String _createdUserName = '';
   DateTime _createdAt = DateTime.now();
@@ -41,7 +41,7 @@ class UserSendModel {
     choices = _convertChoices(data['choices'] ?? []);
     _draft = data['draft'] ?? false;
     _sendAt = data['sendAt'].toDate() ?? DateTime.now();
-    sendMapUsers = _convertMapUsers(data['sendMapUsers'] ?? []);
+    sendUsers = _convertSendUsers(data['sendUsers'] ?? []);
     _createdUserId = data['createdUserId'] ?? '';
     _createdUserName = data['createdUserName'] ?? '';
     _createdAt = data['createdAt'].toDate() ?? DateTime.now();
@@ -55,10 +55,10 @@ class UserSendModel {
     return ret;
   }
 
-  List<MapUserModel> _convertMapUsers(List list) {
-    List<MapUserModel> ret = [];
+  List<SendUserModel> _convertSendUsers(List list) {
+    List<SendUserModel> ret = [];
     for (Map data in list) {
-      ret.add(MapUserModel.fromMap(data));
+      ret.add(SendUserModel.fromMap(data));
     }
     return ret;
   }

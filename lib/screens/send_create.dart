@@ -5,26 +5,26 @@ import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/send_select.dart';
+import 'package:simple_alert_app/screens/send_create2.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
-class SendInputScreen extends StatefulWidget {
+class SendCreateScreen extends StatefulWidget {
   final UserProvider userProvider;
   final UserSendModel? userSend;
 
-  const SendInputScreen({
+  const SendCreateScreen({
     required this.userProvider,
     this.userSend,
     super.key,
   });
 
   @override
-  State<SendInputScreen> createState() => _SendInputScreenState();
+  State<SendCreateScreen> createState() => _SendCreateScreenState();
 }
 
-class _SendInputScreenState extends State<SendInputScreen> {
+class _SendCreateScreenState extends State<SendCreateScreen> {
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
   bool isChoice = false;
@@ -267,7 +267,7 @@ class _SendInputScreenState extends State<SendInputScreen> {
             context,
             PageTransition(
               type: PageTransitionType.rightToLeft,
-              child: SendSelectScreen(
+              child: SendCreate2Screen(
                 userProvider: widget.userProvider,
                 userSend: widget.userSend,
                 title: titleController.text,

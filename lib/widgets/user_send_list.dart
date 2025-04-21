@@ -59,7 +59,7 @@ class UserSendList extends StatelessWidget {
                   userSend.draft
                       ? Container()
                       : Text(
-                          '送信件数: ${userSend.sendMapUsers.length}件',
+                          '送信件数: ${userSend.sendUsers.length}件',
                           style: TextStyle(
                             color: kBlackColor.withOpacity(0.8),
                             fontSize: 14,

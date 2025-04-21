@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simple_alert_app/common/functions.dart';
-import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/models/user_sender.dart';
 
-class UserSendService {
+class UserSenderService {
   String collection = 'user';
-  String subCollection = 'send';
+  String subCollection = 'sender';
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   String id({
@@ -45,53 +44,22 @@ class UserSendService {
         .delete();
   }
 
-  Future<UserSendModel?> selectData({
-    required String id,
+  Future<UserSenderModel?> selectData({
     required String userId,
+    required String senderUserId,
   }) async {
-    UserSendModel? ret;
+    UserSenderModel? ret;
     await firestore
         .collection(collection)
         .doc(userId)
         .collection(subCollection)
-        .where('id', isEqualTo: id)
+        .where('senderUserId', isEqualTo: senderUserId)
         .get()
         .then((value) {
       if (value.docs.isNotEmpty) {
-        ret = UserSendModel.fromSnapshot(value.docs.first);
+        ret = UserSenderModel.fromSnapshot(value.docs.first);
       }
     });
-    return ret;
-  }
-
-  Future<int> selectMonthSendCount({
-    required String? userId,
-  }) async {
-    int ret = 0;
-    DateTime now = DateTime.now();
-    DateTime start = DateTime(now.year, now.month, 1);
-    DateTime end = DateTime(now.year, now.month + 1, 1).subtract(Duration(
-      days: 1,
-    ));
-    Timestamp startAt = convertTimestamp(start, false);
-    Timestamp endAt = convertTimestamp(end, true);
-    await firestore
-        .collection(collection)
-        .doc(userId ?? 'error')
-        .collection(subCollection)
-        .where('draft', isEqualTo: false)
-        .orderBy('sendAt', descending: true)
-        .startAt([endAt])
-        .endAt([startAt])
-        .get()
-        .then((value) {
-          if (value.docs.isNotEmpty) {
-            for (final doc in value.docs) {
-              UserSendModel userSend = UserSendModel.fromSnapshot(doc);
-              ret += userSend.sendUsers.length;
-            }
-          }
-        });
     return ret;
   }
 
@@ -102,16 +70,16 @@ class UserSendService {
         .collection(collection)
         .doc(userId)
         .collection(subCollection)
-        .orderBy('createdAt', descending: true)
+        .orderBy('senderUserName')
         .snapshots();
   }
 
-  List<UserSendModel> generateList({
+  List<UserSenderModel> generateList({
     required QuerySnapshot<Map<String, dynamic>>? data,
   }) {
-    List<UserSendModel> ret = [];
+    List<UserSenderModel> ret = [];
     for (DocumentSnapshot<Map<String, dynamic>> doc in data!.docs) {
-      ret.add(UserSendModel.fromSnapshot(doc));
+      ret.add(UserSenderModel.fromSnapshot(doc));
     }
     return ret;
   }

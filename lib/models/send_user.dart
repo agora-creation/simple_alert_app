@@ -1,4 +1,4 @@
-class MapUserModel {
+class SendUserModel {
   String _id = '';
   String _name = '';
   String answer = '';
@@ -6,7 +6,7 @@ class MapUserModel {
   String get id => _id;
   String get name => _name;
 
-  MapUserModel.fromMap(Map data) {
+  SendUserModel.fromMap(Map data) {
     _id = data['id'] ?? '';
     _name = data['name'] ?? '';
     answer = data['answer'] ?? '';

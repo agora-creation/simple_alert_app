@@ -5,7 +5,7 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/choice_list.dart';
-import 'package:simple_alert_app/widgets/map_user_sheet.dart';
+import 'package:simple_alert_app/widgets/send_user_sheet.dart';
 
 class SendDetailScreen extends StatefulWidget {
   final UserSendModel userSend;
@@ -114,7 +114,7 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
               ),
             ],
           ),
-          MapUserSheet(widget.userSend.sendMapUsers),
+          SendUserSheet(widget.userSend.sendUsers),
         ],
       ),
     );

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/models/map_user.dart';
-import 'package:simple_alert_app/widgets/map_user_list.dart';
+import 'package:simple_alert_app/models/send_user.dart';
+import 'package:simple_alert_app/widgets/send_user_list.dart';
 
-class MapUserSheet extends StatelessWidget {
-  final List<MapUserModel> sendMapUsers;
+class SendUserSheet extends StatelessWidget {
+  final List<SendUserModel> sendUsers;
 
-  const MapUserSheet(
-    this.sendMapUsers, {
+  const SendUserSheet(
+    this.sendUsers, {
     super.key,
   });
 
@@ -54,10 +54,10 @@ class MapUserSheet extends StatelessWidget {
               Expanded(
                 child: ListView.builder(
                   controller: scrollController,
-                  itemCount: sendMapUsers.length,
+                  itemCount: sendUsers.length,
                   itemBuilder: (context, index) {
-                    MapUserModel mapUser = sendMapUsers[index];
-                    return MapUserList(mapUser: mapUser);
+                    SendUserModel sendUser = sendUsers[index];
+                    return SendUserList(sendUser: sendUser);
                   },
                 ),
               ),

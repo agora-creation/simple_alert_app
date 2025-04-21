@@ -1,14 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_alert_app/common/functions.dart';
-import 'package:simple_alert_app/models/map_user.dart';
+import 'package:simple_alert_app/models/send_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_notice.dart';
+import 'package:simple_alert_app/models/user_noticer.dart';
 import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/models/user_sender.dart';
 import 'package:simple_alert_app/services/push.dart';
 import 'package:simple_alert_app/services/user.dart';
 import 'package:simple_alert_app/services/user_notice.dart';
+import 'package:simple_alert_app/services/user_noticer.dart';
 import 'package:simple_alert_app/services/user_send.dart';
+import 'package:simple_alert_app/services/user_sender.dart';
 
 enum AuthStatus {
   authenticated,
@@ -30,6 +34,8 @@ class UserProvider with ChangeNotifier {
 
   final PushService _pushService = PushService();
   final UserService _userService = UserService();
+  final UserNoticerService _userNoticerService = UserNoticerService();
+  final UserSenderService _userSenderService = UserSenderService();
   final UserNoticeService _userNoticeService = UserNoticeService();
   final UserSendService _userSendService = UserSendService();
 
@@ -76,8 +82,6 @@ class UserProvider with ChangeNotifier {
                 'token': token,
                 'sender': false,
                 'senderName': '',
-                'noticeMapUsers': [],
-                'sendMapUsers': [],
               });
             } else {
               _userService.update({
@@ -135,8 +139,6 @@ class UserProvider with ChangeNotifier {
               'token': token,
               'sender': false,
               'senderName': '',
-              'noticeMapUsers': [],
-              'sendMapUsers': [],
             });
           } else {
             _userService.update({
@@ -206,84 +208,39 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
-  Future<String?> addNoticeMapUsers({
+  //受信者側が送信者情報を登録する
+  Future<String?> addSenderUser({
     required UserModel senderUser,
   }) async {
     String? error;
     try {
-      //受信者側のデータ追加
-      List<Map> noticeMapUsers = [];
-      if (_user!.noticeMapUsers.isNotEmpty) {
-        for (MapUserModel mapUser in _user!.noticeMapUsers) {
-          noticeMapUsers.add(mapUser.toMap());
-        }
+      //受信者側の登録処理
+      UserSenderModel? userSender = await _userSenderService.selectData(
+        userId: _user!.id,
+        senderUserId: senderUser.id,
+      );
+      if (userSender == null) {
+        String userSenderId = _userSenderService.id(userId: _user!.id);
+        _userSenderService.create({
+          'id': userSenderId,
+          'userId': _user?.id,
+          'senderUserId': senderUser.id,
+          'senderUserName': senderUser.senderName,
+          'block': false,
+        });
       }
-      noticeMapUsers.add({
-        'id': senderUser.id,
-        'name': senderUser.senderName,
-      });
-      _userService.update({
-        'id': _user?.id,
-        'noticeMapUsers': noticeMapUsers,
-      });
-      //送信者側のデータ追加
-      List<Map> sendMapUsers = [];
-      if (senderUser.sendMapUsers.isNotEmpty) {
-        for (MapUserModel mapUser in senderUser.sendMapUsers) {
-          sendMapUsers.add(mapUser.toMap());
-        }
-      }
-      sendMapUsers.add({
-        'id': _user!.id,
-        'name': _user!.name,
-        'tel': _user!.tel,
-      });
-      _userService.update({
-        'id': senderUser.id,
-        'sendMapUsers': sendMapUsers,
-      });
-    } catch (e) {
-      error = e.toString();
-    }
-    return error;
-  }
-
-  Future<String?> removeNoticeMapUsers({
-    required List<MapUserModel> selectedNoticeMapUsers,
-  }) async {
-    String? error;
-    if (selectedNoticeMapUsers.isEmpty) return '選択されていません';
-    try {
-      //受信者側のデータ削除
-      List<Map> noticeMapUsers = [];
-      if (_user!.noticeMapUsers.isNotEmpty) {
-        for (MapUserModel mapUser in _user!.noticeMapUsers) {
-          if (!selectedNoticeMapUsers.contains(mapUser)) {
-            noticeMapUsers.add(mapUser.toMap());
-          }
-        }
-      }
-      _userService.update({
-        'id': _user?.id,
-        'noticeMapUsers': noticeMapUsers,
-      });
-      //送信者側のデータ削除
-      for (MapUserModel mapUser in selectedNoticeMapUsers) {
-        UserModel? senderUser = await _userService.selectData(
-          id: mapUser.id,
-        );
-        if (senderUser == null) continue;
-        List<Map> sendMapUsers = [];
-        if (senderUser.sendMapUsers.isNotEmpty) {
-          for (MapUserModel mapUser in senderUser.sendMapUsers) {
-            if (mapUser.id != _user!.id) {
-              sendMapUsers.add(mapUser.toMap());
-            }
-          }
-        }
-        _userService.update({
-          'id': senderUser.id,
-          'sendMapUsers': sendMapUsers,
+      //送信者側の登録処理
+      UserNoticerModel? userNoticer = await _userNoticerService.selectData(
+        userId: senderUser.id,
+        noticerUserId: _user!.id,
+      );
+      if (userNoticer == null) {
+        String userNoticerId = _userNoticerService.id(userId: senderUser.id);
+        _userNoticerService.create({
+          'id': userNoticerId,
+          'userId': senderUser.id,
+          'noticerUserId': _user?.id,
+          'noticerUserName': _user?.name,
         });
       }
     } catch (e) {
@@ -292,42 +249,54 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
-  Future<String?> removeSendMapUsers({
-    required List<MapUserModel> selectedSendMapUsers,
+  //受信者側が登録した送信者情報を削除する
+  Future<String?> removeUserSender({
+    required UserSenderModel userSender,
   }) async {
     String? error;
-    if (selectedSendMapUsers.isEmpty) return '選択されていません';
     try {
-      //送信者側のデータ削除
-      List<Map> sendMapUsers = [];
-      if (_user!.sendMapUsers.isNotEmpty) {
-        for (MapUserModel mapUser in _user!.sendMapUsers) {
-          if (!selectedSendMapUsers.contains(mapUser)) {
-            sendMapUsers.add(mapUser.toMap());
-          }
-        }
-      }
-      _userService.update({
-        'id': _user?.id,
-        'sendMapUsers': sendMapUsers,
+      //受信者側の削除処理
+      _userSenderService.delete({
+        'id': userSender.id,
+        'userId': userSender.userId,
       });
-      //受信者側のデータ削除
-      for (MapUserModel mapUser in selectedSendMapUsers) {
-        UserModel? noticeUser = await _userService.selectData(
-          id: mapUser.id,
-        );
-        if (noticeUser == null) continue;
-        List<Map> noticeMapUsers = [];
-        if (noticeUser.noticeMapUsers.isNotEmpty) {
-          for (MapUserModel mapUser in noticeUser.noticeMapUsers) {
-            if (mapUser.id != _user!.id) {
-              noticeMapUsers.add(mapUser.toMap());
-            }
-          }
-        }
-        _userService.update({
-          'id': noticeUser.id,
-          'noticeMapUsers': noticeMapUsers,
+      //送信者側の削除処理
+      UserNoticerModel? userNoticer = await _userNoticerService.selectData(
+        userId: userSender.id,
+        noticerUserId: userSender.userId,
+      );
+      if (userNoticer != null) {
+        _userNoticerService.delete({
+          'id': userNoticer.id,
+          'userId': userNoticer.userId,
+        });
+      }
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  //送信者側が登録した受信者情報を削除する
+  Future<String?> removeUserNoticer({
+    required UserNoticerModel userNoticer,
+  }) async {
+    String? error;
+    try {
+      //送信者側の削除処理
+      _userNoticerService.delete({
+        'id': userNoticer.id,
+        'userId': userNoticer.userId,
+      });
+      //受信者側の削除処理
+      UserSenderModel? userSender = await _userSenderService.selectData(
+        userId: userNoticer.id,
+        senderUserId: userNoticer.userId,
+      );
+      if (userSender != null) {
+        _userSenderService.delete({
+          'id': userSender.id,
+          'userId': userSender.userId,
         });
       }
     } catch (e) {
@@ -359,7 +328,7 @@ class UserProvider with ChangeNotifier {
         'choices': choices,
         'draft': true,
         'sendAt': DateTime.now(),
-        'sendMapUsers': [],
+        'sendUsers': [],
         'createdUserId': _user!.id,
         'createdUserName': _user!.name,
         'createdAt': DateTime.now(),
@@ -419,7 +388,7 @@ class UserProvider with ChangeNotifier {
     required String content,
     required bool isChoice,
     required List<String> choices,
-    required List<MapUserModel> selectedSendMapUsers,
+    required List<SendUserModel> selectedSendUsers,
   }) async {
     String? error;
     if (title == '') return '件名は必須入力です';
@@ -428,10 +397,10 @@ class UserProvider with ChangeNotifier {
       return '選択肢が設定されていません';
     }
     try {
-      List<Map> sendMapUsers = [];
-      if (selectedSendMapUsers.isNotEmpty) {
-        for (MapUserModel mapUser in selectedSendMapUsers) {
-          sendMapUsers.add(mapUser.toMap());
+      List<Map> mapSendUsers = [];
+      if (selectedSendUsers.isNotEmpty) {
+        for (final selectSendUser in selectedSendUsers) {
+          mapSendUsers.add(selectSendUser.toMap());
         }
       }
       String userSendId = '';
@@ -445,7 +414,7 @@ class UserProvider with ChangeNotifier {
           'choices': choices,
           'draft': false,
           'sendAt': DateTime.now(),
-          'sendMapUsers': sendMapUsers,
+          'sendUsers': mapSendUsers,
         });
         userSendId = userSend.id;
       } else {
@@ -459,34 +428,36 @@ class UserProvider with ChangeNotifier {
           'choices': choices,
           'draft': false,
           'sendAt': DateTime.now(),
-          'sendMapUsers': sendMapUsers,
+          'sendUsers': mapSendUsers,
           'createdUserId': _user!.id,
           'createdUserName': _user!.name,
           'createdAt': DateTime.now(),
         });
         userSendId = id;
       }
-      for (MapUserModel mapUser in selectedSendMapUsers) {
-        UserModel? noticeUser = await _userService.selectData(
-          id: mapUser.id,
-        );
-        if (noticeUser == null) continue;
-        String id = _userNoticeService.id(userId: noticeUser.id);
-        _userNoticeService.create({
-          'id': id,
-          'userId': noticeUser.id,
-          'userSendId': userSendId,
-          'title': title,
-          'content': content,
-          'isChoice': isChoice,
-          'choices': choices,
-          'answer': '',
-          'read': false,
-          'token': noticeUser.token,
-          'createdUserId': _user!.id,
-          'createdUserName': _user!.name,
-          'createdAt': DateTime.now(),
-        });
+      if (selectedSendUsers.isNotEmpty) {
+        for (final selectSendUser in selectedSendUsers) {
+          UserModel? noticeUser = await _userService.selectData(
+            id: selectSendUser.id,
+          );
+          if (noticeUser == null) continue;
+          String id = _userNoticeService.id(userId: noticeUser.id);
+          _userNoticeService.create({
+            'id': id,
+            'userId': noticeUser.id,
+            'userSendId': userSendId,
+            'title': title,
+            'content': content,
+            'isChoice': isChoice,
+            'choices': choices,
+            'answer': '',
+            'read': false,
+            'token': noticeUser.token,
+            'createdUserId': _user!.id,
+            'createdUserName': _user!.name,
+            'createdAt': DateTime.now(),
+          });
+        }
       }
     } catch (e) {
       error = e.toString();
@@ -511,19 +482,19 @@ class UserProvider with ChangeNotifier {
         userId: userNotice.userId,
       );
       if (userSend != null) {
-        List<Map> sendMapUsers = [];
-        if (userSend.sendMapUsers.isNotEmpty) {
-          for (MapUserModel mapUser in userSend.sendMapUsers) {
-            if (mapUser.id == userNotice.userId) {
-              mapUser.answer = answer;
+        List<Map> mapSendUsers = [];
+        if (userSend.sendUsers.isNotEmpty) {
+          for (final sendUser in userSend.sendUsers) {
+            if (sendUser.id == userNotice.userId) {
+              sendUser.answer = answer;
             }
-            sendMapUsers.add(mapUser.toMap());
+            mapSendUsers.add(sendUser.toMap());
           }
         }
         _userSendService.update({
           'id': userSend.id,
           'userId': userSend.userId,
-          'sendMapUsers': sendMapUsers,
+          'sendUsers': mapSendUsers,
         });
       }
     } catch (e) {
