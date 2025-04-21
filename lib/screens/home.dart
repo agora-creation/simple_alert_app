@@ -444,7 +444,7 @@ class _SendCardState extends State<SendCard> {
                       prefix: Icons.account_box,
                       fillColor: kBlackColor.withOpacity(0.1),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     CustomButton(
                       type: ButtonSizeType.lg,
                       label: 'ご利用プランを選ぶ',

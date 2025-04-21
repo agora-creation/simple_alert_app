@@ -76,10 +76,18 @@ class UserNoticerService {
 
   List<UserNoticerModel> generateList({
     required QuerySnapshot<Map<String, dynamic>>? data,
+    bool isBlockView = true,
   }) {
     List<UserNoticerModel> ret = [];
     for (DocumentSnapshot<Map<String, dynamic>> doc in data!.docs) {
-      ret.add(UserNoticerModel.fromSnapshot(doc));
+      UserNoticerModel userNoticer = UserNoticerModel.fromSnapshot(doc);
+      if (isBlockView) {
+        ret.add(userNoticer);
+      } else {
+        if (!userNoticer.block) {
+          ret.add(userNoticer);
+        }
+      }
     }
     return ret;
   }

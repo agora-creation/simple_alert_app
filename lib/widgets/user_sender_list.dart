@@ -20,9 +20,19 @@ class UserSenderList extends StatelessWidget {
         border: Border(
           bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
         ),
+        color: userSender.block ? kRedColor.withOpacity(0.3) : kWhiteColor,
       ),
       child: ListTile(
         title: Text(userSender.senderUserName),
+        subtitle: userSender.block
+            ? Text(
+                'ブロック中',
+                style: TextStyle(
+                  color: kRedColor,
+                  fontSize: 14,
+                ),
+              )
+            : null,
         trailing: onTap != null
             ? const FaIcon(
                 FontAwesomeIcons.chevronRight,

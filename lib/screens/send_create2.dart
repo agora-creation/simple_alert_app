@@ -71,6 +71,7 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
         if (snapshot.hasData) {
           userNoticers = UserNoticerService().generateList(
             data: snapshot.data,
+            isBlockView: false,
           );
         }
         return Scaffold(

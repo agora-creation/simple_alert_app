@@ -123,6 +123,7 @@ class DelDialog extends StatelessWidget {
               return;
             }
             Navigator.pop(context);
+            Navigator.pop(context);
           },
         ),
       ],

@@ -241,6 +241,7 @@ class UserProvider with ChangeNotifier {
           'userId': senderUser.id,
           'noticerUserId': _user?.id,
           'noticerUserName': _user?.name,
+          'block': false,
         });
       }
     } catch (e) {
@@ -297,6 +298,35 @@ class UserProvider with ChangeNotifier {
         _userSenderService.delete({
           'id': userSender.id,
           'userId': userSender.userId,
+        });
+      }
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> blockUserSender({
+    required UserSenderModel userSender,
+  }) async {
+    String? error;
+    try {
+      //受信者側の更新処理
+      _userSenderService.update({
+        'id': userSender.id,
+        'userId': userSender.userId,
+        'block': true,
+      });
+      //送信者側の更新処理
+      UserNoticerModel? userNoticer = await _userNoticerService.selectData(
+        userId: userSender.id,
+        noticerUserId: userSender.userId,
+      );
+      if (userNoticer != null) {
+        _userNoticerService.update({
+          'id': userNoticer.id,
+          'userId': userNoticer.userId,
+          'block': true,
         });
       }
     } catch (e) {

@@ -69,14 +69,21 @@ class NoticeUsersDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              // SizedBox(height: 16),
-              // CustomButton(
-              //   type: ButtonSizeType.lg,
-              //   label: 'ブロックする',
-              //   labelColor: kWhiteColor,
-              //   backgroundColor: kRedColor,
-              //   onPressed: () {},
-              // ),
+              SizedBox(height: 16),
+              CustomButton(
+                type: ButtonSizeType.lg,
+                label: 'ブロックする',
+                labelColor: kWhiteColor,
+                backgroundColor: kRedColor,
+                onPressed: () => showDialog(
+                  context: context,
+                  builder: (context) => BlockDialog(
+                    userProvider: userProvider,
+                    userSender: userSender,
+                  ),
+                ),
+                disabled: userSender.block,
+              ),
             ],
           ),
         ),
@@ -130,6 +137,61 @@ class DelDialog extends StatelessWidget {
               showMessage(context, error, false);
               return;
             }
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class BlockDialog extends StatelessWidget {
+  final UserProvider userProvider;
+  final UserSenderModel userSender;
+
+  const BlockDialog({
+    required this.userProvider,
+    required this.userSender,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomAlertDialog(
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8),
+          Text(
+            '本当にブロックしますか？',
+            style: TextStyle(color: kRedColor),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'ブロックする',
+          labelColor: kWhiteColor,
+          backgroundColor: kRedColor,
+          onPressed: () async {
+            String? error = await userProvider.blockUserSender(
+              userSender: userSender,
+            );
+            if (error != null) {
+              showMessage(context, error, false);
+              return;
+            }
+            Navigator.pop(context);
             Navigator.pop(context);
           },
         ),

@@ -1,8 +1,12 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
@@ -87,7 +91,34 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 padding: const EdgeInsets.all(24),
-                child: PrettyQrView.data(data: qrData),
+                child: GestureDetector(
+                  onLongPress: () async {
+                    final qrCodeData = QrCode.fromData(
+                      data: qrData,
+                      errorCorrectLevel: QrErrorCorrectLevel.H,
+                    );
+                    final qrImage = QrImage(qrCodeData);
+                    final qrImageBytes = await qrImage.toImageAsBytes(
+                      size: 512,
+                      format: ImageByteFormat.png,
+                      decoration: const PrettyQrDecoration(),
+                    );
+                    if (qrImageBytes != null) {
+                      //ストレージのパーミッションをリクエスト
+                      final status = await Permission.storage.request();
+                      if (status.isGranted) {
+                        //ギャラリーに画像を保存
+                        await ImageGallerySaver.saveImage(
+                          qrImageBytes.buffer.asUint8List(),
+                          quality: 100,
+                          name:
+                              'qrcode_${DateTime.now().millisecondsSinceEpoch}',
+                        );
+                      }
+                    }
+                  },
+                  child: PrettyQrView.data(data: qrData),
+                ),
               ),
             ),
             SettingList(

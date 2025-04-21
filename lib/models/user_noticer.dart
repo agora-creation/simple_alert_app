@@ -6,11 +6,13 @@ class UserNoticerModel {
   String _userId = '';
   String _noticerUserId = '';
   String _noticerUserName = '';
+  bool _block = false;
 
   String get id => _id;
   String get userId => _userId;
   String get noticerUserId => _noticerUserId;
   String get noticerUserName => _noticerUserName;
+  bool get block => _block;
 
   UserNoticerModel.fromSnapshot(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -21,5 +23,6 @@ class UserNoticerModel {
     _userId = data['userId'] ?? '';
     _noticerUserId = data['noticerUserId'] ?? '';
     _noticerUserName = data['noticerUserName'] ?? '';
+    _block = data['block'] ?? false;
   }
 }
