@@ -1,12 +1,8 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
@@ -20,6 +16,8 @@ import 'package:simple_alert_app/screens/send_setting_name.dart';
 import 'package:simple_alert_app/screens/send_setting_users.dart';
 import 'package:simple_alert_app/services/user_noticer.dart';
 import 'package:simple_alert_app/services/user_send.dart';
+import 'package:simple_alert_app/widgets/alert_bar.dart';
+import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
 
 class SendSettingScreen extends StatefulWidget {
@@ -35,6 +33,7 @@ class SendSettingScreen extends StatefulWidget {
 }
 
 class _SendSettingScreenState extends State<SendSettingScreen> {
+  GlobalKey qrcodeKey = GlobalKey();
   int monthSendCount = 0;
 
   void _init() async {
@@ -76,49 +75,34 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
       body: SafeArea(
         child: ListView(
           children: [
-            Align(
-              alignment: Alignment.center,
-              child: Text('受信者に、下記QRコードを見せてください。'),
-            ),
+            AlertBar('受信者に、下記QRコードを見せてください。'),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8,
-                horizontal: 24,
+              padding: const EdgeInsets.only(
+                top: 16,
+                left: 24,
+                right: 24,
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: kBlackColor.withOpacity(0.5)),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: const EdgeInsets.all(24),
-                child: GestureDetector(
-                  onLongPress: () async {
-                    final qrCodeData = QrCode.fromData(
-                      data: qrData,
-                      errorCorrectLevel: QrErrorCorrectLevel.H,
-                    );
-                    final qrImage = QrImage(qrCodeData);
-                    final qrImageBytes = await qrImage.toImageAsBytes(
-                      size: 512,
-                      format: ImageByteFormat.png,
-                      decoration: const PrettyQrDecoration(),
-                    );
-                    if (qrImageBytes != null) {
-                      //ストレージのパーミッションをリクエスト
-                      final status = await Permission.storage.request();
-                      if (status.isGranted) {
-                        //ギャラリーに画像を保存
-                        await ImageGallerySaver.saveImage(
-                          qrImageBytes.buffer.asUint8List(),
-                          quality: 100,
-                          name:
-                              'qrcode_${DateTime.now().millisecondsSinceEpoch}',
-                        );
-                      }
-                    }
-                  },
-                  child: PrettyQrView.data(data: qrData),
-                ),
+              child: Column(
+                children: [
+                  RepaintBoundary(
+                    key: qrcodeKey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: kBlackColor.withOpacity(0.5)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: const EdgeInsets.all(24),
+                      child: PrettyQrView.data(data: qrData),
+                    ),
+                  ),
+                  CustomButton(
+                    type: ButtonSizeType.sm,
+                    label: '画像を保存',
+                    labelColor: kWhiteColor,
+                    backgroundColor: kBlueColor,
+                    onPressed: () async {},
+                  ),
+                ],
               ),
             ),
             SettingList(
