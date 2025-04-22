@@ -173,9 +173,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showTutorial() async {
+  Future _showTutorial() async {
     bool tutorialFinished = await getPrefsBool('tutorialFinished') ?? false;
     if (!tutorialFinished) {
+      await Future.delayed(Duration(seconds: 1));
       if (!mounted) return;
       tutorialCoachMark.show(context: context);
     }
@@ -187,8 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<InAppPurchaseProvider>().initialize();
     super.initState();
     _createTutorial();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showTutorial();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _showTutorial();
     });
   }
 
