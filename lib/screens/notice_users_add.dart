@@ -67,6 +67,7 @@ class _NoticeUsersAddScreenState extends State<NoticeUsersAddScreen> {
                       builder: (context) => SenderUserDialog(
                         userProvider: widget.userProvider,
                         senderUser: senderUser,
+                        controller: controller,
                       ),
                     );
                   }
@@ -83,10 +84,12 @@ class _NoticeUsersAddScreenState extends State<NoticeUsersAddScreen> {
 class SenderUserDialog extends StatefulWidget {
   final UserProvider userProvider;
   final UserModel senderUser;
+  final MobileScannerController controller;
 
   const SenderUserDialog({
     required this.userProvider,
     required this.senderUser,
+    required this.controller,
     super.key,
   });
 
@@ -154,6 +157,7 @@ class _SenderUserDialogState extends State<SenderUserDialog> {
               showMessage(context, error, false);
               return;
             }
+            widget.controller.dispose();
             Navigator.pop(context);
             Navigator.pop(context);
           },

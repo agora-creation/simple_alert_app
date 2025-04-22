@@ -335,6 +335,35 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
+  Future<String?> unblockUserSender({
+    required UserSenderModel userSender,
+  }) async {
+    String? error;
+    try {
+      //受信者側の更新処理
+      _userSenderService.update({
+        'id': userSender.id,
+        'userId': userSender.userId,
+        'block': false,
+      });
+      //送信者側の更新処理
+      UserNoticerModel? userNoticer = await _userNoticerService.selectData(
+        userId: userSender.id,
+        noticerUserId: userSender.userId,
+      );
+      if (userNoticer != null) {
+        _userNoticerService.update({
+          'id': userNoticer.id,
+          'userId': userNoticer.userId,
+          'block': false,
+        });
+      }
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
   Future<String?> createSendDraft({
     required String title,
     required String content,
@@ -509,7 +538,7 @@ class UserProvider with ChangeNotifier {
       });
       UserSendModel? userSend = await _userSendService.selectData(
         id: userNotice.userSendId,
-        userId: userNotice.userId,
+        userId: userNotice.createdUserId,
       );
       if (userSend != null) {
         List<Map> mapSendUsers = [];

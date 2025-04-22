@@ -1,8 +1,16 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
@@ -17,7 +25,7 @@ import 'package:simple_alert_app/screens/send_setting_users.dart';
 import 'package:simple_alert_app/services/user_noticer.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
-import 'package:simple_alert_app/widgets/custom_button.dart';
+import 'package:simple_alert_app/widgets/link_text.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
 
 class SendSettingScreen extends StatefulWidget {
@@ -43,6 +51,37 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
       );
     }
     setState(() {});
+  }
+
+  Future _requestPermission() async {
+    if (Platform.isAndroid) {
+      await Permission.storage.request();
+      await Permission.photos.request();
+    } else if (Platform.isIOS) {
+      await Permission.photosAddOnly.request();
+    }
+  }
+
+  Future _saveQrToGallery() async {
+    //パーミッション確認
+    await _requestPermission();
+    try {
+      RenderRepaintBoundary boundary =
+          qrcodeKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+      //一時ファイルに保存
+      final tmpDir = await getTemporaryDirectory();
+      String filePath = '${tmpDir.path}/qr_code.png';
+      File file = await File(filePath).writeAsBytes(pngBytes);
+      //ギャラリーに保存
+      await GallerySaver.saveImage(file.path, albumName: 'QR_Codes');
+      showMessage(context, 'QRコードを保存しました', true);
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -83,6 +122,7 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                 right: 24,
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   RepaintBoundary(
                     key: qrcodeKey,
@@ -95,12 +135,9 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                       child: PrettyQrView.data(data: qrData),
                     ),
                   ),
-                  CustomButton(
-                    type: ButtonSizeType.sm,
-                    label: '画像を保存',
-                    labelColor: kWhiteColor,
-                    backgroundColor: kBlueColor,
-                    onPressed: () async {},
+                  LinkText(
+                    label: 'QRコード画像を保存',
+                    onTap: _saveQrToGallery,
                   ),
                 ],
               ),

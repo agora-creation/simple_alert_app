@@ -20,19 +20,9 @@ class UserNoticerList extends StatelessWidget {
         border: Border(
           bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
         ),
-        color: userNoticer.block ? kRedColor.withOpacity(0.3) : kWhiteColor,
       ),
       child: ListTile(
         title: Text(userNoticer.noticerUserName),
-        subtitle: userNoticer.block
-            ? Text(
-                'ブロックされています',
-                style: TextStyle(
-                  color: kRedColor,
-                  fontSize: 14,
-                ),
-              )
-            : null,
         trailing: onTap != null
             ? const FaIcon(
                 FontAwesomeIcons.chevronRight,
