@@ -104,7 +104,7 @@ class _NoticeUsersScreenState extends State<NoticeUsersScreen> {
               color: kWhiteColor,
             ),
             label: Text(
-              '受信先を追加',
+              '受信先を追加(QR)',
               style: TextStyle(color: kWhiteColor),
             ),
           ),

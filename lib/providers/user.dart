@@ -154,6 +154,7 @@ class UserProvider with ChangeNotifier {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
       error = e.toString();
+      print(e.toString());
     }
     notifyListeners();
     return error;

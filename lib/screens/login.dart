@@ -19,6 +19,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController telController = TextEditingController();
+  bool buttonDisabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -84,12 +85,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelColor: kWhiteColor,
                       backgroundColor: kBlueColor,
                       onPressed: () async {
+                        setState(() {
+                          buttonDisabled = true;
+                        });
                         final result = await userProvider.signIn(
                           name: nameController.text,
                           tel: telController.text,
                         );
                         if (result.error != null) {
                           if (!mounted) return;
+                          setState(() {
+                            buttonDisabled = false;
+                          });
                           showMessage(context, result.error!, false);
                           return;
                         }
@@ -105,6 +112,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         } else {
                           if (!mounted) return;
+                          setState(() {
+                            buttonDisabled = false;
+                          });
                           showDialog(
                             context: context,
                             barrierDismissible: false,
@@ -116,6 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         }
                       },
+                      disabled: buttonDisabled,
                     ),
                   ],
                 ),
@@ -146,6 +157,7 @@ class SmsCodeDialog extends StatefulWidget {
 
 class _SmsCodeDialogState extends State<SmsCodeDialog> {
   TextEditingController smsCodeController = TextEditingController();
+  bool buttonDisabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -182,6 +194,9 @@ class _SmsCodeDialogState extends State<SmsCodeDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
+            setState(() {
+              buttonDisabled = true;
+            });
             String? error = await widget.userProvider.signInConf(
               name: widget.name,
               tel: widget.tel,
@@ -189,7 +204,10 @@ class _SmsCodeDialogState extends State<SmsCodeDialog> {
             );
             if (error != null) {
               if (!mounted) return;
-              showMessage(context, error, false);
+              setState(() {
+                buttonDisabled = false;
+              });
+              showMessage(context, '正しい認証コードを入力してください', false);
               return;
             }
             await widget.userProvider.reload();
@@ -202,6 +220,7 @@ class _SmsCodeDialogState extends State<SmsCodeDialog> {
               ),
             );
           },
+          disabled: buttonDisabled,
         ),
       ],
     );

@@ -99,6 +99,11 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
           widget.userSend != null
               ? TextButton(
                   onPressed: () async {
+                    if (titleController.text == '') {
+                      if (!mounted) return;
+                      showMessage(context, '件名を入力してください', false);
+                      return;
+                    }
                     String? error = await widget.userProvider.updateSendDraft(
                       userSend: widget.userSend!,
                       title: titleController.text,
@@ -123,6 +128,11 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
           widget.userSend == null
               ? TextButton(
                   onPressed: () async {
+                    if (titleController.text == '') {
+                      if (!mounted) return;
+                      showMessage(context, '件名を入力してください', false);
+                      return;
+                    }
                     String? error = await widget.userProvider.createSendDraft(
                       title: titleController.text,
                       content: contentController.text,
@@ -263,6 +273,16 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
+          if (titleController.text == '') {
+            if (!mounted) return;
+            showMessage(context, '件名を入力してください', false);
+            return;
+          }
+          if (contentController.text == '') {
+            if (!mounted) return;
+            showMessage(context, '内容を入力してください', false);
+            return;
+          }
           Navigator.push(
             context,
             PageTransition(

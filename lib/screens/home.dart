@@ -44,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
   BannerAd bannerAd = AdService.createBannerAd();
   late TutorialCoachMark tutorialCoachMark;
   GlobalKey modeChangeKey = GlobalKey();
+  GlobalKey infoKey = GlobalKey();
+  GlobalKey userSendersKey = GlobalKey();
 
   void _initBannerAd() async {
     await bannerAd.load();
@@ -84,10 +86,89 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+        TargetFocus(
+          identify: 'info',
+          keyTarget: infoKey,
+          contents: [
+            TargetContent(
+              align: ContentAlign.bottom,
+              builder: (context, controller) {
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  child: const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'アプリ情報の確認',
+                        style: TextStyle(
+                          color: kWhiteColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'SourceHanSansJP-Bold',
+                        ),
+                      ),
+                      Text(
+                        'ここをタップすると、アプリの利用規約やプライバシーポリシーを確認することができます。',
+                        style: TextStyle(color: kWhiteColor),
+                      ),
+                      Text(
+                        'また、認証時ご入力いただいたお名前を変更することができます。',
+                        style: TextStyle(color: kWhiteColor),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        TargetFocus(
+          identify: 'user_senders',
+          keyTarget: userSendersKey,
+          contents: [
+            TargetContent(
+              align: ContentAlign.bottom,
+              builder: (context, controller) {
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  child: const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 200),
+                      Text(
+                        '受信先の確認',
+                        style: TextStyle(
+                          color: kWhiteColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'SourceHanSansJP-Bold',
+                        ),
+                      ),
+                      Text(
+                        'ここをタップすると、どこから通知を受け取るのか確認できます。',
+                        style: TextStyle(color: kWhiteColor),
+                      ),
+                      Text(
+                        '受信先の登録はもちろん、ブロックをすることも可能です。',
+                        style: TextStyle(color: kWhiteColor),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ],
       textSkip: 'スキップ',
+      onSkip: () {
+        setPrefsBool('tutorialFinished', true);
+        print('チュートリアルスキップ');
+        return true;
+      },
       onFinish: () async {
         await setPrefsBool('tutorialFinished', true);
+        print('チュートリアル終了');
       },
     );
   }
@@ -95,6 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showTutorial() async {
     bool tutorialFinished = await getPrefsBool('tutorialFinished') ?? false;
     if (!tutorialFinished) {
+      await Future.delayed(Duration(seconds: 2));
       if (!mounted) return;
       tutorialCoachMark.show(context: context);
     }
@@ -146,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
+            key: infoKey,
             icon: const FaIcon(FontAwesomeIcons.ellipsisVertical),
             onPressed: () => showBottomUpScreen(
               context,
@@ -169,10 +252,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(
                   left: 16,
                   right: 16,
-                  bottom: 8,
+                  bottom: 16,
                 ),
                 child: userProvider.mode == HomeMode.notice
-                    ? NoticeCard(userProvider: userProvider)
+                    ? NoticeCard(
+                        userProvider: userProvider,
+                        userSendersKey: userSendersKey,
+                      )
                     : userProvider.mode == HomeMode.send
                         ? SendCard(
                             userProvider: userProvider,
@@ -190,9 +276,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class NoticeCard extends StatelessWidget {
   final UserProvider userProvider;
+  final GlobalKey userSendersKey;
 
   const NoticeCard({
     required this.userProvider,
+    required this.userSendersKey,
     super.key,
   });
 
@@ -212,6 +300,7 @@ class NoticeCard extends StatelessWidget {
                 );
               }
               return CustomListButton(
+                key: userSendersKey,
                 leadingIcon: FontAwesomeIcons.list,
                 label: '受信先一覧 (${userSenders.length})',
                 labelColor: kBlackColor,
