@@ -83,6 +83,30 @@ class UserProvider with ChangeNotifier {
                 'sender': false,
                 'senderName': '',
               });
+              String userNoticeId = _userNoticeService.id(
+                userId: result.user!.uid,
+              );
+              String title = 'ご登録ありがとうございます！';
+              String content = '''
+この度は、当アプリへのご登録いただき誠にありがとうございます。
+アプリについてのご意見要望もお待ちしております。
+今後ともどうぞよろしくお願いいたします。
+              ''';
+              _userNoticeService.create({
+                'id': userNoticeId,
+                'userId': result.user!.uid,
+                'userSendId': '',
+                'title': title,
+                'content': content,
+                'isChoice': false,
+                'choices': [],
+                'answer': '',
+                'read': false,
+                'token': token,
+                'createdUserId': '',
+                'createdUserName': 'アプリ管理者',
+                'createdAt': DateTime.now(),
+              });
             } else {
               _userService.update({
                 'id': tmpUser.id,
@@ -139,6 +163,30 @@ class UserProvider with ChangeNotifier {
               'token': token,
               'sender': false,
               'senderName': '',
+            });
+            String userNoticeId = _userNoticeService.id(
+              userId: result.user!.uid,
+            );
+            String title = 'ご登録ありがとうございます！';
+            String content = '''
+この度は、当アプリへのご登録いただき誠にありがとうございます。
+アプリについてのご意見要望もお待ちしております。
+今後ともどうぞよろしくお願いいたします。
+              ''';
+            _userNoticeService.create({
+              'id': userNoticeId,
+              'userId': result.user!.uid,
+              'userSendId': '',
+              'title': title,
+              'content': content,
+              'isChoice': false,
+              'choices': [],
+              'answer': '',
+              'read': false,
+              'token': token,
+              'createdUserId': '',
+              'createdUserName': 'アプリ管理者',
+              'createdAt': DateTime.now(),
             });
           } else {
             _userService.update({

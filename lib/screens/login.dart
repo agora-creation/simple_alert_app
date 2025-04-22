@@ -58,7 +58,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Text(
                       '$kAppShortNameのアプリを利用するには、電話番号によるSMS認証が必要です。',
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(
+                        color: kRedColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'SourceHanSansJP-Bold',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     CustomTextFormField(

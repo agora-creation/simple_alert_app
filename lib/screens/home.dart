@@ -176,7 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showTutorial() async {
     bool tutorialFinished = await getPrefsBool('tutorialFinished') ?? false;
     if (!tutorialFinished) {
-      await Future.delayed(Duration(seconds: 2));
       if (!mounted) return;
       tutorialCoachMark.show(context: context);
     }

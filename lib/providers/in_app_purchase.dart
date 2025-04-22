@@ -224,7 +224,11 @@ class InAppPurchaseProvider extends ChangeNotifier {
 void showInAppPurchaseDialog(
   BuildContext context, {
   required Function(String) result,
-}) {
+}) async {
+  String? purchasePlan = await getPrefsString('purchasePlan');
+  if (purchasePlan != null) {
+    context.read<InAppPurchaseProvider>().selectedProductId = purchasePlan;
+  }
   showModalBottomSheet<bool?>(
     backgroundColor: kWhiteColor,
     shape: const RoundedRectangleBorder(
