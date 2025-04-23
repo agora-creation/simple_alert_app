@@ -28,8 +28,8 @@ class UserSendList extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            vertical: 8,
-            horizontal: 16,
+            vertical: 10,
+            horizontal: 20,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

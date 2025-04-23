@@ -60,10 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 Column(
                   children: [
                     Text(
-                      '$kAppShortNameのアプリを利用するには、電話番号によるSMS認証が必要です。',
+                      'このアプリを利用するには、SMS認証が必要です。以下の項目を入力してください。',
                       style: TextStyle(
                         color: kRedColor,
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'SourceHanSansJP-Bold',
                       ),
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     ModeRadioList(
-                      label: '受信者として始める',
+                      label: '私は『受信者』です',
                       value: Mode.notice,
                       groupValue: mode,
                       onChanged: (value) {
@@ -98,9 +98,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
                     ModeRadioList(
-                      label: '送信者として始める',
+                      label: '私は『送信者』です',
                       value: Mode.send,
                       groupValue: mode,
                       onChanged: (value) {
