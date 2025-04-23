@@ -4,10 +4,12 @@ import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/home.dart';
+import 'package:simple_alert_app/screens/notice.dart';
+import 'package:simple_alert_app/screens/send.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
+import 'package:simple_alert_app/widgets/mode_radio_list.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,6 +21,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController telController = TextEditingController();
+  Mode mode = Mode.notice;
   bool buttonDisabled = false;
 
   @override
@@ -83,6 +86,30 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: kBlackColor,
                       prefix: Icons.phone,
                     ),
+                    const SizedBox(height: 8),
+                    ModeRadioList(
+                      label: '受信者として始める',
+                      value: Mode.notice,
+                      groupValue: mode,
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() {
+                          mode = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 4),
+                    ModeRadioList(
+                      label: '送信者として始める',
+                      value: Mode.send,
+                      groupValue: mode,
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() {
+                          mode = value;
+                        });
+                      },
+                    ),
                     const SizedBox(height: 16),
                     CustomButton(
                       type: ButtonSizeType.lg,
@@ -107,14 +134,26 @@ class _LoginScreenState extends State<LoginScreen> {
                         }
                         if (result.autoAuth) {
                           await userProvider.reload();
-                          if (!mounted) return;
-                          Navigator.pushReplacement(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.bottomToTop,
-                              child: HomeScreen(),
-                            ),
-                          );
+                          await userProvider.modeChange(mode);
+                          if (mode == Mode.notice) {
+                            if (!mounted) return;
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.bottomToTop,
+                                child: NoticeScreen(),
+                              ),
+                            );
+                          } else if (mode == Mode.send) {
+                            if (!mounted) return;
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.bottomToTop,
+                                child: SendScreen(),
+                              ),
+                            );
+                          }
                         } else {
                           if (!mounted) return;
                           setState(() {
@@ -127,6 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               userProvider: userProvider,
                               name: nameController.text,
                               tel: telController.text,
+                              mode: mode,
                             ),
                           );
                         }
@@ -148,11 +188,13 @@ class SmsCodeDialog extends StatefulWidget {
   final UserProvider userProvider;
   final String name;
   final String tel;
+  final Mode mode;
 
   const SmsCodeDialog({
     required this.userProvider,
     required this.name,
     required this.tel,
+    required this.mode,
     super.key,
   });
 
@@ -216,14 +258,26 @@ class _SmsCodeDialogState extends State<SmsCodeDialog> {
               return;
             }
             await widget.userProvider.reload();
-            if (!mounted) return;
-            Navigator.pushReplacement(
-              context,
-              PageTransition(
-                type: PageTransitionType.bottomToTop,
-                child: HomeScreen(),
-              ),
-            );
+            await widget.userProvider.modeChange(widget.mode);
+            if (widget.mode == Mode.notice) {
+              if (!mounted) return;
+              Navigator.pushReplacement(
+                context,
+                PageTransition(
+                  type: PageTransitionType.bottomToTop,
+                  child: NoticeScreen(),
+                ),
+              );
+            } else if (widget.mode == Mode.send) {
+              if (!mounted) return;
+              Navigator.pushReplacement(
+                context,
+                PageTransition(
+                  type: PageTransitionType.bottomToTop,
+                  child: SendScreen(),
+                ),
+              );
+            }
           },
           disabled: buttonDisabled,
         ),

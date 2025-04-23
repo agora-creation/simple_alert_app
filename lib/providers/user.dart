@@ -5,12 +5,14 @@ import 'package:simple_alert_app/models/send_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_notice.dart';
 import 'package:simple_alert_app/models/user_noticer.dart';
+import 'package:simple_alert_app/models/user_noticer_group.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/models/user_sender.dart';
 import 'package:simple_alert_app/services/push.dart';
 import 'package:simple_alert_app/services/user.dart';
 import 'package:simple_alert_app/services/user_notice.dart';
 import 'package:simple_alert_app/services/user_noticer.dart';
+import 'package:simple_alert_app/services/user_noticer_group.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/services/user_sender.dart';
 
@@ -21,7 +23,7 @@ enum AuthStatus {
   unauthenticated,
 }
 
-enum HomeMode { notice, send }
+enum Mode { notice, send }
 
 class UserProvider with ChangeNotifier {
   AuthStatus _status = AuthStatus.uninitialized;
@@ -30,11 +32,13 @@ class UserProvider with ChangeNotifier {
   User? _authUser;
   User? get authUser => _authUser;
   String _verificationId = '';
-  HomeMode mode = HomeMode.values.first;
+  Mode currentMode = Mode.values.first;
 
   final PushService _pushService = PushService();
   final UserService _userService = UserService();
   final UserNoticerService _userNoticerService = UserNoticerService();
+  final UserNoticerGroupService _userNoticerGroupService =
+      UserNoticerGroupService();
   final UserSenderService _userSenderService = UserSenderService();
   final UserNoticeService _userNoticeService = UserNoticeService();
   final UserSendService _userSendService = UserSendService();
@@ -46,9 +50,9 @@ class UserProvider with ChangeNotifier {
     _auth?.authStateChanges().listen(_onStateChanged);
   }
 
-  Future modeChange(HomeMode newMode) async {
-    mode = newMode;
-    await setPrefsInt('modeIndex', mode.index);
+  Future modeChange(Mode mode) async {
+    currentMode = mode;
+    await setPrefsInt('currentModeIndex', mode.index);
     notifyListeners();
   }
 
@@ -355,6 +359,60 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
+  Future<String?> addUserNoticerGroup({
+    required String name,
+  }) async {
+    String? error;
+    try {
+      if (name == '') return 'グループ名は必須入力です';
+      String id = _userNoticerGroupService.id(userId: _user!.id);
+      _userNoticerGroupService.create({
+        'id': id,
+        'userId': _user?.id,
+        'name': name,
+        'userIds': [],
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateUserNoticerGroup({
+    required UserNoticerGroupModel userNoticerGroup,
+    required String name,
+    required List<String> userIds,
+  }) async {
+    String? error;
+    try {
+      if (name == '') return 'グループ名は必須入力です';
+      _userNoticerGroupService.update({
+        'id': userNoticerGroup.id,
+        'userId': userNoticerGroup.userId,
+        'name': name,
+        'userIds': userIds,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> removeUserNoticerGroup({
+    required UserNoticerGroupModel userNoticerGroup,
+  }) async {
+    String? error;
+    try {
+      _userNoticerGroupService.delete({
+        'id': userNoticerGroup.id,
+        'userId': userNoticerGroup.userId,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
   Future<String?> blockUserSender({
     required UserSenderModel userSender,
   }) async {
@@ -490,6 +548,21 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
+  Future<String?> deleteSend({
+    required UserSendModel userSend,
+  }) async {
+    String? error;
+    try {
+      _userSendService.delete({
+        'id': userSend.id,
+        'userId': userSend.userId,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
   Future<String?> send({
     required UserSendModel? userSend,
     required String title,
@@ -573,6 +646,21 @@ class UserProvider with ChangeNotifier {
     return error;
   }
 
+  Future<String?> deleteNotice({
+    required UserNoticeModel userNotice,
+  }) async {
+    String? error;
+    try {
+      _userNoticeService.delete({
+        'id': userNotice.id,
+        'userId': userNotice.userId,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
   Future<String?> answer({
     required UserNoticeModel userNotice,
     required String answer,
@@ -646,9 +734,9 @@ class UserProvider with ChangeNotifier {
         _status = AuthStatus.unauthenticated;
       }
     }
-    int modeIndex =
-        await getPrefsInt('modeIndex') ?? HomeMode.values.first.index;
-    mode = HomeMode.values[modeIndex];
+    int currentModeIndex =
+        await getPrefsInt('currentModeIndex') ?? Mode.values.first.index;
+    currentMode = Mode.values[currentModeIndex];
     notifyListeners();
   }
 }

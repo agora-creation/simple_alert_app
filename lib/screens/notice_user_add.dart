@@ -12,19 +12,19 @@ import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 
-class NoticeUsersAddScreen extends StatefulWidget {
+class NoticeUserAddScreen extends StatefulWidget {
   final UserProvider userProvider;
 
-  const NoticeUsersAddScreen({
+  const NoticeUserAddScreen({
     required this.userProvider,
     super.key,
   });
 
   @override
-  State<NoticeUsersAddScreen> createState() => _NoticeUsersAddScreenState();
+  State<NoticeUserAddScreen> createState() => _NoticeUserAddScreenState();
 }
 
-class _NoticeUsersAddScreenState extends State<NoticeUsersAddScreen> {
+class _NoticeUserAddScreenState extends State<NoticeUserAddScreen> {
   MobileScannerController controller = MobileScannerController();
 
   @override

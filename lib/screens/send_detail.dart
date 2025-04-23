@@ -3,14 +3,19 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
+import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/choice_list.dart';
+import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
+import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/send_user_sheet.dart';
 
 class SendDetailScreen extends StatefulWidget {
+  final UserProvider userProvider;
   final UserSendModel userSend;
 
   const SendDetailScreen({
+    required this.userProvider,
     required this.userSend,
     super.key,
   });
@@ -30,6 +35,21 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
           icon: const FaIcon(FontAwesomeIcons.chevronLeft),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => DelDialog(
+                userProvider: widget.userProvider,
+                userSend: widget.userSend,
+              ),
+            ),
+            child: Text(
+              '削除',
+              style: TextStyle(color: kRedColor),
+            ),
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -117,6 +137,67 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
           SendUserSheet(widget.userSend.sendUsers),
         ],
       ),
+    );
+  }
+}
+
+class DelDialog extends StatefulWidget {
+  final UserProvider userProvider;
+  final UserSendModel userSend;
+
+  const DelDialog({
+    required this.userProvider,
+    required this.userSend,
+    super.key,
+  });
+
+  @override
+  State<DelDialog> createState() => _DelDialogState();
+}
+
+class _DelDialogState extends State<DelDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return CustomAlertDialog(
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8),
+          Text(
+            '本当に削除しますか？',
+            style: TextStyle(color: kRedColor),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: '削除する',
+          labelColor: kWhiteColor,
+          backgroundColor: kRedColor,
+          onPressed: () async {
+            String? error = await widget.userProvider.deleteSend(
+              userSend: widget.userSend,
+            );
+            if (error != null) {
+              if (!mounted) return;
+              showMessage(context, error, false);
+              return;
+            }
+            if (!mounted) return;
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 }

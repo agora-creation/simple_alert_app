@@ -17,12 +17,15 @@ import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_noticer.dart';
+import 'package:simple_alert_app/models/user_noticer_group.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/home.dart';
+import 'package:simple_alert_app/screens/send.dart';
+import 'package:simple_alert_app/screens/send_setting_group.dart';
 import 'package:simple_alert_app/screens/send_setting_name.dart';
-import 'package:simple_alert_app/screens/send_setting_users.dart';
+import 'package:simple_alert_app/screens/send_setting_user.dart';
 import 'package:simple_alert_app/services/user_noticer.dart';
+import 'package:simple_alert_app/services/user_noticer_group.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
@@ -120,7 +123,6 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                 horizontal: 40,
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   GestureDetector(
                     onLongPress: _saveQrToGallery,
@@ -137,6 +139,10 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                         child: PrettyQrView.data(data: qrData),
                       ),
                     ),
+                  ),
+                  Text(
+                    '画像を長押しで保存できます',
+                    style: TextStyle(fontSize: 14),
                   ),
                 ],
               ),
@@ -184,7 +190,36 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                       context,
                       PageTransition(
                         type: PageTransitionType.rightToLeft,
-                        child: SendSettingUsersScreen(
+                        child: SendSettingUserScreen(
+                          userProvider: widget.userProvider,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: UserNoticerGroupService().streamList(userId: userId),
+              builder: (context, snapshot) {
+                List<UserNoticerGroupModel> userNoticerGroups = [];
+                if (snapshot.hasData) {
+                  userNoticerGroups = UserNoticerGroupService().generateList(
+                    data: snapshot.data,
+                  );
+                }
+                return SettingList(
+                  label: '受信者をグループ分け (${userNoticerGroups.length})',
+                  trailing: const FaIcon(
+                    FontAwesomeIcons.chevronRight,
+                    size: 16,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: SendSettingGroupScreen(
                           userProvider: widget.userProvider,
                         ),
                       ),
@@ -238,7 +273,7 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.bottomToTop,
-                            child: HomeScreen(),
+                            child: SendScreen(),
                           ),
                         );
                       } else {
@@ -252,7 +287,7 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                         context,
                         PageTransition(
                           type: PageTransitionType.bottomToTop,
-                          child: HomeScreen(),
+                          child: SendScreen(),
                         ),
                       );
                     }

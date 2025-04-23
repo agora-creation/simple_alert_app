@@ -2,8 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>QRコードを保存するために写真アルバムへのアクセスが必要です。</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>アプリ内のQRコード画像を保存するために、ライブラリへのアクセスが必要です。</string>
     <key>NSCameraUsageDescription</key>
     <string>カメラを使用してQRコードをスキャンします。</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>

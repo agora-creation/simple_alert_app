@@ -7,11 +7,11 @@ import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 
-class SendSettingUsersDetailScreen extends StatelessWidget {
+class SendSettingUserDetailScreen extends StatelessWidget {
   final UserProvider userProvider;
   final UserNoticerModel userNoticer;
 
-  const SendSettingUsersDetailScreen({
+  const SendSettingUserDetailScreen({
     required this.userProvider,
     required this.userNoticer,
     super.key,

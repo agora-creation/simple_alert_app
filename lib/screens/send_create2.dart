@@ -6,10 +6,12 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/send_user.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_noticer.dart';
+import 'package:simple_alert_app/models/user_noticer_group.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/services/user_noticer.dart';
+import 'package:simple_alert_app/services/user_noticer_group.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
@@ -41,13 +43,18 @@ class SendCreate2Screen extends StatefulWidget {
 class _SendCreate2ScreenState extends State<SendCreate2Screen> {
   int monthSendCount = 0;
   int monthSendLimit = 0;
+  List<UserNoticerGroupModel> userNoticerGroups = [];
+  String selectedGroupId = '';
   List<SendUserModel> selectedSendUsers = [];
 
   void _init() async {
     monthSendCount = await UserSendService().selectMonthSendCount(
-      userId: widget.userProvider.user!.id,
+      userId: widget.userProvider.user?.id ?? 'error',
     );
     monthSendLimit = await getMonthSendLimit();
+    userNoticerGroups = await UserNoticerGroupService().selectList(
+      userId: widget.userProvider.user?.id ?? 'error',
+    );
     setState(() {});
   }
 
@@ -65,7 +72,9 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
       selectedLimit = monthSendLimit - monthSendCount;
     }
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: UserNoticerService().streamList(userId: user!.id),
+      stream: UserNoticerService().streamList(
+        userId: user?.id ?? 'error',
+      ),
       builder: (context, snapshot) {
         List<UserNoticerModel> userNoticers = [];
         if (snapshot.hasData) {
@@ -73,6 +82,20 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
             data: snapshot.data,
             isBlockView: false,
           );
+        }
+        List<UserNoticerModel> viewUserNoticers = [];
+        if (selectedGroupId == '') {
+          viewUserNoticers = userNoticers;
+        } else {
+          UserNoticerGroupModel tmpGroup = userNoticerGroups.firstWhere(
+            (e) => e.id == selectedGroupId,
+          );
+          List<String> tmpUserIds = tmpGroup.userIds;
+          for (final userNoticer in userNoticers) {
+            if (tmpUserIds.contains(userNoticer.noticerUserId)) {
+              viewUserNoticers.add(userNoticer);
+            }
+          }
         }
         return Scaffold(
           backgroundColor: kWhiteColor,
@@ -83,7 +106,7 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
               onPressed: () => Navigator.pop(context),
             ),
             title: const Text(
-              '送信先の選択',
+              '送信先の確認',
               style: TextStyle(color: kBlackColor),
             ),
             actions: [
@@ -91,8 +114,8 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
                 onPressed: () {
                   if (selectedSendUsers.isEmpty) {
                     selectedSendUsers.clear();
-                    if (userNoticers.isNotEmpty) {
-                      for (final userNoticer in userNoticers) {
+                    if (viewUserNoticers.isNotEmpty) {
+                      for (final userNoticer in viewUserNoticers) {
                         SendUserModel sendUser = SendUserModel.fromMap({
                           'id': userNoticer.noticerUserId,
                           'name': userNoticer.noticerUserName,
@@ -117,12 +140,41 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
             child: Column(
               children: [
                 AlertBar('あと$selectedLimit件まで送信可'),
+                DropdownButton(
+                  items: [
+                    DropdownMenuItem(
+                      value: '',
+                      child: Text('全ての受信者 (${userNoticers.length})'),
+                    ),
+                    ...userNoticerGroups.map((userNoticerGroup) {
+                      return DropdownMenuItem(
+                        value: userNoticerGroup.id,
+                        child: Text(
+                          '${userNoticerGroup.name} (${userNoticerGroup.userIds.length})',
+                        ),
+                      );
+                    }),
+                  ],
+                  onChanged: (value) {
+                    selectedGroupId = value ?? '';
+                    selectedSendUsers.clear();
+                    setState(() {});
+                  },
+                  value: selectedGroupId,
+                  isExpanded: true,
+                  padding: EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
+                ),
+                Divider(height: 1),
                 Expanded(
-                  child: userNoticers.isNotEmpty
+                  child: viewUserNoticers.isNotEmpty
                       ? ListView.builder(
-                          itemCount: userNoticers.length,
+                          itemCount: viewUserNoticers.length,
                           itemBuilder: (context, index) {
-                            UserNoticerModel userNoticer = userNoticers[index];
+                            UserNoticerModel userNoticer =
+                                viewUserNoticers[index];
                             bool contain = false;
                             if (selectedSendUsers.isNotEmpty) {
                               for (final sendUser in selectedSendUsers) {
@@ -164,38 +216,36 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
               ],
             ),
           ),
-          floatingActionButton: selectedSendUsers.isNotEmpty
-              ? FloatingActionButton.extended(
-                  onPressed: () async {
-                    if (selectedSendUsers.length > selectedLimit) {
-                      if (!mounted) return;
-                      showMessage(context, '送信制限により送信できません', false);
-                      return;
-                    }
-                    showDialog(
-                      context: context,
-                      builder: (context) => SendDialog(
-                        userProvider: widget.userProvider,
-                        userSend: widget.userSend,
-                        title: widget.title,
-                        content: widget.content,
-                        isChoice: widget.isChoice,
-                        choices: widget.choices,
-                        selectedSendUsers: selectedSendUsers,
-                      ),
-                    );
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.paperPlane,
-                    size: 18,
-                    color: kWhiteColor,
-                  ),
-                  label: Text(
-                    '送信する',
-                    style: TextStyle(color: kWhiteColor),
-                  ),
-                )
-              : null,
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () async {
+              if (selectedSendUsers.length > selectedLimit) {
+                if (!mounted) return;
+                showMessage(context, '送信制限により送信できません', false);
+                return;
+              }
+              showDialog(
+                context: context,
+                builder: (context) => SendDialog(
+                  userProvider: widget.userProvider,
+                  userSend: widget.userSend,
+                  title: widget.title,
+                  content: widget.content,
+                  isChoice: widget.isChoice,
+                  choices: widget.choices,
+                  selectedSendUsers: selectedSendUsers,
+                ),
+              );
+            },
+            icon: const FaIcon(
+              FontAwesomeIcons.paperPlane,
+              size: 18,
+              color: kWhiteColor,
+            ),
+            label: Text(
+              '送信する',
+              style: TextStyle(color: kWhiteColor),
+            ),
+          ),
         );
       },
     );

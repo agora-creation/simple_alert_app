@@ -57,7 +57,10 @@ class _SendSettingNameScreenState extends State<SendSettingNameScreen> {
               if (!mounted) return;
               Navigator.pop(context);
             },
-            child: Text('保存'),
+            child: Text(
+              '保存',
+              style: TextStyle(color: kBlueColor),
+            ),
           ),
         ],
       ),

@@ -56,6 +56,21 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
           icon: const FaIcon(FontAwesomeIcons.chevronLeft),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => DelDialog(
+                userProvider: widget.userProvider,
+                userNotice: widget.userNotice,
+              ),
+            ),
+            child: Text(
+              '削除',
+              style: TextStyle(color: kRedColor),
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -181,6 +196,67 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class DelDialog extends StatefulWidget {
+  final UserProvider userProvider;
+  final UserNoticeModel userNotice;
+
+  const DelDialog({
+    required this.userProvider,
+    required this.userNotice,
+    super.key,
+  });
+
+  @override
+  State<DelDialog> createState() => _DelDialogState();
+}
+
+class _DelDialogState extends State<DelDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return CustomAlertDialog(
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8),
+          Text(
+            '本当に削除しますか？',
+            style: TextStyle(color: kRedColor),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: '削除する',
+          labelColor: kWhiteColor,
+          backgroundColor: kRedColor,
+          onPressed: () async {
+            String? error = await widget.userProvider.deleteNotice(
+              userNotice: widget.userNotice,
+            );
+            if (error != null) {
+              if (!mounted) return;
+              showMessage(context, error, false);
+              return;
+            }
+            if (!mounted) return;
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 }

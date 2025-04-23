@@ -299,12 +299,12 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
           );
         },
         icon: const FaIcon(
-          FontAwesomeIcons.listCheck,
+          FontAwesomeIcons.list,
           size: 18,
           color: kWhiteColor,
         ),
         label: Text(
-          '送信先の選択',
+          '送信先の確認',
           style: TextStyle(color: kWhiteColor),
         ),
       ),

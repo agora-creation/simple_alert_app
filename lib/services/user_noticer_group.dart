@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simple_alert_app/models/user_noticer.dart';
+import 'package:simple_alert_app/models/user_noticer_group.dart';
 
-class UserNoticerService {
+class UserNoticerGroupService {
   String collection = 'user';
-  String subCollection = 'noticer';
+  String subCollection = 'noticerGroup';
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   String id({
@@ -44,38 +44,38 @@ class UserNoticerService {
         .delete();
   }
 
-  Future<UserNoticerModel?> selectData({
+  Future<UserNoticerGroupModel?> selectData({
+    required String id,
     required String userId,
-    required String noticerUserId,
   }) async {
-    UserNoticerModel? ret;
+    UserNoticerGroupModel? ret;
     await firestore
         .collection(collection)
         .doc(userId)
         .collection(subCollection)
-        .where('noticerUserId', isEqualTo: noticerUserId)
+        .where('id', isEqualTo: id)
         .get()
         .then((value) {
       if (value.docs.isNotEmpty) {
-        ret = UserNoticerModel.fromSnapshot(value.docs.first);
+        ret = UserNoticerGroupModel.fromSnapshot(value.docs.first);
       }
     });
     return ret;
   }
 
-  Future<List<UserNoticerModel>> selectList({
+  Future<List<UserNoticerGroupModel>> selectList({
     required String userId,
   }) async {
-    List<UserNoticerModel> ret = [];
+    List<UserNoticerGroupModel> ret = [];
     await firestore
         .collection(collection)
         .doc(userId)
         .collection(subCollection)
-        .orderBy('noticerUserName', descending: true)
+        .orderBy('name', descending: true)
         .get()
         .then((value) {
       for (DocumentSnapshot<Map<String, dynamic>> map in value.docs) {
-        ret.add(UserNoticerModel.fromSnapshot(map));
+        ret.add(UserNoticerGroupModel.fromSnapshot(map));
       }
     });
     return ret;
@@ -88,24 +88,16 @@ class UserNoticerService {
         .collection(collection)
         .doc(userId)
         .collection(subCollection)
-        .orderBy('noticerUserName', descending: true)
+        .orderBy('name', descending: true)
         .snapshots();
   }
 
-  List<UserNoticerModel> generateList({
+  List<UserNoticerGroupModel> generateList({
     required QuerySnapshot<Map<String, dynamic>>? data,
-    bool isBlockView = true,
   }) {
-    List<UserNoticerModel> ret = [];
+    List<UserNoticerGroupModel> ret = [];
     for (DocumentSnapshot<Map<String, dynamic>> doc in data!.docs) {
-      UserNoticerModel userNoticer = UserNoticerModel.fromSnapshot(doc);
-      if (isBlockView) {
-        ret.add(userNoticer);
-      } else {
-        if (!userNoticer.block) {
-          ret.add(userNoticer);
-        }
-      }
+      ret.add(UserNoticerGroupModel.fromSnapshot(doc));
     }
     return ret;
   }

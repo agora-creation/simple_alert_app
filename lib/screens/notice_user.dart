@@ -6,29 +6,29 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_sender.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/notice_users_add.dart';
-import 'package:simple_alert_app/screens/notice_users_detail.dart';
+import 'package:simple_alert_app/screens/notice_user_add.dart';
+import 'package:simple_alert_app/screens/notice_user_detail.dart';
 import 'package:simple_alert_app/services/user_sender.dart';
 import 'package:simple_alert_app/widgets/user_sender_list.dart';
 
-class NoticeUsersScreen extends StatefulWidget {
+class NoticeUserScreen extends StatefulWidget {
   final UserProvider userProvider;
 
-  const NoticeUsersScreen({
+  const NoticeUserScreen({
     required this.userProvider,
     super.key,
   });
 
   @override
-  State<NoticeUsersScreen> createState() => _NoticeUsersScreenState();
+  State<NoticeUserScreen> createState() => _NoticeUserScreenState();
 }
 
-class _NoticeUsersScreenState extends State<NoticeUsersScreen> {
+class _NoticeUserScreenState extends State<NoticeUserScreen> {
   @override
   Widget build(BuildContext context) {
     UserModel? user = widget.userProvider.user;
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: UserSenderService().streamList(userId: user!.id),
+      stream: UserSenderService().streamList(userId: user?.id ?? 'error'),
       builder: (context, snapshot) {
         List<UserSenderModel> userSenders = [];
         if (snapshot.hasData) {
@@ -66,7 +66,7 @@ class _NoticeUsersScreenState extends State<NoticeUsersScreen> {
                             context,
                             PageTransition(
                               type: PageTransitionType.rightToLeft,
-                              child: NoticeUsersDetailScreen(
+                              child: NoticeUserDetailScreen(
                                 userProvider: widget.userProvider,
                                 userSender: userSender,
                               ),
@@ -92,7 +92,7 @@ class _NoticeUsersScreenState extends State<NoticeUsersScreen> {
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
-                  child: NoticeUsersAddScreen(
+                  child: NoticeUserAddScreen(
                     userProvider: widget.userProvider,
                   ),
                 ),

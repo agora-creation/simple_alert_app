@@ -9,8 +9,9 @@ import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/home.dart';
 import 'package:simple_alert_app/screens/login.dart';
+import 'package:simple_alert_app/screens/notice.dart';
+import 'package:simple_alert_app/screens/send.dart';
 import 'package:simple_alert_app/screens/splash.dart';
 import 'package:simple_alert_app/services/push.dart';
 
@@ -84,7 +85,12 @@ class SplashController extends StatelessWidget {
       case AuthStatus.authenticating:
         return const LoginScreen();
       case AuthStatus.authenticated:
-        return const HomeScreen();
+        if (userProvider.currentMode == Mode.notice) {
+          return const NoticeScreen();
+        } else if (userProvider.currentMode == Mode.send) {
+          return const SendScreen();
+        }
+        return const SplashScreen();
     }
   }
 }

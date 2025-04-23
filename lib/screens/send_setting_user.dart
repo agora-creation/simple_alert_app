@@ -6,28 +6,28 @@ import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_noticer.dart';
 import 'package:simple_alert_app/providers/user.dart';
-import 'package:simple_alert_app/screens/send_setting_users_detail.dart';
+import 'package:simple_alert_app/screens/send_setting_user_detail.dart';
 import 'package:simple_alert_app/services/user_noticer.dart';
 import 'package:simple_alert_app/widgets/user_noticer_list.dart';
 
-class SendSettingUsersScreen extends StatefulWidget {
+class SendSettingUserScreen extends StatefulWidget {
   final UserProvider userProvider;
 
-  const SendSettingUsersScreen({
+  const SendSettingUserScreen({
     required this.userProvider,
     super.key,
   });
 
   @override
-  State<SendSettingUsersScreen> createState() => _SendSettingUsersScreenState();
+  State<SendSettingUserScreen> createState() => _SendSettingUserScreenState();
 }
 
-class _SendSettingUsersScreenState extends State<SendSettingUsersScreen> {
+class _SendSettingUserScreenState extends State<SendSettingUserScreen> {
   @override
   Widget build(BuildContext context) {
     UserModel? user = widget.userProvider.user;
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: UserNoticerService().streamList(userId: user!.id),
+      stream: UserNoticerService().streamList(userId: user?.id ?? 'error'),
       builder: (context, snapshot) {
         List<UserNoticerModel> userNoticers = [];
         if (snapshot.hasData) {
@@ -61,7 +61,7 @@ class _SendSettingUsersScreenState extends State<SendSettingUsersScreen> {
                             context,
                             PageTransition(
                               type: PageTransitionType.rightToLeft,
-                              child: SendSettingUsersDetailScreen(
+                              child: SendSettingUserDetailScreen(
                                 userProvider: widget.userProvider,
                                 userNoticer: userNoticer,
                               ),
