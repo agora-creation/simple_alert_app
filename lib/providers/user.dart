@@ -324,6 +324,22 @@ class UserProvider with ChangeNotifier {
           'id': userNoticer.id,
           'userId': userNoticer.userId,
         });
+        //グループからIDを削除
+        List<UserNoticerGroupModel> userNoticerGroups =
+            await _userNoticerGroupService.selectList(
+          userId: userNoticer.userId,
+        );
+        if (userNoticerGroups.isNotEmpty) {
+          for (final userNoticerGroup in userNoticerGroups) {
+            List<String> userIds = userNoticerGroup.userIds;
+            userIds.remove(userNoticer.userId);
+            _userNoticerGroupService.update({
+              'id': userNoticerGroup.id,
+              'userId': userNoticerGroup.userId,
+              'userIds': userIds,
+            });
+          }
+        }
       }
     } catch (e) {
       error = e.toString();
@@ -342,6 +358,22 @@ class UserProvider with ChangeNotifier {
         'id': userNoticer.id,
         'userId': userNoticer.userId,
       });
+      //グループからIDを削除
+      List<UserNoticerGroupModel> userNoticerGroups =
+          await _userNoticerGroupService.selectList(
+        userId: userNoticer.userId,
+      );
+      if (userNoticerGroups.isNotEmpty) {
+        for (final userNoticerGroup in userNoticerGroups) {
+          List<String> userIds = userNoticerGroup.userIds;
+          userIds.remove(userNoticer.userId);
+          _userNoticerGroupService.update({
+            'id': userNoticerGroup.id,
+            'userId': userNoticerGroup.userId,
+            'userIds': userIds,
+          });
+        }
+      }
       //受信者側の削除処理
       UserSenderModel? userSender = await _userSenderService.selectData(
         userId: userNoticer.id,

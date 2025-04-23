@@ -218,6 +218,11 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () async {
+              if (selectedSendUsers.isEmpty) {
+                if (!mounted) return;
+                showMessage(context, '送信先を1つ以上選択してください', false);
+                return;
+              }
               if (selectedSendUsers.length > selectedLimit) {
                 if (!mounted) return;
                 showMessage(context, '送信制限により送信できません', false);
