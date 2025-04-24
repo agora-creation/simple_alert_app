@@ -1,17 +1,9 @@
-import 'dart:io';
-import 'dart:typed_data';
-import 'dart:ui' as ui;
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
@@ -55,37 +47,6 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
     setState(() {});
   }
 
-  Future _requestPermission() async {
-    if (Platform.isAndroid) {
-      await Permission.storage.request();
-      await Permission.photos.request();
-    } else if (Platform.isIOS) {
-      await Permission.photosAddOnly.request();
-    }
-  }
-
-  Future _saveQrToGallery() async {
-    //パーミッション確認
-    await _requestPermission();
-    try {
-      RenderRepaintBoundary boundary =
-          qrcodeKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      ByteData? byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
-      Uint8List pngBytes = byteData!.buffer.asUint8List();
-      //一時ファイルに保存
-      final tmpDir = await getTemporaryDirectory();
-      String filePath = '${tmpDir.path}/qr_code.png';
-      File file = await File(filePath).writeAsBytes(pngBytes);
-      //ギャラリーに保存
-      await GallerySaver.saveImage(file.path, albumName: 'QR_Codes');
-      showMessage(context, 'QRコードを保存しました', true);
-    } catch (e) {
-      print(e);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -95,8 +56,6 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
   @override
   Widget build(BuildContext context) {
     UserModel? user = widget.userProvider.user;
-    String userId = user?.id ?? '';
-    String qrData = 'AGORA-$userId';
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -116,36 +75,33 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AlertBar('受信者に、下記QRコードを見せてください。'),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 40,
+            AlertBar('受信者に『送信者ID』を伝えてください'),
+            SettingList(
+              label: '送信者ID',
+              subtitle: Text(
+                '※タップするとコピーできます',
+                style: TextStyle(
+                  color: kRedColor,
+                  fontSize: 12,
+                ),
               ),
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onLongPress: _saveQrToGallery,
-                    child: RepaintBoundary(
-                      key: qrcodeKey,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: kBlackColor.withOpacity(0.5),
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        padding: const EdgeInsets.all(24),
-                        child: PrettyQrView.data(data: qrData),
-                      ),
-                    ),
-                  ),
-                  Text(
-                    '画像を長押しで保存できます',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ],
+              trailing: Text(
+                user?.senderId ?? '',
+                style: TextStyle(
+                  color: kBlackColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'SourceHanSansJP-Bold',
+                ),
               ),
+              onTap: () async {
+                final data = ClipboardData(
+                  text: user?.senderId ?? '',
+                );
+                await Clipboard.setData(data);
+                if (!mounted) return;
+                showMessage(context, '送信者IDをコピーしました', true);
+              },
             ),
             SettingList(
               label: '送信者名',
@@ -171,7 +127,9 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
               },
             ),
             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: UserNoticerService().streamList(userId: userId),
+              stream: UserNoticerService().streamList(
+                userId: user?.id ?? 'error',
+              ),
               builder: (context, snapshot) {
                 List<UserNoticerModel> userNoticers = [];
                 if (snapshot.hasData) {
@@ -200,7 +158,9 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
               },
             ),
             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: UserNoticerGroupService().streamList(userId: userId),
+              stream: UserNoticerGroupService().streamList(
+                userId: user?.id ?? 'error',
+              ),
               builder: (context, snapshot) {
                 List<UserNoticerGroupModel> userNoticerGroups = [];
                 if (snapshot.hasData) {

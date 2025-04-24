@@ -10,6 +10,8 @@ class UserSendModel {
   String _content = '';
   bool _isChoice = false;
   List<String> choices = [];
+  String _filePath = '';
+  String _fileName = '';
   bool _draft = false;
   DateTime _sendAt = DateTime.now();
   List<SendUserModel> sendUsers = [];
@@ -22,6 +24,8 @@ class UserSendModel {
   String get title => _title;
   String get content => _content;
   bool get isChoice => _isChoice;
+  String get filePath => _filePath;
+  String get fileName => _fileName;
   bool get draft => _draft;
   DateTime get sendAt => _sendAt;
   String get createdUserId => _createdUserId;
@@ -39,6 +43,8 @@ class UserSendModel {
     _content = data['content'] ?? '';
     _isChoice = data['isChoice'] ?? false;
     choices = _convertChoices(data['choices'] ?? []);
+    _filePath = data['filePath'] ?? '';
+    _fileName = data['fileName'] ?? '';
     _draft = data['draft'] ?? false;
     _sendAt = data['sendAt'].toDate() ?? DateTime.now();
     sendUsers = _convertSendUsers(data['sendUsers'] ?? []);

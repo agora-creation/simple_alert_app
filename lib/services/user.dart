@@ -20,6 +20,7 @@ class UserService {
   Future<UserModel?> selectData({
     String? id,
     String? tel,
+    String? senderId,
   }) async {
     UserModel? ret;
     if (id != null) {
@@ -44,21 +45,17 @@ class UserService {
         }
       });
     }
-    return ret;
-  }
-
-  Future<UserModel?> selectDataQR(String id) async {
-    UserModel? ret;
-    await firestore
-        .collection(collection)
-        .where('id', isEqualTo: id)
-        .where('sender', isEqualTo: true)
-        .get()
-        .then((value) {
-      if (value.docs.isNotEmpty) {
-        ret = UserModel.fromSnapshot(value.docs.first);
-      }
-    });
+    if (senderId != null) {
+      await firestore
+          .collection(collection)
+          .where('senderId', isEqualTo: senderId)
+          .get()
+          .then((value) {
+        if (value.docs.isNotEmpty) {
+          ret = UserModel.fromSnapshot(value.docs.first);
+        }
+      });
+    }
     return ret;
   }
 }

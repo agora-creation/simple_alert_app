@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:form_builder_file_picker/form_builder_file_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/send_create2.dart';
+import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
+import 'package:simple_alert_app/widgets/link_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SendCreateScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -30,6 +34,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
   bool isChoice = false;
   List<String> choices = [];
   List<TextEditingController> choiceControllers = [];
+  List<PlatformFile> pickedFiles = [];
 
   void updateChoices() {
     choices = choiceControllers.map((controller) => controller.text).toList();
@@ -104,12 +109,17 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                       showMessage(context, '件名を入力してください', false);
                       return;
                     }
+                    PlatformFile? pickedFile;
+                    if (pickedFiles.isNotEmpty) {
+                      pickedFile = pickedFiles.first;
+                    }
                     String? error = await widget.userProvider.updateSendDraft(
                       userSend: widget.userSend!,
                       title: titleController.text,
                       content: contentController.text,
                       isChoice: isChoice,
                       choices: choices,
+                      pickedFile: pickedFile,
                     );
                     if (error != null) {
                       if (!mounted) return;
@@ -133,11 +143,16 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                       showMessage(context, '件名を入力してください', false);
                       return;
                     }
+                    PlatformFile? pickedFile;
+                    if (pickedFiles.isNotEmpty) {
+                      pickedFile = pickedFiles.first;
+                    }
                     String? error = await widget.userProvider.createSendDraft(
                       title: titleController.text,
                       content: contentController.text,
                       isChoice: isChoice,
                       choices: choices,
+                      pickedFile: pickedFile,
                     );
                     if (error != null) {
                       if (!mounted) return;
@@ -163,111 +178,175 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         behavior: HitTestBehavior.opaque,
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  CustomTextFormField(
-                    controller: titleController,
-                    textInputType: TextInputType.text,
-                    maxLines: 1,
-                    label: '件名',
-                    color: kBlackColor,
-                    prefix: Icons.short_text,
-                    fillColor: kBlackColor.withOpacity(0.1),
-                  ),
-                  const SizedBox(height: 8),
-                  CustomTextFormField(
-                    controller: contentController,
-                    textInputType: TextInputType.multiline,
-                    maxLines: 15,
-                    label: '内容',
-                    color: kBlackColor,
-                    prefix: Icons.wrap_text,
-                    fillColor: kBlackColor.withOpacity(0.1),
-                  ),
-                  const SizedBox(height: 8),
-                  Column(
-                    children: [
-                      Divider(color: kBlackColor.withOpacity(0.5), height: 1),
-                      CheckboxListTile(
-                        title: Text('回答を求める'),
-                        value: isChoice,
-                        onChanged: (value) {
-                          if (value == null) return;
-                          setState(() {
-                            isChoice = value;
-                          });
-                        },
-                        tileColor:
-                            isChoice ? kRedColor.withOpacity(0.3) : kWhiteColor,
-                        activeColor: kRedColor,
-                      ),
-                      Divider(color: kBlackColor.withOpacity(0.5), height: 1),
-                    ],
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: kBlackColor.withOpacity(0.5),
-                        ),
-                      ),
-                    ),
-                    child: ExpansionTile(
-                      enabled: isChoice,
-                      title: Text('選択肢を設定'),
+          child: Column(
+            children: [
+              widget.userSend != null ? AlertBar('下書き中です') : Container(),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: choices.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Row(
+                        CustomTextFormField(
+                          controller: titleController,
+                          textInputType: TextInputType.text,
+                          maxLines: 1,
+                          label: '件名',
+                          color: kBlackColor,
+                          prefix: Icons.short_text,
+                          fillColor: kBlackColor.withOpacity(0.1),
+                        ),
+                        const SizedBox(height: 8),
+                        CustomTextFormField(
+                          controller: contentController,
+                          textInputType: TextInputType.multiline,
+                          maxLines: 15,
+                          label: '内容',
+                          color: kBlackColor,
+                          prefix: Icons.wrap_text,
+                          fillColor: kBlackColor.withOpacity(0.1),
+                        ),
+                        const SizedBox(height: 16),
+                        Column(
+                          children: [
+                            Divider(
+                              color: kBlackColor.withOpacity(0.5),
+                              height: 1,
+                            ),
+                            CheckboxListTile(
+                              title: Text('回答を求める'),
+                              value: isChoice,
+                              onChanged: (value) {
+                                if (value == null) return;
+                                setState(() {
+                                  isChoice = value;
+                                });
+                              },
+                              tileColor: isChoice
+                                  ? kRedColor.withOpacity(0.3)
+                                  : kWhiteColor,
+                              activeColor: kRedColor,
+                            ),
+                            Divider(
+                              color: kBlackColor.withOpacity(0.5),
+                              height: 1,
+                            ),
+                          ],
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: kBlackColor.withOpacity(0.5),
+                              ),
+                            ),
+                          ),
+                          child: ExpansionTile(
+                            enabled: isChoice,
+                            title: Text('選択肢を設定'),
+                            children: [
+                              ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: choices.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextField(
+                                            controller:
+                                                choiceControllers[index],
+                                            decoration: InputDecoration(
+                                              border: OutlineInputBorder(),
+                                            ),
+                                            onChanged: (value) {
+                                              updateChoices();
+                                            },
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: FaIcon(
+                                            FontAwesomeIcons.xmark,
+                                            color: kRedColor,
+                                          ),
+                                          onPressed: () => removeChoices(index),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: CustomButton(
+                                  type: ButtonSizeType.sm,
+                                  label: '選択肢を追加',
+                                  labelColor: kWhiteColor,
+                                  backgroundColor: kBlueColor,
+                                  onPressed: addChoices,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          '添付ファイル',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        widget.userSend != null ||
+                                widget.userSend?.fileName != ''
+                            ? LinkText(
+                                label: widget.userSend?.fileName ?? '',
+                                onTap: () async {
+                                  if (!await launchUrl(Uri.parse(
+                                    widget.userSend?.fileName ?? '',
+                                  ))) {
+                                    throw Exception('Could not launch');
+                                  }
+                                },
+                              )
+                            : Container(),
+                        FormBuilderFilePicker(
+                          name: 'file',
+                          previewImages: false,
+                          allowMultiple: false,
+                          maxFiles: 1,
+                          initialValue: pickedFiles,
+                          onChanged: (value) {
+                            pickedFiles.clear();
+                            if (value == null) return;
+                            pickedFiles = value;
+                            setState(() {});
+                          },
+                          typeSelectors: [
+                            TypeSelector(
+                              type: FileType.any,
+                              selector: Row(
                                 children: [
-                                  Expanded(
-                                    child: TextField(
-                                      controller: choiceControllers[index],
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      onChanged: (value) {
-                                        updateChoices();
-                                      },
-                                    ),
+                                  FaIcon(
+                                    FontAwesomeIcons.fileCirclePlus,
+                                    size: 18,
                                   ),
-                                  IconButton(
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.xmark,
-                                      color: kRedColor,
-                                    ),
-                                    onPressed: () => removeChoices(index),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Text('ファイルを選択'),
                                   ),
                                 ],
                               ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: CustomButton(
-                            type: ButtonSizeType.sm,
-                            label: '選択肢を追加',
-                            labelColor: kWhiteColor,
-                            backgroundColor: kBlueColor,
-                            onPressed: addChoices,
-                          ),
-                        ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 100),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 100),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -283,6 +362,10 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
             showMessage(context, '内容を入力してください', false);
             return;
           }
+          PlatformFile? pickedFile;
+          if (pickedFiles.isNotEmpty) {
+            pickedFile = pickedFiles.first;
+          }
           Navigator.push(
             context,
             PageTransition(
@@ -294,6 +377,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                 content: contentController.text,
                 isChoice: isChoice,
                 choices: choices,
+                pickedFile: pickedFile,
               ),
             ),
           );

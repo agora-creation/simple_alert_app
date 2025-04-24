@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:form_builder_file_picker/form_builder_file_picker.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/send_user.dart';
@@ -25,6 +26,7 @@ class SendCreate2Screen extends StatefulWidget {
   final String content;
   final bool isChoice;
   final List<String> choices;
+  final PlatformFile? pickedFile;
 
   const SendCreate2Screen({
     required this.userProvider,
@@ -33,6 +35,7 @@ class SendCreate2Screen extends StatefulWidget {
     required this.content,
     required this.isChoice,
     required this.choices,
+    required this.pickedFile,
     super.key,
   });
 
@@ -55,6 +58,7 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
     userNoticerGroups = await UserNoticerGroupService().selectList(
       userId: widget.userProvider.user?.id ?? 'error',
     );
+
     setState(() {});
   }
 
@@ -162,6 +166,7 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
                   },
                   value: selectedGroupId,
                   isExpanded: true,
+                  underline: Container(),
                   padding: EdgeInsets.symmetric(
                     vertical: 8,
                     horizontal: 16,
@@ -237,6 +242,7 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
                   content: widget.content,
                   isChoice: widget.isChoice,
                   choices: widget.choices,
+                  pickedFile: widget.pickedFile,
                   selectedSendUsers: selectedSendUsers,
                 ),
               );
@@ -264,6 +270,7 @@ class SendDialog extends StatefulWidget {
   final String content;
   final bool isChoice;
   final List<String> choices;
+  final PlatformFile? pickedFile;
   final List<SendUserModel> selectedSendUsers;
 
   const SendDialog({
@@ -273,6 +280,7 @@ class SendDialog extends StatefulWidget {
     required this.content,
     required this.isChoice,
     required this.choices,
+    required this.pickedFile,
     required this.selectedSendUsers,
     super.key,
   });
@@ -313,6 +321,7 @@ class _SendDialogState extends State<SendDialog> {
               content: widget.content,
               isChoice: widget.isChoice,
               choices: widget.choices,
+              pickedFile: widget.pickedFile,
               selectedSendUsers: widget.selectedSendUsers,
             );
             if (error != null) {

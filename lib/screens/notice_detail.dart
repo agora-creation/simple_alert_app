@@ -9,6 +9,8 @@ import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/choice_radio_list.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
+import 'package:simple_alert_app/widgets/link_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NoticeDetailScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -181,6 +183,29 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                                                       '',
                                             )
                                           : Container(),
+                                    ],
+                                  )
+                                : Container(),
+                            const SizedBox(height: 16),
+                            widget.userNotice.fileName != ''
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '添付ファイル',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      LinkText(
+                                        label: widget.userNotice.fileName,
+                                        onTap: () async {
+                                          if (!await launchUrl(Uri.parse(
+                                            widget.userNotice.fileName,
+                                          ))) {
+                                            throw Exception('Could not launch');
+                                          }
+                                        },
+                                      ),
                                     ],
                                   )
                                 : Container(),

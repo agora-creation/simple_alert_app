@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart' as fs;
 import 'package:flutter/material.dart';
+import 'package:form_builder_file_picker/form_builder_file_picker.dart';
+import 'package:path/path.dart' as p;
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/models/send_user.dart';
 import 'package:simple_alert_app/models/user.dart';
@@ -85,6 +90,7 @@ class UserProvider with ChangeNotifier {
                 'tel': tel,
                 'token': token,
                 'sender': false,
+                'senderId': '',
                 'senderName': '',
               });
               String userNoticeId = _userNoticeService.id(
@@ -166,6 +172,7 @@ class UserProvider with ChangeNotifier {
               'tel': tel,
               'token': token,
               'sender': false,
+              'senderId': '',
               'senderName': '',
             });
             String userNoticeId = _userNoticeService.id(
@@ -234,9 +241,16 @@ class UserProvider with ChangeNotifier {
     String? error;
     if (senderName == '') return '送信者名は必須入力です';
     try {
+      String senderId;
+      UserModel? tmpUser;
+      do {
+        senderId = rndText(10);
+        tmpUser = await _userService.selectData(senderId: senderId);
+      } while (tmpUser != null);
       _userService.update({
         'id': _user?.id,
         'sender': true,
+        'senderId': senderId,
         'senderName': senderName,
       });
     } catch (e) {
@@ -508,6 +522,7 @@ class UserProvider with ChangeNotifier {
     required String content,
     required bool isChoice,
     required List<String> choices,
+    required PlatformFile? pickedFile,
   }) async {
     String? error;
     if (title == '') return '件名は必須入力です';
@@ -517,6 +532,18 @@ class UserProvider with ChangeNotifier {
     }
     try {
       String id = _userSendService.id(userId: _user!.id);
+      String filePath = '';
+      String fileName = '';
+      if (pickedFile != null) {
+        File file = File(pickedFile.path!);
+        fileName = p.basename(pickedFile.name);
+        fs.UploadTask uploadTask;
+        fs.Reference ref =
+            fs.FirebaseStorage.instance.ref().child(id).child(fileName);
+        uploadTask = ref.putData(file.readAsBytesSync());
+        await uploadTask.whenComplete(() => null);
+        filePath = await ref.getDownloadURL();
+      }
       _userSendService.create({
         'id': id,
         'userId': _user?.id,
@@ -524,6 +551,8 @@ class UserProvider with ChangeNotifier {
         'content': content,
         'isChoice': isChoice,
         'choices': choices,
+        'filePath': filePath,
+        'fileName': fileName,
         'draft': true,
         'sendAt': DateTime.now(),
         'sendUsers': [],
@@ -543,6 +572,7 @@ class UserProvider with ChangeNotifier {
     required String content,
     required bool isChoice,
     required List<String> choices,
+    required PlatformFile? pickedFile,
   }) async {
     String? error;
     if (title == '') return '件名は必須入力です';
@@ -551,6 +581,20 @@ class UserProvider with ChangeNotifier {
       return '選択肢が設定されていません';
     }
     try {
+      String filePath = userSend.filePath;
+      String fileName = userSend.fileName;
+      if (pickedFile != null) {
+        File file = File(pickedFile.path!);
+        fileName = p.basename(pickedFile.name);
+        fs.UploadTask uploadTask;
+        fs.Reference ref = fs.FirebaseStorage.instance
+            .ref()
+            .child(userSend.id)
+            .child(fileName);
+        uploadTask = ref.putData(file.readAsBytesSync());
+        await uploadTask.whenComplete(() => null);
+        filePath = await ref.getDownloadURL();
+      }
       _userSendService.update({
         'id': userSend.id,
         'userId': userSend.userId,
@@ -558,6 +602,8 @@ class UserProvider with ChangeNotifier {
         'content': content,
         'isChoice': isChoice,
         'choices': choices,
+        'filePath': filePath,
+        'fileName': fileName,
       });
     } catch (e) {
       error = e.toString();
@@ -601,6 +647,7 @@ class UserProvider with ChangeNotifier {
     required String content,
     required bool isChoice,
     required List<String> choices,
+    required PlatformFile? pickedFile,
     required List<SendUserModel> selectedSendUsers,
   }) async {
     String? error;
@@ -617,7 +664,23 @@ class UserProvider with ChangeNotifier {
         }
       }
       String userSendId = '';
+      String userNoticeFilePath = '';
+      String userNoticeFileName = '';
       if (userSend != null) {
+        String filePath = userSend.filePath;
+        String fileName = userSend.fileName;
+        if (pickedFile != null) {
+          File file = File(pickedFile.path!);
+          fileName = p.basename(pickedFile.name);
+          fs.UploadTask uploadTask;
+          fs.Reference ref = fs.FirebaseStorage.instance
+              .ref()
+              .child(userSend.id)
+              .child(fileName);
+          uploadTask = ref.putData(file.readAsBytesSync());
+          await uploadTask.whenComplete(() => null);
+          filePath = await ref.getDownloadURL();
+        }
         _userSendService.update({
           'id': userSend.id,
           'userId': userSend.userId,
@@ -625,13 +688,29 @@ class UserProvider with ChangeNotifier {
           'content': content,
           'isChoice': isChoice,
           'choices': choices,
+          'filePath': filePath,
+          'fileName': fileName,
           'draft': false,
           'sendAt': DateTime.now(),
           'sendUsers': mapSendUsers,
         });
         userSendId = userSend.id;
+        userNoticeFilePath = filePath;
+        userNoticeFileName = fileName;
       } else {
         String id = _userSendService.id(userId: _user!.id);
+        String filePath = '';
+        String fileName = '';
+        if (pickedFile != null) {
+          File file = File(pickedFile.path!);
+          fileName = p.basename(pickedFile.name);
+          fs.UploadTask uploadTask;
+          fs.Reference ref =
+              fs.FirebaseStorage.instance.ref().child(id).child(fileName);
+          uploadTask = ref.putData(file.readAsBytesSync());
+          await uploadTask.whenComplete(() => null);
+          filePath = await ref.getDownloadURL();
+        }
         _userSendService.create({
           'id': id,
           'userId': _user?.id,
@@ -639,6 +718,8 @@ class UserProvider with ChangeNotifier {
           'content': content,
           'isChoice': isChoice,
           'choices': choices,
+          'filePath': filePath,
+          'fileName': fileName,
           'draft': false,
           'sendAt': DateTime.now(),
           'sendUsers': mapSendUsers,
@@ -647,6 +728,8 @@ class UserProvider with ChangeNotifier {
           'createdAt': DateTime.now(),
         });
         userSendId = id;
+        userNoticeFilePath = filePath;
+        userNoticeFileName = fileName;
       }
       if (selectedSendUsers.isNotEmpty) {
         for (final selectSendUser in selectedSendUsers) {
@@ -663,6 +746,8 @@ class UserProvider with ChangeNotifier {
             'content': content,
             'isChoice': isChoice,
             'choices': choices,
+            'filePath': userNoticeFilePath,
+            'fileName': userNoticeFileName,
             'answer': '',
             'read': false,
             'token': noticeUser.token,

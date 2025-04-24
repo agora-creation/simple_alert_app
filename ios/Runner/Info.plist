@@ -3,9 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>アプリ内のQRコード画像を保存するために、ライブラリへのアクセスが必要です。</string>
-    <key>NSCameraUsageDescription</key>
-    <string>カメラを使用してQRコードをスキャンします。</string>
+    <string>通知にファイルを添付することができるため、ライブラリへのアクセス許可が必要です。</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

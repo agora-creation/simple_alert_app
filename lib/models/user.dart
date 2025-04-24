@@ -6,6 +6,7 @@ class UserModel {
   String _tel = '';
   String _token = '';
   bool _sender = false;
+  String _senderId = '';
   String _senderName = '';
 
   String get id => _id;
@@ -13,6 +14,7 @@ class UserModel {
   String get tel => _tel;
   String get token => _token;
   bool get sender => _sender;
+  String get senderId => _senderId;
   String get senderName => _senderName;
 
   UserModel.fromSnapshot(
@@ -25,6 +27,7 @@ class UserModel {
     _tel = data['tel'] ?? '';
     _token = data['token'] ?? '';
     _sender = data['sender'] ?? false;
+    _senderId = data['senderId'] ?? '';
     _senderName = data['senderName'] ?? '';
   }
 }

@@ -99,12 +99,12 @@ class _NoticeUserScreenState extends State<NoticeUserScreen> {
               );
             },
             icon: const FaIcon(
-              FontAwesomeIcons.qrcode,
+              FontAwesomeIcons.plus,
               size: 18,
               color: kWhiteColor,
             ),
             label: Text(
-              '受信先を追加(QR)',
+              '受信先を追加',
               style: TextStyle(color: kWhiteColor),
             ),
           ),

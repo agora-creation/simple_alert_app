@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:alert_banner/exports.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -107,6 +109,20 @@ Timestamp convertTimestamp(DateTime date, bool end) {
   return Timestamp.fromMillisecondsSinceEpoch(
     DateTime.parse(dateTime).millisecondsSinceEpoch,
   );
+}
+
+String rndText(int length) {
+  const tmp = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  int tmpLength = tmp.length;
+  final rnd = Random();
+  final codeUnits = List.generate(
+    length,
+    (index) {
+      final n = rnd.nextInt(tmpLength);
+      return tmp.codeUnitAt(n);
+    },
+  );
+  return String.fromCharCodes(codeUnits);
 }
 
 String formatPrice(ProductDetails product) {

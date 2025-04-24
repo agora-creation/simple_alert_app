@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
@@ -11,6 +10,7 @@ import 'package:simple_alert_app/services/user_sender.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
+import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 
 class NoticeUserAddScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -25,13 +25,7 @@ class NoticeUserAddScreen extends StatefulWidget {
 }
 
 class _NoticeUserAddScreenState extends State<NoticeUserAddScreen> {
-  MobileScannerController controller = MobileScannerController();
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  TextEditingController senderIdController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -48,62 +42,90 @@ class _NoticeUserAddScreenState extends State<NoticeUserAddScreen> {
           style: TextStyle(color: kBlackColor),
         ),
       ),
-      body: Column(
-        children: [
-          AlertBar('専用のQRコードをスキャンしてください'),
-          Expanded(
-            child: MobileScanner(
-              controller: controller,
-              onDetect: (capture) async {
-                final barcode = capture.barcodes.first;
-                final code = barcode.rawValue;
-                if (code != null) {
-                  String id = code.replaceAll('AGORA-', '');
-                  UserModel? senderUser = await UserService().selectDataQR(id);
-                  if (senderUser != null) {
-                    showDialog(
-                      barrierDismissible: false,
-                      context: context,
-                      builder: (context) => SenderUserDialog(
-                        userProvider: widget.userProvider,
-                        senderUser: senderUser,
-                        controller: controller,
-                      ),
-                    );
-                  }
-                }
-              },
-            ),
+      body: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: SafeArea(
+          child: Column(
+            children: [
+              AlertBar('送信者IDを入力してください'),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    CustomTextFormField(
+                      controller: senderIdController,
+                      textInputType: TextInputType.text,
+                      maxLines: 1,
+                      label: '送信者ID',
+                      color: kBlackColor,
+                      prefix: Icons.numbers,
+                      fillColor: kBlackColor.withOpacity(0.1),
+                    ),
+                    SizedBox(height: 16),
+                    CustomButton(
+                      type: ButtonSizeType.lg,
+                      label: '上記IDで検索',
+                      labelColor: kWhiteColor,
+                      backgroundColor: kBlueColor,
+                      onPressed: () async {
+                        if (senderIdController.text == '') {
+                          if (!mounted) return;
+                          showMessage(context, '送信者IDを入力してください', false);
+                          return;
+                        }
+                        UserModel? resultUser = await UserService().selectData(
+                          senderId: senderIdController.text,
+                        );
+                        if (resultUser == null || resultUser.sender == false) {
+                          if (!mounted) return;
+                          showMessage(context, '送信者が見つかりませんでした', false);
+                          return;
+                        }
+                        if (!mounted) return;
+                        showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (context) => ResultUserDialog(
+                            userProvider: widget.userProvider,
+                            resultUser: resultUser,
+                          ),
+                        );
+                        return;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class SenderUserDialog extends StatefulWidget {
+class ResultUserDialog extends StatefulWidget {
   final UserProvider userProvider;
-  final UserModel senderUser;
-  final MobileScannerController controller;
+  final UserModel resultUser;
 
-  const SenderUserDialog({
+  const ResultUserDialog({
     required this.userProvider,
-    required this.senderUser,
-    required this.controller,
+    required this.resultUser,
     super.key,
   });
 
   @override
-  State<SenderUserDialog> createState() => _SenderUserDialogState();
+  State<ResultUserDialog> createState() => _ResultUserDialogState();
 }
 
-class _SenderUserDialogState extends State<SenderUserDialog> {
+class _ResultUserDialogState extends State<ResultUserDialog> {
   bool disabled = false;
 
   void _init() async {
     UserSenderModel? userSender = await UserSenderService().selectData(
       userId: widget.userProvider.user!.id,
-      senderUserId: widget.senderUser.id,
+      senderUserId: widget.resultUser.id,
     );
     if (userSender != null) {
       disabled = true;
@@ -132,7 +154,7 @@ class _SenderUserDialogState extends State<SenderUserDialog> {
                 bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
               ),
             ),
-            child: ListTile(title: Text(widget.senderUser.senderName)),
+            child: ListTile(title: Text(widget.resultUser.senderName)),
           ),
         ],
       ),
@@ -151,13 +173,14 @@ class _SenderUserDialogState extends State<SenderUserDialog> {
           backgroundColor: kBlueColor,
           onPressed: () async {
             String? error = await widget.userProvider.addSenderUser(
-              senderUser: widget.senderUser,
+              senderUser: widget.resultUser,
             );
             if (error != null) {
               showMessage(context, error, false);
               return;
             }
-            widget.controller.dispose();
+            if (!mounted) return;
+            showMessage(context, '受信先を追加しました', true);
             Navigator.pop(context);
             Navigator.pop(context);
           },

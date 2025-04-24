@@ -8,6 +8,8 @@ class UserNoticeModel {
   String _content = '';
   bool _isChoice = false;
   List<String> choices = [];
+  String _filePath = '';
+  String _fileName = '';
   String _answer = '';
   bool _read = false;
   String _token = '';
@@ -21,6 +23,8 @@ class UserNoticeModel {
   String get title => _title;
   String get content => _content;
   bool get isChoice => _isChoice;
+  String get filePath => _filePath;
+  String get fileName => _fileName;
   String get answer => _answer;
   bool get read => _read;
   String get token => _token;
@@ -40,6 +44,8 @@ class UserNoticeModel {
     _content = data['content'] ?? '';
     _isChoice = data['isChoice'] ?? false;
     choices = _convertChoices(data['choices'] ?? []);
+    _filePath = data['filePath'] ?? '';
+    _fileName = data['fileName'] ?? '';
     _answer = data['answer'] ?? '';
     _read = data['read'] ?? false;
     _token = data['token'] ?? '';

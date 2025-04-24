@@ -4,6 +4,7 @@ import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_sender.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 
@@ -44,61 +45,66 @@ class NoticeUserDetailScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              Container(
-                color: kMsgBgColor,
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      '送信者名',
-                      style: TextStyle(fontSize: 14),
+        child: Column(
+          children: [
+            userSender.block ? AlertBar('ブロック中') : Container(),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Container(
+                    color: kMsgBgColor,
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          '送信者名',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        Text(
+                          userSender.senderUserName,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'SourceHanSansJP-Bold',
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      userSender.senderUserName,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'SourceHanSansJP-Bold',
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 16),
+                  userSender.block
+                      ? CustomButton(
+                          type: ButtonSizeType.lg,
+                          label: 'ブロックを解除する',
+                          labelColor: kBlackColor,
+                          backgroundColor: kBlackColor.withOpacity(0.3),
+                          onPressed: () => showDialog(
+                            context: context,
+                            builder: (context) => UnBlockDialog(
+                              userProvider: userProvider,
+                              userSender: userSender,
+                            ),
+                          ),
+                        )
+                      : CustomButton(
+                          type: ButtonSizeType.lg,
+                          label: 'ブロックする',
+                          labelColor: kWhiteColor,
+                          backgroundColor: kRedColor,
+                          onPressed: () => showDialog(
+                            context: context,
+                            builder: (context) => BlockDialog(
+                              userProvider: userProvider,
+                              userSender: userSender,
+                            ),
+                          ),
+                        ),
+                ],
               ),
-              SizedBox(height: 16),
-              userSender.block
-                  ? CustomButton(
-                      type: ButtonSizeType.lg,
-                      label: 'ブロックを解除する',
-                      labelColor: kBlackColor,
-                      backgroundColor: kBlackColor.withOpacity(0.3),
-                      onPressed: () => showDialog(
-                        context: context,
-                        builder: (context) => UnBlockDialog(
-                          userProvider: userProvider,
-                          userSender: userSender,
-                        ),
-                      ),
-                    )
-                  : CustomButton(
-                      type: ButtonSizeType.lg,
-                      label: 'ブロックする',
-                      labelColor: kWhiteColor,
-                      backgroundColor: kRedColor,
-                      onPressed: () => showDialog(
-                        context: context,
-                        builder: (context) => BlockDialog(
-                          userProvider: userProvider,
-                          userSender: userSender,
-                        ),
-                      ),
-                    ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -8,7 +8,9 @@ import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/choice_list.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
+import 'package:simple_alert_app/widgets/link_text.dart';
 import 'package:simple_alert_app/widgets/send_user_sheet.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SendDetailScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -83,6 +85,7 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
                       Expanded(
                         child: SingleChildScrollView(
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
                                 color: kMsgBgColor,
@@ -119,6 +122,30 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
                                               .map((choice) {
                                             return ChoiceList(choice);
                                           }).toList(),
+                                        ),
+                                      ],
+                                    )
+                                  : Container(),
+                              const SizedBox(height: 16),
+                              widget.userSend.fileName != ''
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '添付ファイル',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                        LinkText(
+                                          label: widget.userSend.fileName,
+                                          onTap: () async {
+                                            if (!await launchUrl(Uri.parse(
+                                              widget.userSend.fileName,
+                                            ))) {
+                                              throw Exception(
+                                                  'Could not launch');
+                                            }
+                                          },
                                         ),
                                       ],
                                     )
