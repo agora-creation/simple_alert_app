@@ -219,8 +219,8 @@ class _SendScreenState extends State<SendScreen> {
 
   @override
   void dispose() {
-    // bannerAd.dispose();
-    // context.read<InAppPurchaseProvider>().dispose();
+    bannerAd.dispose();
+    context.read<InAppPurchaseProvider>().dispose();
     super.dispose();
   }
 
