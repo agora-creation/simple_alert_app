@@ -303,7 +303,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
                                 label: widget.userSend?.fileName ?? '',
                                 onTap: () async {
                                   if (!await launchUrl(Uri.parse(
-                                    widget.userSend?.fileName ?? '',
+                                    widget.userSend?.filePath ?? '',
                                   ))) {
                                     throw Exception('Could not launch');
                                   }

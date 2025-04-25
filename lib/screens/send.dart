@@ -213,14 +213,14 @@ class _SendScreenState extends State<SendScreen> {
   void initState() {
     _initBannerAd();
     context.read<InAppPurchaseProvider>().initialize();
-    _initTutorial();
+    // _initTutorial();
     super.initState();
   }
 
   @override
   void dispose() {
     bannerAd.dispose();
-    context.read<InAppPurchaseProvider>().dispose();
+    // context.read<InAppPurchaseProvider>().dispose();
     super.dispose();
   }
 

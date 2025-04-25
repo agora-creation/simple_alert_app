@@ -200,7 +200,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                                         label: widget.userNotice.fileName,
                                         onTap: () async {
                                           if (!await launchUrl(Uri.parse(
-                                            widget.userNotice.fileName,
+                                            widget.userNotice.filePath,
                                           ))) {
                                             throw Exception('Could not launch');
                                           }
