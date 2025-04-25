@@ -190,14 +190,24 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
             ),
             SettingList(
               label: 'ご利用中のプラン',
-              subtitle: Text(
-                'フリープラン',
-                style: TextStyle(
-                  color: kRedColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'SourceHanSansJP-Bold',
-                ),
+              subtitle: FutureBuilder<String>(
+                future: getPlanName(),
+                builder: (context, snapshot) {
+                  String planName = '';
+                  if (snapshot.data != null) {
+                    planName = snapshot.data ?? '';
+                    return AlertBar(snapshot.data ?? '');
+                  }
+                  return Text(
+                    planName,
+                    style: TextStyle(
+                      color: kRedColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'SourceHanSansJP-Bold',
+                    ),
+                  );
+                },
               ),
               trailing: const FaIcon(
                 FontAwesomeIcons.pen,

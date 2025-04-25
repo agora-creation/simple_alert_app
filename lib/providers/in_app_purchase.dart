@@ -37,6 +37,21 @@ const List<Map<String, String>> kProductMaps = [
   },
 ];
 
+Future<String> getPlanName() async {
+  String purchasePlan =
+      await getPrefsString('purchasePlan') ?? 'subscription_free';
+  switch (purchasePlan) {
+    case 'subscription_free':
+      return 'フリープラン';
+    case 'subscription_standard':
+      return 'スタンダードプラン';
+    case 'subscription_pro':
+      return 'プロプラン';
+    default:
+      return 'フリープラン';
+  }
+}
+
 Future<int> getMonthSendLimit() async {
   String purchasePlan =
       await getPrefsString('purchasePlan') ?? 'subscription_free';
