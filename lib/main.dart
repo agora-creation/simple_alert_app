@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -28,6 +30,12 @@ Future main() async {
           ),
         )
       : await Firebase.initializeApp();
+  await FirebaseAppCheck.instance.activate(
+    appleProvider:
+        kReleaseMode ? AppleProvider.deviceCheck : AppleProvider.debug,
+    androidProvider:
+        kReleaseMode ? AndroidProvider.playIntegrity : AndroidProvider.debug,
+  );
   //通知サービスの初期化
   PushService().init();
   SystemChrome.setPreferredOrientations([
@@ -48,7 +56,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: UserProvider.initialize()),
-        ChangeNotifierProvider(create: (context) => InAppPurchaseProvider()),
+        ChangeNotifierProvider(
+          create: (context) => InAppPurchaseProvider(),
+          lazy: false,
+        ),
       ],
       child: MaterialApp(
         builder: (context, child) {

@@ -35,6 +35,7 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
   List<String> choices = [];
   List<TextEditingController> choiceControllers = [];
   List<PlatformFile> pickedFiles = [];
+  bool buttonDisabled = false;
 
   void updateChoices() {
     choices = choiceControllers.map((controller) => controller.text).toList();
@@ -103,32 +104,44 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
               : Container(),
           widget.userSend != null
               ? TextButton(
-                  onPressed: () async {
-                    if (titleController.text == '') {
-                      if (!mounted) return;
-                      showMessage(context, '件名を入力してください', false);
-                      return;
-                    }
-                    PlatformFile? pickedFile;
-                    if (pickedFiles.isNotEmpty) {
-                      pickedFile = pickedFiles.first;
-                    }
-                    String? error = await widget.userProvider.updateSendDraft(
-                      userSend: widget.userSend!,
-                      title: titleController.text,
-                      content: contentController.text,
-                      isChoice: isChoice,
-                      choices: choices,
-                      pickedFile: pickedFile,
-                    );
-                    if (error != null) {
-                      if (!mounted) return;
-                      showMessage(context, error, false);
-                      return;
-                    }
-                    if (!mounted) return;
-                    Navigator.pop(context);
-                  },
+                  onPressed: !buttonDisabled
+                      ? () async {
+                          setState(() {
+                            buttonDisabled = true;
+                          });
+                          if (titleController.text == '') {
+                            if (!mounted) return;
+                            setState(() {
+                              buttonDisabled = false;
+                            });
+                            showMessage(context, '件名を入力してください', false);
+                            return;
+                          }
+                          PlatformFile? pickedFile;
+                          if (pickedFiles.isNotEmpty) {
+                            pickedFile = pickedFiles.first;
+                          }
+                          String? error =
+                              await widget.userProvider.updateSendDraft(
+                            userSend: widget.userSend!,
+                            title: titleController.text,
+                            content: contentController.text,
+                            isChoice: isChoice,
+                            choices: choices,
+                            pickedFile: pickedFile,
+                          );
+                          if (error != null) {
+                            if (!mounted) return;
+                            setState(() {
+                              buttonDisabled = false;
+                            });
+                            showMessage(context, error, false);
+                            return;
+                          }
+                          if (!mounted) return;
+                          Navigator.pop(context);
+                        }
+                      : null,
                   child: Text(
                     '保存',
                     style: TextStyle(color: kBlueColor),
@@ -137,31 +150,43 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
               : Container(),
           widget.userSend == null
               ? TextButton(
-                  onPressed: () async {
-                    if (titleController.text == '') {
-                      if (!mounted) return;
-                      showMessage(context, '件名を入力してください', false);
-                      return;
-                    }
-                    PlatformFile? pickedFile;
-                    if (pickedFiles.isNotEmpty) {
-                      pickedFile = pickedFiles.first;
-                    }
-                    String? error = await widget.userProvider.createSendDraft(
-                      title: titleController.text,
-                      content: contentController.text,
-                      isChoice: isChoice,
-                      choices: choices,
-                      pickedFile: pickedFile,
-                    );
-                    if (error != null) {
-                      if (!mounted) return;
-                      showMessage(context, error, false);
-                      return;
-                    }
-                    if (!mounted) return;
-                    Navigator.pop(context);
-                  },
+                  onPressed: !buttonDisabled
+                      ? () async {
+                          setState(() {
+                            buttonDisabled = true;
+                          });
+                          if (titleController.text == '') {
+                            if (!mounted) return;
+                            setState(() {
+                              buttonDisabled = false;
+                            });
+                            showMessage(context, '件名を入力してください', false);
+                            return;
+                          }
+                          PlatformFile? pickedFile;
+                          if (pickedFiles.isNotEmpty) {
+                            pickedFile = pickedFiles.first;
+                          }
+                          String? error =
+                              await widget.userProvider.createSendDraft(
+                            title: titleController.text,
+                            content: contentController.text,
+                            isChoice: isChoice,
+                            choices: choices,
+                            pickedFile: pickedFile,
+                          );
+                          if (error != null) {
+                            if (!mounted) return;
+                            setState(() {
+                              buttonDisabled = false;
+                            });
+                            showMessage(context, error, false);
+                            return;
+                          }
+                          if (!mounted) return;
+                          Navigator.pop(context);
+                        }
+                      : null,
                   child: Text(
                     '下書き保存',
                     style: TextStyle(color: kBlueColor),

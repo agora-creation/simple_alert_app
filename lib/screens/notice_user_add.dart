@@ -156,6 +156,7 @@ class _ResultUserDialogState extends State<ResultUserDialog> {
             ),
             child: ListTile(title: Text(widget.resultUser.senderName)),
           ),
+          disabled ? AlertBar('既に登録済みです') : Container(),
         ],
       ),
       actions: [
