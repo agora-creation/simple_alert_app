@@ -196,7 +196,6 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                   String planName = '';
                   if (snapshot.data != null) {
                     planName = snapshot.data ?? '';
-                    return AlertBar(snapshot.data ?? '');
                   }
                   return Text(
                     planName,
