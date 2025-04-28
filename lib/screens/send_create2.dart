@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_file_picker/form_builder_file_picker.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/send_user.dart';
@@ -9,8 +10,8 @@ import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_noticer.dart';
 import 'package:simple_alert_app/models/user_noticer_group.dart';
 import 'package:simple_alert_app/models/user_send.dart';
-import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/services/purchases.dart';
 import 'package:simple_alert_app/services/user_noticer.dart';
 import 'package:simple_alert_app/services/user_noticer_group.dart';
 import 'package:simple_alert_app/services/user_send.dart';
@@ -44,28 +45,47 @@ class SendCreate2Screen extends StatefulWidget {
 }
 
 class _SendCreate2ScreenState extends State<SendCreate2Screen> {
+  String purchasesId = '';
   int monthSendCount = 0;
   int monthSendLimit = 0;
   List<UserNoticerGroupModel> userNoticerGroups = [];
   String selectedGroupId = '';
   List<SendUserModel> selectedSendUsers = [];
 
+  void _initPurchasesListener() async {
+    Purchases.addCustomerInfoUpdateListener((customerInfo) async {
+      CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+      EntitlementInfo? entitlement =
+          customerInfo.entitlements.all['subscription'];
+      if (mounted) {
+        setState(() {
+          purchasesId = entitlement?.productIdentifier ?? '';
+        });
+      }
+    });
+  }
+
   void _init() async {
     monthSendCount = await UserSendService().selectMonthSendCount(
       userId: widget.userProvider.user?.id ?? 'error',
     );
-    monthSendLimit = await getMonthSendLimit();
+    monthSendLimit = PurchasesService().getMonthSendLimit(purchasesId);
     userNoticerGroups = await UserNoticerGroupService().selectList(
       userId: widget.userProvider.user?.id ?? 'error',
     );
-
     setState(() {});
   }
 
   @override
   void initState() {
+    _initPurchasesListener();
     _init();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

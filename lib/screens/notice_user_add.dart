@@ -77,7 +77,7 @@ class _NoticeUserAddScreenState extends State<NoticeUserAddScreen> {
                         UserModel? resultUser = await UserService().selectData(
                           senderId: senderIdController.text,
                         );
-                        if (resultUser == null || resultUser.sender == false) {
+                        if (resultUser == null) {
                           if (!mounted) return;
                           showMessage(context, '送信者が見つかりませんでした', false);
                           return;

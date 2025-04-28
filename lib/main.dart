@@ -9,12 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_alert_app/common/style.dart';
-import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/login.dart';
 import 'package:simple_alert_app/screens/notice.dart';
 import 'package:simple_alert_app/screens/send.dart';
 import 'package:simple_alert_app/screens/splash.dart';
+import 'package:simple_alert_app/services/purchases.dart';
 import 'package:simple_alert_app/services/push.dart';
 
 Future main() async {
@@ -38,6 +38,8 @@ Future main() async {
   );
   //通知サービスの初期化
   PushService().init();
+  //課金サービスの初期化
+  PurchasesService().init();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
@@ -56,10 +58,6 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: UserProvider.initialize()),
-        ChangeNotifierProvider(
-          create: (context) => InAppPurchaseProvider(),
-          lazy: false,
-        ),
       ],
       child: MaterialApp(
         builder: (context, child) {

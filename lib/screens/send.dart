@@ -1,16 +1,14 @@
-import 'package:app_tutorial/app_tutorial.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_send.dart';
-import 'package:simple_alert_app/providers/in_app_purchase.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/screens/info.dart';
 import 'package:simple_alert_app/screens/notice.dart';
@@ -18,6 +16,7 @@ import 'package:simple_alert_app/screens/send_create.dart';
 import 'package:simple_alert_app/screens/send_detail.dart';
 import 'package:simple_alert_app/screens/send_setting.dart';
 import 'package:simple_alert_app/services/ad.dart';
+import 'package:simple_alert_app/services/purchases.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_bottom_sheet.dart';
@@ -36,165 +35,25 @@ class SendScreen extends StatefulWidget {
 
 class _SendScreenState extends State<SendScreen> {
   BannerAd bannerAd = AdService.createBannerAd();
-  GlobalKey tutorial1Key = GlobalKey();
-  GlobalKey tutorial2Key = GlobalKey();
-  GlobalKey tutorial3Key = GlobalKey();
-  List<TutorialItem> tutorialItems = [];
+  bool isPurchases = false;
+  String purchasesId = '';
+
+  void _initPurchasesListener() async {
+    Purchases.addCustomerInfoUpdateListener((customerInfo) async {
+      CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+      EntitlementInfo? entitlement =
+          customerInfo.entitlements.all['subscription'];
+      if (mounted) {
+        setState(() {
+          isPurchases = entitlement?.isActive ?? false;
+          purchasesId = entitlement?.productIdentifier ?? '';
+        });
+      }
+    });
+  }
 
   void _initBannerAd() async {
     await bannerAd.load();
-  }
-
-  void _initTutorial() async {
-    bool sendTutorial = await getPrefsBool('sendTutorial') ?? false;
-    if (sendTutorial) return;
-    tutorialItems.clear();
-    tutorialItems.addAll({
-      TutorialItem(
-        globalKey: tutorial1Key,
-        color: kBlackColor.withOpacity(0.8),
-        shapeFocus: ShapeFocus.square,
-        borderRadius: const Radius.circular(0),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '送信者設定',
-                  style: TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'SourceHanSansJP-Bold',
-                  ),
-                ),
-                Text(
-                  'このボタンをタップすると、送信に関する様々な設定を確認できます。',
-                  style: TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  '● 送信者QRコードの表示',
-                  style: TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  '● 送信者名の変更',
-                  style: TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  '● 登録された受信者の確認',
-                  style: TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  '● 受信者をグループで分ける',
-                  style: TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  '● プランの変更',
-                  style: TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      TutorialItem(
-        globalKey: tutorial2Key,
-        color: kBlackColor.withOpacity(0.8),
-        shapeFocus: ShapeFocus.square,
-        borderRadius: const Radius.circular(0),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '通知の送信履歴',
-                  style: TextStyle(
-                    color: kBlackColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'SourceHanSansJP-Bold',
-                  ),
-                ),
-                Text(
-                  'ここに送信履歴一覧が表示されます。下書き中のデータも確認できます。',
-                  style: TextStyle(
-                    color: kBlackColor,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      TutorialItem(
-        globalKey: tutorial3Key,
-        color: kBlackColor.withOpacity(0.8),
-        shapeFocus: ShapeFocus.square,
-        borderRadius: const Radius.circular(0),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'メッセージの作成',
-                  style: TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'SourceHanSansJP-Bold',
-                  ),
-                ),
-                Text(
-                  'このボタンをタップすると、通知内容を作成することができます。下書き保存も可能です。',
-                  style: TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    });
-    Future.delayed(const Duration(seconds: 1)).then((value) {
-      if (!mounted) return;
-      Tutorial.showTutorial(
-        context,
-        tutorialItems,
-        onTutorialComplete: () async {
-          await setPrefsBool('sendTutorial', true);
-        },
-      );
-    });
   }
 
   Future<String> fetchMonthSendCount(UserModel? user) async {
@@ -205,22 +64,20 @@ class _SendScreenState extends State<SendScreen> {
         userId: user.id,
       );
     }
-    monthSendLimit = await getMonthSendLimit();
+    monthSendLimit = PurchasesService().getMonthSendLimit(purchasesId);
     return '現在$monthSendCount件 / 月$monthSendLimit件まで送信可';
   }
 
   @override
   void initState() {
     _initBannerAd();
-    context.read<InAppPurchaseProvider>().initialize();
-    // _initTutorial();
+    _initPurchasesListener();
     super.initState();
   }
 
   @override
   void dispose() {
     bannerAd.dispose();
-    // context.read<InAppPurchaseProvider>().dispose();
     super.dispose();
   }
 
@@ -271,12 +128,11 @@ class _SendScreenState extends State<SendScreen> {
                   right: 16,
                   bottom: 16,
                 ),
-                child: userProvider.user?.sender == true
+                child: isPurchases
                     ? CustomCard(
                         child: Column(
                           children: [
                             CustomListButton(
-                              key: tutorial1Key,
                               leadingIcon: FontAwesomeIcons.gear,
                               label: '送信者設定',
                               labelColor: kBlackColor,
@@ -299,7 +155,6 @@ class _SendScreenState extends State<SendScreen> {
                               },
                             ),
                             Expanded(
-                              key: tutorial2Key,
                               child: StreamBuilder<
                                   QuerySnapshot<Map<String, dynamic>>>(
                                 stream: UserSendService().streamList(
@@ -360,7 +215,6 @@ class _SendScreenState extends State<SendScreen> {
                               ),
                             ),
                             CustomListButton(
-                              key: tutorial3Key,
                               leadingIcon: FontAwesomeIcons.pen,
                               label: 'メッセージを作成',
                               labelColor: kWhiteColor,
@@ -404,7 +258,7 @@ class _SendLoginWidgetState extends State<SendLoginWidget> {
 
   @override
   void initState() {
-    senderNameController.text = widget.userProvider.user?.name ?? '';
+    senderNameController.text = widget.userProvider.user?.senderName ?? '';
     super.initState();
   }
 
@@ -453,78 +307,30 @@ class _SendLoginWidgetState extends State<SendLoginWidget> {
                     label: 'ご利用プランを選ぶ',
                     labelColor: kWhiteColor,
                     backgroundColor: kBlueColor,
-                    onPressed: () {
+                    onPressed: () async {
                       if (senderNameController.text == '') {
                         if (!mounted) return;
                         showMessage(context, '送信者名を入力してください', false);
                         return;
                       }
-                      final inAppPurchaseProvider =
-                          context.read<InAppPurchaseProvider>();
-                      showInAppPurchaseDialog(
+                      var result = await PurchasesService().showPaywall();
+                      print('Paywall result: $result');
+                      String? error = await widget.userProvider.updateSender(
+                        senderName: senderNameController.text,
+                      );
+                      if (error != null) {
+                        if (!mounted) return;
+                        showMessage(context, error, false);
+                        return;
+                      }
+                      await widget.userProvider.reload();
+                      if (!mounted) return;
+                      Navigator.pushReplacement(
                         context,
-                        result: (selectedProductId) async {
-                          if (selectedProductId !=
-                              kProductMaps[0]['id'].toString()) {
-                            ProductDetails? selectedProduct;
-                            if (inAppPurchaseProvider
-                                .availableProducts.isNotEmpty) {
-                              for (final product
-                                  in inAppPurchaseProvider.availableProducts) {
-                                if (product.id == selectedProductId) {
-                                  selectedProduct = product;
-                                  break;
-                                }
-                              }
-                            }
-                            final purchaseResult = await inAppPurchaseProvider
-                                .purchaseProduct(selectedProduct!);
-                            if (purchaseResult.$1 && context.mounted) {
-                              print('購入成功');
-                              String? error =
-                                  await widget.userProvider.updateSender(
-                                senderName: senderNameController.text,
-                              );
-                              if (error != null) {
-                                if (!mounted) return;
-                                showMessage(context, error, false);
-                                return;
-                              }
-                              await widget.userProvider.reload();
-                              if (!mounted) return;
-                              Navigator.pushReplacement(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.bottomToTop,
-                                  child: SendScreen(),
-                                ),
-                              );
-                            } else {
-                              if (context.mounted) {
-                                print(purchaseResult.$2);
-                              }
-                            }
-                          } else {
-                            String? error =
-                                await widget.userProvider.updateSender(
-                              senderName: senderNameController.text,
-                            );
-                            if (error != null) {
-                              if (!mounted) return;
-                              showMessage(context, error, false);
-                              return;
-                            }
-                            await widget.userProvider.reload();
-                            if (!mounted) return;
-                            Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                type: PageTransitionType.bottomToTop,
-                                child: SendScreen(),
-                              ),
-                            );
-                          }
-                        },
+                        PageTransition(
+                          type: PageTransitionType.bottomToTop,
+                          child: SendScreen(),
+                        ),
                       );
                     },
                   ),

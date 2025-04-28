@@ -89,9 +89,8 @@ class UserProvider with ChangeNotifier {
                 'name': name,
                 'tel': tel,
                 'token': token,
-                'sender': false,
                 'senderId': '',
-                'senderName': '',
+                'senderName': name,
               });
               String userNoticeId = _userNoticeService.id(
                 userId: result.user!.uid,
@@ -171,9 +170,8 @@ class UserProvider with ChangeNotifier {
               'name': name,
               'tel': tel,
               'token': token,
-              'sender': false,
               'senderId': '',
-              'senderName': '',
+              'senderName': name,
             });
             String userNoticeId = _userNoticeService.id(
               userId: result.user!.uid,
@@ -249,7 +247,6 @@ class UserProvider with ChangeNotifier {
       } while (tmpUser != null);
       _userService.update({
         'id': _user?.id,
-        'sender': true,
         'senderId': senderId,
         'senderName': senderName,
       });

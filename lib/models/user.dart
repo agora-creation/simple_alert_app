@@ -5,7 +5,6 @@ class UserModel {
   String _name = '';
   String _tel = '';
   String _token = '';
-  bool _sender = false;
   String _senderId = '';
   String _senderName = '';
 
@@ -13,7 +12,6 @@ class UserModel {
   String get name => _name;
   String get tel => _tel;
   String get token => _token;
-  bool get sender => _sender;
   String get senderId => _senderId;
   String get senderName => _senderName;
 
@@ -26,7 +24,6 @@ class UserModel {
     _name = data['name'] ?? '';
     _tel = data['tel'] ?? '';
     _token = data['token'] ?? '';
-    _sender = data['sender'] ?? false;
     _senderId = data['senderId'] ?? '';
     _senderName = data['senderName'] ?? '';
   }

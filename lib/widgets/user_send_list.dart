@@ -34,37 +34,50 @@ class UserSendList extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  Text(
-                    userSend.title,
-                    style: TextStyle(
-                      color: kBlackColor,
-                      fontSize: 18,
-                    ),
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                  userSend.fileName != ''
+                      ? Padding(
+                          padding: const EdgeInsets.only(right: 16),
+                          child: FaIcon(
+                            FontAwesomeIcons.file,
+                            color: kBlueColor,
+                          ),
+                        )
+                      : Container(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        userSend.title,
+                        style: TextStyle(
+                          color: kBlackColor,
+                          fontSize: 18,
+                        ),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      userSend.draft
+                          ? Container()
+                          : Text(
+                              '送信日時: ${dateText('yyyy/MM/dd HH:mm', userSend.createdAt)}',
+                              style: TextStyle(
+                                color: kBlackColor.withOpacity(0.8),
+                                fontSize: 14,
+                              ),
+                            ),
+                      userSend.draft
+                          ? Container()
+                          : Text(
+                              '送信件数: ${userSend.sendUsers.length}件',
+                              style: TextStyle(
+                                color: kBlackColor.withOpacity(0.8),
+                                fontSize: 14,
+                              ),
+                            ),
+                    ],
                   ),
-                  userSend.draft
-                      ? Container()
-                      : Text(
-                          '送信日時: ${dateText('yyyy/MM/dd HH:mm', userSend.createdAt)}',
-                          style: TextStyle(
-                            color: kBlackColor.withOpacity(0.8),
-                            fontSize: 14,
-                          ),
-                        ),
-                  userSend.draft
-                      ? Container()
-                      : Text(
-                          '送信件数: ${userSend.sendUsers.length}件',
-                          style: TextStyle(
-                            color: kBlackColor.withOpacity(0.8),
-                            fontSize: 14,
-                          ),
-                        ),
                 ],
               ),
               userSend.draft
