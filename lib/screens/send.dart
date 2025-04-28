@@ -114,7 +114,7 @@ class _SendScreenState extends State<SendScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            bannerAd.responseInfo != null
+            bannerAd.responseInfo != null && !isPurchases
                 ? SizedBox(
                     width: bannerAd.size.width.toDouble(),
                     height: bannerAd.size.height.toDouble(),

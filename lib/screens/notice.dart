@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_notice.dart';
@@ -30,6 +31,20 @@ class NoticeScreen extends StatefulWidget {
 
 class _NoticeScreenState extends State<NoticeScreen> {
   BannerAd bannerAd = AdService.createBannerAd();
+  bool isPurchases = false;
+
+  void _initPurchasesListener() async {
+    Purchases.addCustomerInfoUpdateListener((customerInfo) async {
+      CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+      EntitlementInfo? entitlement =
+          customerInfo.entitlements.all['subscription'];
+      if (mounted) {
+        setState(() {
+          isPurchases = entitlement?.isActive ?? false;
+        });
+      }
+    });
+  }
 
   void _initBannerAd() async {
     await bannerAd.load();
@@ -38,6 +53,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
   @override
   void initState() {
     _initBannerAd();
+    _initPurchasesListener();
     super.initState();
   }
 
@@ -80,7 +96,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            bannerAd.responseInfo != null
+            bannerAd.responseInfo != null && !isPurchases
                 ? SizedBox(
                     width: bannerAd.size.width.toDouble(),
                     height: bannerAd.size.height.toDouble(),
