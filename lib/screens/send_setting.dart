@@ -18,6 +18,8 @@ import 'package:simple_alert_app/services/user_noticer.dart';
 import 'package:simple_alert_app/services/user_noticer_group.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
+import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
+import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
 
 class SendSettingScreen extends StatefulWidget {
@@ -207,19 +209,106 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
             ),
             SettingList(
               label: 'ご利用中のプラン',
-              subtitle: Text(
+              trailing: Text(
                 PurchasesService().getName(purchasesId),
                 style: TextStyle(
-                  color: kRedColor,
+                  color: kBlackColor,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'SourceHanSansJP-Bold',
                 ),
               ),
+              onTap: () {
+                showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (context) => PurchasesDialog(
+                    purchasesId: purchasesId,
+                  ),
+                );
+              },
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class PurchasesDialog extends StatelessWidget {
+  final String purchasesId;
+
+  const PurchasesDialog({
+    required this.purchasesId,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomAlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8),
+          Text('以下のプランに契約しています'),
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
+              ),
+            ),
+            child: ListTile(
+              title: Text(
+                PurchasesService().getName(purchasesId),
+                style: TextStyle(
+                  color: kBlackColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'SourceHanSansJP-Bold',
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '・1ヶ月に${PurchasesService().getMonthSendLimit(purchasesId)}件まで送信可能',
+                    style: TextStyle(
+                      color: kBlackColor,
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    '・広告の非表示',
+                    style: TextStyle(
+                      color: kBlackColor,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: '閉じる',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlackColor.withOpacity(0.5),
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          type: ButtonSizeType.sm,
+          label: '解約する',
+          labelColor: kWhiteColor,
+          backgroundColor: kRedColor,
+          onPressed: () async {
+            await PurchasesService().openSubscriptionManagement();
+          },
+        ),
+      ],
     );
   }
 }
