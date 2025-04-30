@@ -37,9 +37,9 @@ class PurchasesService {
   int getMonthSendLimit(String id) {
     switch (id) {
       case 'subscription_standard':
-        return 100;
-      case 'subscription_pro':
         return 1000;
+      case 'subscription_pro':
+        return 5000;
       default:
         return 0;
     }
