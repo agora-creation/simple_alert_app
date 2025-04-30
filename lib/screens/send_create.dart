@@ -60,14 +60,22 @@ class _SendCreateScreenState extends State<SendCreateScreen> {
     if (widget.userSend != null) {
       titleController.text = widget.userSend!.title;
       contentController.text = widget.userSend!.content;
-    }
-    if (kDefaultChoices.isNotEmpty) {
-      for (final choice in kDefaultChoices) {
-        choices.add(choice);
+      isChoice = widget.userSend!.isChoice;
+      choices = widget.userSend!.choices;
+      choiceControllers =
+          choices.map((choice) => TextEditingController(text: choice)).toList();
+    } else {
+      titleController.text = '';
+      contentController.text = '';
+      isChoice = false;
+      if (kDefaultChoices.isNotEmpty) {
+        for (final choice in kDefaultChoices) {
+          choices.add(choice);
+        }
       }
+      choiceControllers =
+          choices.map((choice) => TextEditingController(text: choice)).toList();
     }
-    choiceControllers =
-        choices.map((choice) => TextEditingController(text: choice)).toList();
     super.initState();
   }
 

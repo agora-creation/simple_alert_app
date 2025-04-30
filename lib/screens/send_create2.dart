@@ -349,8 +349,13 @@ class _SendDialogState extends State<SendDialog> {
               showMessage(context, error, false);
               return;
             }
-            //レビューの促し
-            //await requestReview();
+            //レビューの促し(5回目の送信)
+            int sendCount = await getPrefsInt('sendCount') ?? 0;
+            sendCount++;
+            if (sendCount == 5) {
+              await requestReview();
+            }
+            await setPrefsInt('sendCount', sendCount);
             if (!mounted) return;
             Navigator.pop(context);
             Navigator.pop(context);

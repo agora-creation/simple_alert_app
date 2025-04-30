@@ -240,11 +240,15 @@ class UserProvider with ChangeNotifier {
     if (senderName == '') return '送信者名は必須入力です';
     try {
       String senderId;
-      UserModel? tmpUser;
-      do {
-        senderId = rndText(10);
-        tmpUser = await _userService.selectData(senderId: senderId);
-      } while (tmpUser != null);
+      if (_user?.senderId == '') {
+        UserModel? tmpUser;
+        do {
+          senderId = rndText(10);
+          tmpUser = await _userService.selectData(senderId: senderId);
+        } while (tmpUser != null);
+      } else {
+        senderId = _user!.senderId;
+      }
       _userService.update({
         'id': _user?.id,
         'senderId': senderId,

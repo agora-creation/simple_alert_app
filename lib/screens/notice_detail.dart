@@ -37,8 +37,13 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
         'read': true,
       });
     }
-    //レビューの促し
-    //await requestReview();
+    //レビューの促し(5回目の閲覧)
+    int noticeConfCount = await getPrefsInt('noticeConfCount') ?? 0;
+    noticeConfCount++;
+    if (noticeConfCount == 5) {
+      await requestReview();
+    }
+    await setPrefsInt('noticeConfCount', noticeConfCount);
   }
 
   @override
