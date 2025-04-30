@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/send_user.dart';
 import 'package:simple_alert_app/widgets/send_user_list.dart';
 
 class SendUserSheet extends StatelessWidget {
   final List<SendUserModel> sendUsers;
+  final Function()? downloadOnPressed;
 
   const SendUserSheet(
     this.sendUsers, {
+    this.downloadOnPressed,
     super.key,
   });
 
@@ -44,12 +47,28 @@ class SendUserSheet extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(
-                '送信結果',
-                style: TextStyle(
-                  color: kBlackColor.withOpacity(0.5),
-                  fontSize: 16,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Text(
+                      '送信結果',
+                      style: TextStyle(
+                        color: kBlackColor.withOpacity(0.5),
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: downloadOnPressed,
+                    icon: FaIcon(
+                      FontAwesomeIcons.download,
+                      color: kBlueColor,
+                      size: 20,
+                    ),
+                  ),
+                ],
               ),
               Expanded(
                 child: ListView.builder(

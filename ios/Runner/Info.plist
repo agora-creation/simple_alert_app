@@ -47,6 +47,8 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>CSVファイルを保存するため、ライブラリへのアクセス許可が必要です。</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>通知にファイルを添付することができるため、ライブラリへのアクセス許可が必要です。</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
