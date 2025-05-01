@@ -20,10 +20,8 @@ import 'package:simple_alert_app/services/purchases.dart';
 import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_bottom_sheet.dart';
-import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/custom_card.dart';
 import 'package:simple_alert_app/widgets/custom_list_button.dart';
-import 'package:simple_alert_app/widgets/custom_text_form_field.dart';
 import 'package:simple_alert_app/widgets/user_send_list.dart';
 
 class SendScreen extends StatefulWidget {
@@ -46,7 +44,11 @@ class _SendScreenState extends State<SendScreen> {
       if (mounted) {
         setState(() {
           isPurchases = entitlement?.isActive ?? false;
-          purchasesId = entitlement?.productIdentifier ?? '';
+          if (isPurchases) {
+            purchasesId = entitlement?.productIdentifier ?? '';
+          } else {
+            purchasesId = '';
+          }
         });
       }
     });
@@ -65,7 +67,8 @@ class _SendScreenState extends State<SendScreen> {
       );
     }
     monthSendLimit = PurchasesService().getMonthSendLimit(purchasesId);
-    return '現在$monthSendCount件 / 月$monthSendLimit件まで送信可';
+    String name = PurchasesService().getName(purchasesId);
+    return '$name\n現在$monthSendCount件 / 月$monthSendLimit件まで送信可';
   }
 
   @override
@@ -128,218 +131,112 @@ class _SendScreenState extends State<SendScreen> {
                   right: 16,
                   bottom: 16,
                 ),
-                child: isPurchases
-                    ? CustomCard(
-                        child: Column(
-                          children: [
-                            CustomListButton(
-                              leadingIcon: FontAwesomeIcons.gear,
-                              label: '送信者設定',
-                              labelColor: kBlackColor,
-                              tileColor: kBlackColor.withOpacity(0.3),
-                              onTap: () => showBottomUpScreen(
-                                context,
-                                SendSettingScreen(
-                                  userProvider: userProvider,
-                                ),
-                              ),
-                            ),
-                            FutureBuilder<String>(
-                              future: fetchMonthSendCount(userProvider.user),
-                              builder: (context, snapshot) {
-                                if (snapshot.data != null) {
-                                  return AlertBar(snapshot.data ?? '');
-                                } else {
-                                  return Container();
-                                }
-                              },
-                            ),
-                            Expanded(
-                              child: StreamBuilder<
-                                  QuerySnapshot<Map<String, dynamic>>>(
-                                stream: UserSendService().streamList(
-                                  userId: userProvider.user?.id ?? 'error',
-                                ),
-                                builder: (context, snapshot) {
-                                  List<UserSendModel> userSends = [];
-                                  if (snapshot.hasData) {
-                                    userSends = UserSendService().generateList(
-                                      data: snapshot.data,
-                                    );
-                                  }
-                                  if (userSends.isEmpty) {
-                                    return Center(
-                                      child: Text(
-                                        '送信履歴はありません',
-                                        style: TextStyle(
-                                          color: kBlackColor.withOpacity(0.5),
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  return ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: userSends.length,
-                                    itemBuilder: (context, index) {
-                                      UserSendModel userSend = userSends[index];
-                                      return UserSendList(
-                                        userSend: userSend,
-                                        onTap: () {
-                                          if (userSend.draft) {
-                                            showBottomUpScreen(
-                                              context,
-                                              SendCreateScreen(
-                                                userProvider: userProvider,
-                                                userSend: userSend,
-                                              ),
-                                            );
-                                          } else {
-                                            Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                type: PageTransitionType
-                                                    .rightToLeft,
-                                                child: SendDetailScreen(
-                                                  userProvider: userProvider,
-                                                  userSend: userSend,
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                        },
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                            CustomListButton(
-                              leadingIcon: FontAwesomeIcons.pen,
-                              label: 'メッセージを作成',
-                              labelColor: kWhiteColor,
-                              tileColor: kBlueColor,
-                              onTap: () => showBottomUpScreen(
-                                context,
-                                SendCreateScreen(
-                                  userProvider: userProvider,
-                                ),
-                              ),
-                              verticalAlign: ButtonVerticalAlign.bottom,
-                            ),
-                          ],
+                child: CustomCard(
+                  child: Column(
+                    children: [
+                      CustomListButton(
+                        leadingIcon: FontAwesomeIcons.gear,
+                        label: '送信設定',
+                        labelColor: kBlackColor,
+                        tileColor: kBlackColor.withOpacity(0.3),
+                        onTap: () => showBottomUpScreen(
+                          context,
+                          SendSettingScreen(
+                            userProvider: userProvider,
+                          ),
                         ),
-                      )
-                    : SendLoginWidget(userProvider: userProvider),
+                      ),
+                      FutureBuilder<String>(
+                        future: fetchMonthSendCount(userProvider.user),
+                        builder: (context, snapshot) {
+                          if (snapshot.data != null) {
+                            return AlertBar(snapshot.data ?? '');
+                          } else {
+                            return Container();
+                          }
+                        },
+                      ),
+                      Expanded(
+                        child:
+                            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                          stream: UserSendService().streamList(
+                            userId: userProvider.user?.id ?? 'error',
+                          ),
+                          builder: (context, snapshot) {
+                            List<UserSendModel> userSends = [];
+                            if (snapshot.hasData) {
+                              userSends = UserSendService().generateList(
+                                data: snapshot.data,
+                              );
+                            }
+                            if (userSends.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  '送信履歴はありません',
+                                  style: TextStyle(
+                                    color: kBlackColor.withOpacity(0.5),
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              );
+                            }
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: userSends.length,
+                              itemBuilder: (context, index) {
+                                UserSendModel userSend = userSends[index];
+                                return UserSendList(
+                                  userSend: userSend,
+                                  onTap: () {
+                                    if (userSend.draft) {
+                                      showBottomUpScreen(
+                                        context,
+                                        SendCreateScreen(
+                                          userProvider: userProvider,
+                                          userSend: userSend,
+                                        ),
+                                      );
+                                    } else {
+                                      Navigator.push(
+                                        context,
+                                        PageTransition(
+                                          type: PageTransitionType.rightToLeft,
+                                          child: SendDetailScreen(
+                                            userProvider: userProvider,
+                                            userSend: userSend,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      CustomListButton(
+                        leadingIcon: FontAwesomeIcons.pen,
+                        label: 'メッセージを作成',
+                        labelColor: kWhiteColor,
+                        tileColor: kBlueColor,
+                        onTap: () => showBottomUpScreen(
+                          context,
+                          SendCreateScreen(
+                            userProvider: userProvider,
+                          ),
+                        ),
+                        verticalAlign: ButtonVerticalAlign.bottom,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
         ),
       ),
       bottomSheet: CustomBottomSheet(),
-    );
-  }
-}
-
-class SendLoginWidget extends StatefulWidget {
-  final UserProvider userProvider;
-
-  const SendLoginWidget({
-    required this.userProvider,
-    super.key,
-  });
-
-  @override
-  State<SendLoginWidget> createState() => _SendLoginWidgetState();
-}
-
-class _SendLoginWidgetState extends State<SendLoginWidget> {
-  TextEditingController senderNameController = TextEditingController();
-
-  @override
-  void initState() {
-    senderNameController.text = widget.userProvider.user?.senderName ?? '';
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      behavior: HitTestBehavior.opaque,
-      child: CustomCard(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Column(
-                children: [
-                  Text(
-                    '- はじめに -',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'SourceHanSansJP-Bold',
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '送信モードを利用するには、送信者名を入力して、ご利用プランを選んでください。',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  CustomTextFormField(
-                    controller: senderNameController,
-                    textInputType: TextInputType.name,
-                    maxLines: 1,
-                    label: '送信者名',
-                    color: kBlackColor,
-                    prefix: Icons.account_box,
-                    fillColor: kBlackColor.withOpacity(0.1),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomButton(
-                    type: ButtonSizeType.lg,
-                    label: 'ご利用プランを選ぶ',
-                    labelColor: kWhiteColor,
-                    backgroundColor: kBlueColor,
-                    onPressed: () async {
-                      if (senderNameController.text == '') {
-                        if (!mounted) return;
-                        showMessage(context, '送信者名を入力してください', false);
-                        return;
-                      }
-                      var result = await PurchasesService().showPaywall();
-                      print('Paywall result: $result');
-                      String? error = await widget.userProvider.updateSender(
-                        senderName: senderNameController.text,
-                      );
-                      if (error != null) {
-                        if (!mounted) return;
-                        showMessage(context, error, false);
-                        return;
-                      }
-                      await widget.userProvider.reload();
-                      if (!mounted) return;
-                      Navigator.pushReplacement(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.bottomToTop,
-                          child: SendScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

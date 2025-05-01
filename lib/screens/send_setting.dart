@@ -10,6 +10,7 @@ import 'package:simple_alert_app/models/user.dart';
 import 'package:simple_alert_app/models/user_noticer.dart';
 import 'package:simple_alert_app/models/user_noticer_group.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/send.dart';
 import 'package:simple_alert_app/screens/send_setting_group.dart';
 import 'package:simple_alert_app/screens/send_setting_name.dart';
 import 'package:simple_alert_app/screens/send_setting_user.dart';
@@ -35,6 +36,7 @@ class SendSettingScreen extends StatefulWidget {
 }
 
 class _SendSettingScreenState extends State<SendSettingScreen> {
+  bool isPurchases = false;
   String purchasesId = '';
   int monthSendCount = 0;
 
@@ -45,7 +47,12 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
           customerInfo.entitlements.all['subscription'];
       if (mounted) {
         setState(() {
-          purchasesId = entitlement?.productIdentifier ?? '';
+          isPurchases = entitlement?.isActive ?? false;
+          if (isPurchases) {
+            purchasesId = entitlement?.productIdentifier ?? '';
+          } else {
+            purchasesId = '';
+          }
         });
       }
     });
@@ -81,7 +88,7 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
         backgroundColor: kWhiteColor,
         automaticallyImplyLeading: false,
         title: const Text(
-          '送信者設定',
+          '送信設定',
           style: TextStyle(color: kBlackColor),
         ),
         actions: [
@@ -207,27 +214,52 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                 );
               },
             ),
-            SettingList(
-              label: 'ご利用中のプラン',
-              trailing: Text(
-                PurchasesService().getName(purchasesId),
-                style: TextStyle(
-                  color: kBlackColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'SourceHanSansJP-Bold',
-                ),
-              ),
-              onTap: () {
-                showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) => PurchasesDialog(
-                    purchasesId: purchasesId,
+            isPurchases
+                ? SettingList(
+                    label: 'ご利用中のプラン',
+                    trailing: Text(
+                      PurchasesService().getName(purchasesId),
+                      style: TextStyle(
+                        color: kBlackColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'SourceHanSansJP-Bold',
+                      ),
+                    ),
+                    onTap: () {
+                      showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (context) => PurchasesDialog(
+                          purchasesId: purchasesId,
+                        ),
+                      );
+                    },
+                  )
+                : SettingList(
+                    label: 'ご利用中のプラン',
+                    trailing: Text(
+                      PurchasesService().getName(purchasesId),
+                      style: TextStyle(
+                        color: kBlackColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'SourceHanSansJP-Bold',
+                      ),
+                    ),
+                    onTap: () async {
+                      var result = await PurchasesService().showPaywall();
+                      print('Paywall result: $result');
+                      if (!mounted) return;
+                      Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.bottomToTop,
+                          child: SendScreen(),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ],
         ),
       ),

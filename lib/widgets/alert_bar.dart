@@ -23,6 +23,7 @@ class AlertBar extends StatelessWidget {
           fontWeight: FontWeight.bold,
           fontFamily: 'SourceHanSansJP-Bold',
         ),
+        textAlign: TextAlign.center,
       ),
     );
   }

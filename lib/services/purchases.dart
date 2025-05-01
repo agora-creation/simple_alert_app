@@ -30,7 +30,7 @@ class PurchasesService {
       case 'subscription_pro':
         return 'プロプラン';
       default:
-        return '';
+        return 'フリープラン';
     }
   }
 
@@ -41,7 +41,7 @@ class PurchasesService {
       case 'subscription_pro':
         return 5000;
       default:
-        return 0;
+        return 10;
     }
   }
 

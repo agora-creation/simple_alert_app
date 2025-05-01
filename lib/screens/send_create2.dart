@@ -45,6 +45,7 @@ class SendCreate2Screen extends StatefulWidget {
 }
 
 class _SendCreate2ScreenState extends State<SendCreate2Screen> {
+  bool isPurchases = false;
   String purchasesId = '';
   int monthSendCount = 0;
   int monthSendLimit = 0;
@@ -59,7 +60,12 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
           customerInfo.entitlements.all['subscription'];
       if (mounted) {
         setState(() {
-          purchasesId = entitlement?.productIdentifier ?? '';
+          isPurchases = entitlement?.isActive ?? false;
+          if (isPurchases) {
+            purchasesId = entitlement?.productIdentifier ?? '';
+          } else {
+            purchasesId = '';
+          }
         });
       }
     });

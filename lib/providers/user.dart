@@ -84,12 +84,19 @@ class UserProvider with ChangeNotifier {
               id: result.user!.uid,
             );
             if (tmpUser == null) {
+              String senderId;
+              UserModel? duplicateUser;
+              do {
+                senderId = rndText(10);
+                duplicateUser =
+                    await _userService.selectData(senderId: senderId);
+              } while (duplicateUser != null);
               _userService.create({
                 'id': result.user!.uid,
                 'name': name,
                 'tel': tel,
                 'token': token,
-                'senderId': '',
+                'senderId': senderId,
                 'senderName': name,
               });
               String userNoticeId = _userNoticeService.id(
@@ -165,12 +172,18 @@ class UserProvider with ChangeNotifier {
             id: result.user!.uid,
           );
           if (tmpUser == null) {
+            String senderId;
+            UserModel? duplicateUser;
+            do {
+              senderId = rndText(10);
+              duplicateUser = await _userService.selectData(senderId: senderId);
+            } while (duplicateUser != null);
             _userService.create({
               'id': result.user!.uid,
               'name': name,
               'tel': tel,
               'token': token,
-              'senderId': '',
+              'senderId': senderId,
               'senderName': name,
             });
             String userNoticeId = _userNoticeService.id(
@@ -226,33 +239,6 @@ class UserProvider with ChangeNotifier {
       _userService.update({
         'id': _user?.id,
         'name': name,
-      });
-    } catch (e) {
-      error = e.toString();
-    }
-    return error;
-  }
-
-  Future<String?> updateSender({
-    required String senderName,
-  }) async {
-    String? error;
-    if (senderName == '') return '送信者名は必須入力です';
-    try {
-      String senderId;
-      if (_user?.senderId == '') {
-        UserModel? tmpUser;
-        do {
-          senderId = rndText(10);
-          tmpUser = await _userService.selectData(senderId: senderId);
-        } while (tmpUser != null);
-      } else {
-        senderId = _user!.senderId;
-      }
-      _userService.update({
-        'id': _user?.id,
-        'senderId': senderId,
-        'senderName': senderName,
       });
     } catch (e) {
       error = e.toString();
