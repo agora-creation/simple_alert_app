@@ -34,6 +34,17 @@ class PurchasesService {
     }
   }
 
+  List<String> getDetails(String id) {
+    switch (id) {
+      case 'subscription_standard':
+        return ['・1ヵ月に1000件まで送信可能', '・広告の非表示'];
+      case 'subscription_pro':
+        return ['・1ヵ月に5000件まで送信可能', '・広告の非表示'];
+      default:
+        return ['・1ヵ月に10件まで送信可能'];
+    }
+  }
+
   int getMonthSendLimit(String id) {
     switch (id) {
       case 'subscription_standard':

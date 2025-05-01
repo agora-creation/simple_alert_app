@@ -22,6 +22,7 @@ import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
 import 'package:simple_alert_app/widgets/custom_button.dart';
 import 'package:simple_alert_app/widgets/setting_list.dart';
+import 'package:simple_alert_app/widgets/setting_plan_list.dart';
 
 class SendSettingScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -214,52 +215,47 @@ class _SendSettingScreenState extends State<SendSettingScreen> {
                 );
               },
             ),
-            isPurchases
-                ? SettingList(
-                    label: 'ご利用中のプラン',
-                    trailing: Text(
-                      PurchasesService().getName(purchasesId),
-                      style: TextStyle(
-                        color: kBlackColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'SourceHanSansJP-Bold',
+            SettingPlanList(
+              planName: PurchasesService().getName(purchasesId),
+              planDetails: PurchasesService().getDetails(purchasesId),
+              actions: [
+                Container(),
+                isPurchases
+                    ? CustomButton(
+                        type: ButtonSizeType.sm,
+                        label: '解約する',
+                        labelColor: kWhiteColor,
+                        backgroundColor: kRedColor,
+                        onPressed: () {
+                          showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context) => PurchasesDialog(
+                              purchasesId: purchasesId,
+                            ),
+                          );
+                        },
+                      )
+                    : CustomButton(
+                        type: ButtonSizeType.sm,
+                        label: '変更する',
+                        labelColor: kWhiteColor,
+                        backgroundColor: kBlueColor,
+                        onPressed: () async {
+                          var result = await PurchasesService().showPaywall();
+                          print('Paywall result: $result');
+                          if (!mounted) return;
+                          Navigator.pushReplacement(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.bottomToTop,
+                              child: SendScreen(),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                    onTap: () {
-                      showDialog(
-                        barrierDismissible: false,
-                        context: context,
-                        builder: (context) => PurchasesDialog(
-                          purchasesId: purchasesId,
-                        ),
-                      );
-                    },
-                  )
-                : SettingList(
-                    label: 'ご利用中のプラン',
-                    trailing: Text(
-                      PurchasesService().getName(purchasesId),
-                      style: TextStyle(
-                        color: kBlackColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'SourceHanSansJP-Bold',
-                      ),
-                    ),
-                    onTap: () async {
-                      var result = await PurchasesService().showPaywall();
-                      print('Paywall result: $result');
-                      if (!mounted) return;
-                      Navigator.pushReplacement(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.bottomToTop,
-                          child: SendScreen(),
-                        ),
-                      );
-                    },
-                  ),
+              ],
+            ),
           ],
         ),
       ),
