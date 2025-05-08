@@ -20,6 +20,7 @@ class AlertBar extends StatelessWidget {
         label,
         style: TextStyle(
           color: kWhiteColor,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           fontFamily: 'SourceHanSansJP-Bold',
         ),

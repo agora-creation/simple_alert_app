@@ -68,7 +68,7 @@ class _SendScreenState extends State<SendScreen> {
     }
     monthSendLimit = PurchasesService().getMonthSendLimit(purchasesId);
     String name = PurchasesService().getName(purchasesId);
-    return '$name\n現在$monthSendCount件 / 月$monthSendLimit件まで送信可';
+    return '$name(現在$monthSendCount件 / 月$monthSendLimit件まで送信可)';
   }
 
   @override
