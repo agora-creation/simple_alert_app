@@ -17,9 +17,19 @@ class SendUserList extends StatelessWidget {
         border: Border(
           bottom: BorderSide(color: kBlackColor.withOpacity(0.5)),
         ),
+        color: sendUser.read ? kWhiteColor : kRedColor.withOpacity(0.3),
       ),
       child: ListTile(
         title: Text(sendUser.name),
+        subtitle: sendUser.read
+            ? null
+            : Text(
+                '未読',
+                style: TextStyle(
+                  color: kRedColor,
+                  fontSize: 14,
+                ),
+              ),
         trailing: Text(
           sendUser.answer,
           style: TextStyle(

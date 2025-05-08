@@ -1,14 +1,10 @@
-import 'dart:io';
-
-import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
+import 'package:simple_alert_app/screens/send_detail_chart.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/choice_list.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
@@ -168,47 +164,21 @@ class _SendDetailScreenState extends State<SendDetailScreen> {
           ),
           SendUserSheet(
             widget.userSend.sendUsers,
-            downloadOnPressed: () async {
-              String fileName =
-                  '${dateText('yyyyMMddHHmmss', DateTime.now())}.csv';
-              List<String> header = [
-                '受信先名',
-                '回答結果',
-              ];
-              List<List<String>> rows = [];
-              if (widget.userSend.sendUsers.isNotEmpty) {
-                for (final sendUser in widget.userSend.sendUsers) {
-                  List<String> row = [];
-                  row.add(sendUser.name);
-                  row.add(sendUser.answer);
-                  rows.add(row);
-                }
-              }
-              String csv = const ListToCsvConverter().convert(
-                [header, ...rows],
-              );
-              String bom = '\uFEFF';
-              String csvText = bom + csv;
-              csvText = csvText.replaceAll('[', '');
-              csvText = csvText.replaceAll(']', '');
-              //ストレージ権限(Android)
-              if (Platform.isAndroid) {
-                final status = await Permission.storage.request();
-                if (!status.isGranted) {
-                  if (!mounted) return;
-                  showMessage(context, 'ストレージ権限がありません', false);
-                  return;
-                }
-              }
-              //保存先ディレクトリ
-              final directory = await getExternalStorageDirectory();
-              final path = '${directory!.path}/$fileName';
-              //書き込み
-              final file = File(path);
-              await file.writeAsString(csvText);
-              if (!mounted) return;
-              showMessage(context, 'CSVをダウンロードしました', true);
-            },
+            action: widget.userSend.isChoice
+                ? IconButton(
+                    onPressed: () => showBottomUpScreen(
+                      context,
+                      SendDetailChartScreen(
+                        userSend: widget.userSend,
+                      ),
+                    ),
+                    icon: FaIcon(
+                      FontAwesomeIcons.chartPie,
+                      color: kBlueColor,
+                      size: 20,
+                    ),
+                  )
+                : null,
           ),
         ],
       ),

@@ -3,8 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_alert_app/common/functions.dart';
 import 'package:simple_alert_app/common/style.dart';
 import 'package:simple_alert_app/models/user_notice.dart';
+import 'package:simple_alert_app/models/user_send.dart';
 import 'package:simple_alert_app/providers/user.dart';
 import 'package:simple_alert_app/services/user_notice.dart';
+import 'package:simple_alert_app/services/user_send.dart';
 import 'package:simple_alert_app/widgets/alert_bar.dart';
 import 'package:simple_alert_app/widgets/choice_radio_list.dart';
 import 'package:simple_alert_app/widgets/custom_alert_dialog.dart';
@@ -36,6 +38,26 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
         'userId': widget.userNotice.userId,
         'read': true,
       });
+      UserSendModel? userSend = await UserSendService().selectData(
+        id: widget.userNotice.userSendId,
+        userId: widget.userNotice.createdUserId,
+      );
+      if (userSend != null) {
+        List<Map> mapSendUsers = [];
+        if (userSend.sendUsers.isNotEmpty) {
+          for (final sendUser in userSend.sendUsers) {
+            if (sendUser.id == widget.userNotice.userId) {
+              sendUser.read = true;
+            }
+            mapSendUsers.add(sendUser.toMap());
+          }
+        }
+        UserSendService().update({
+          'id': userSend.id,
+          'userId': userSend.userId,
+          'sendUsers': mapSendUsers,
+        });
+      }
     }
     //レビューの促し(5回目の閲覧)
     int noticeConfCount = await getPrefsInt('noticeConfCount') ?? 0;

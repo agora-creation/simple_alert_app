@@ -150,6 +150,7 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
                           'id': userNoticer.noticerUserId,
                           'name': userNoticer.noticerUserName,
                           'answer': '',
+                          'read': false,
                         });
                         selectedSendUsers.add(sendUser);
                       }
@@ -227,6 +228,7 @@ class _SendCreate2ScreenState extends State<SendCreate2Screen> {
                                     'id': userNoticer.noticerUserId,
                                     'name': userNoticer.noticerUserName,
                                     'answer': '',
+                                    'read': false,
                                   }));
                                 }
                                 setState(() {});
